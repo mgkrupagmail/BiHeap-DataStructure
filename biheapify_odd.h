@@ -236,22 +236,7 @@ void BiHeapifyOdd(RAI first, size_type total_num_nodes,
    * Hence a biheap will be formed after finitely many calls to
    *  BiHeapifyOddSinglePass().
    *
-   * (2) Experimentation shows that the four calls to BiHeapifyEven() after
-   *  the do {} while(); loop appear to always form a biheap. It's not clear why
-   *  this happens nor is it clear whether or not this always happens, but it
-   *  does lead to the following conjecture:
-   *
-   *   The four calls to BiHeapifyEven() below always result in the formation of
-   *    a biheap.
-   *
-   * If this conjecture is true then all three of the functions BiHeapifyOddSinglePass()
-   *  SiftFromMaxToMinOdd(), and SiftFromMinToMaxOdd() defined in this file are
-   *  redundant meaning that implementing this biheapify algorithm is only
-   *  marginally more complicated than implementing both a min heap and max heap,
-   *  which is most of the content of the file biheapify_even.h and most of the
-   *  code needed to implement BiHeapifyEven().
-   *
-   *  (3) Information on the frequency of BiHeapifyOddSinglePass()'s success
+   *  (2) Information on the frequency of BiHeapifyOddSinglePass()'s success
    *   rates in forming a biheap:
    *  We now describe the results of the following experiment where "first" is
    *   an iterator pointing to the first element of a vector of size
