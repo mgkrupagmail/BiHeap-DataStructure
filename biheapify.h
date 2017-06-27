@@ -216,11 +216,7 @@ Although the above definition of a biheap is relatively complicated, the author
 #ifndef BIHEAPIFY_H_
 #define BIHEAPIFY_H_
 
-#include <cassert>
-
-#include <algorithm>
 #include <iostream>
-#include <iterator>
 
 #include "biheap_common.h"
 
