@@ -14,7 +14,7 @@
 
 #include <iomanip>
 #include <iostream>
-#include <iterator>
+#include <vector>
 
 namespace biheap_ostream_ns {
 
