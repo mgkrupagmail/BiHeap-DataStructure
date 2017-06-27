@@ -10,8 +10,6 @@
 #ifndef BIHEAPIFY_EVEN_H_
 #define BIHEAPIFY_EVEN_H_
 
-#include <cassert>
-
 #include <algorithm>
 
 #include "biheap_common.h"
