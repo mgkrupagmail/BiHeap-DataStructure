@@ -12,14 +12,15 @@
 #ifndef BIHEAP_COMMON_H_
 #define BIHEAP_COMMON_H_
 
+
+#include <iostream>
+
 namespace {
 typedef std::size_t size_type;
 }
 
-#include <iostream>
-#include <set>
-
 #include "biheap_ostream.h"
+
 
 #define FLIP_COORDINATE(a) (total_num_nodes - 1 - (a))
 
