@@ -10,8 +10,6 @@
 #ifndef BIHEAPIFY_ODD_H_
 #define BIHEAPIFY_ODD_H_
 
-#include <cassert>
-
 #include <algorithm>
 
 #include "biheap_common.h"
@@ -293,21 +291,6 @@ void BiHeapifyOdd(RAI first, size_type total_num_nodes,
                            biheap_upper_bound_node_hc, node_to_start_biheapification_at);
   } while(!IsBiheap(first, total_num_nodes, 0, total_num_nodes - 1, false));
   return ;
-
-  BiHeapifyEven(first, total_num_nodes - 3);
-  BiHeapifyEven(first, total_num_nodes - 1);
-  BiHeapifyEven(first + 3, total_num_nodes - 3);
-  BiHeapifyEven(first + 1, total_num_nodes - 1);
-  return ;
-
-  //BiHeapifyEven(first, total_num_nodes - 3);
-  //BiHeapifyEven(first, total_num_nodes - 1);
-  //BiHeapifyEven(first, total_num_nodes - 1);
-  //BiHeapifyEven(first + 1, total_num_nodes - 1);
-  //BiHeapifyEven(first, total_num_nodes - 1);
-  BiHeapifyOddSinglePass(first, total_num_nodes, biheap_lower_bound_node_hc, biheap_upper_bound_node_hc, node_to_start_biheapification_at);
-  //BiHeapifyOddSinglePass(first, total_num_nodes - 2, biheap_lower_bound_node_hc, biheap_upper_bound_node_hc, node_to_start_biheapification_at);
-  //BiHeapifyOddSinglePass(first + 2, total_num_nodes - 2, biheap_lower_bound_node_hc, biheap_upper_bound_node_hc, node_to_start_biheapification_at);
 }
 
 #undef FLIP_COORDINATE
