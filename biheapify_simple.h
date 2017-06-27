@@ -27,8 +27,6 @@
 #ifndef BIHEAPIFY_SIMPLE_H_
 #define BIHEAPIFY_SIMPLE_H_
 
-#include <cassert>
-
 #include <algorithm>
 
 #include "biheap_common.h"
