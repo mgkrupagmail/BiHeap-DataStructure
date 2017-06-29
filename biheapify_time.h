@@ -42,12 +42,15 @@ template<class T> std::chrono::nanoseconds TimeBiHeapifyGivenVec(T &vec, const T
 template<class T> std::chrono::nanoseconds TimeBiHeapifySinglePassGivenVec(T &vec, const T &vec_original, std::size_t total_num_nodes, int num_repititions = 1) {
   std::chrono::nanoseconds total{0};
   {
-  BiHeapifyOddSinglePass(vec.begin(), total_num_nodes);
+  if (total_num_nodes % 2 == 0)
+    BiHeapifyEvenSinglePass(vec.begin(), total_num_nodes);
+   else 
+    BiHeapifyOddSinglePass(vec.begin(), total_num_nodes);
   vec = vec_original;
   }
   for (int num_repititions_counter = 0; num_repititions_counter < num_repititions; num_repititions_counter++) {
     auto start_time = std::chrono::high_resolution_clock::now();
-    if (total_num_nodes % 2 == 0){
+    if (total_num_nodes % 2 == 0) {
       BiHeapifyEvenSinglePass(vec.begin(), total_num_nodes);
     } else {
       BiHeapifyOddSinglePass(vec.begin(), total_num_nodes);
