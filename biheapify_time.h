@@ -44,17 +44,16 @@ template<class T> std::chrono::nanoseconds TimeBiHeapifySinglePassGivenVec(T &ve
   {
   if (total_num_nodes % 2 == 0)
     BiHeapifyEvenSinglePass(vec.begin(), total_num_nodes);
-   else 
+  else 
     BiHeapifyOddSinglePass(vec.begin(), total_num_nodes);
   vec = vec_original;
   }
   for (int num_repititions_counter = 0; num_repititions_counter < num_repititions; num_repititions_counter++) {
     auto start_time = std::chrono::high_resolution_clock::now();
-    if (total_num_nodes % 2 == 0) {
+    if (total_num_nodes % 2 == 0) 
       BiHeapifyEvenSinglePass(vec.begin(), total_num_nodes);
-    } else {
+    else 
       BiHeapifyOddSinglePass(vec.begin(), total_num_nodes);
-    }
     total += std::chrono::high_resolution_clock::now() - start_time;
     vec = vec_original;
   }
