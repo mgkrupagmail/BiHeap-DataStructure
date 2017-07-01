@@ -27,7 +27,8 @@ void FillWithRandomNumbers(Iterator start, Iterator one_past_end, T a, T b) {
 }
 
 template<class Iterator>
-void FillWithRandomNumbers(Iterator start, Iterator one_past_end, float a, float b) {
+void FillWithRandomNumbers(Iterator start, Iterator one_past_end, float a,
+                           float b) {
   std::random_device rnd_device;
   std::mt19937_64 generator(rnd_device());
   std::uniform_real_distribution<float> dist(a, b);
@@ -37,7 +38,8 @@ void FillWithRandomNumbers(Iterator start, Iterator one_past_end, float a, float
 }
 
 template<class Iterator>
-void FillWithRandomNumbers(Iterator start, Iterator one_past_end, double a, double b) {
+void FillWithRandomNumbers(Iterator start, Iterator one_past_end, double a,
+                           double b) {
   std::random_device rnd_device;
   std::mt19937_64 generator(rnd_device());
   std::uniform_real_distribution<double> dist(a, b);
@@ -47,7 +49,8 @@ void FillWithRandomNumbers(Iterator start, Iterator one_past_end, double a, doub
 }
 
 template<class Iterator>
-void FillWithRandomNumbers(Iterator start, Iterator one_past_end, long double a, long double b) {
+void FillWithRandomNumbers(Iterator start, Iterator one_past_end, long double a,
+                           long double b) {
   std::random_device rnd_device;
   std::mt19937_64 generator(rnd_device());
   std::uniform_real_distribution<long double>  dist(a, b);
