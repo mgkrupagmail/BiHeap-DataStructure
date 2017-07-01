@@ -13,83 +13,47 @@
 #include <vector>
 
 namespace randomhelpers {
-#define FILL_VECTOR_WITH_RANDOM_NUMBERS_DEFAULT_VERBOSE false
-#define FILL_VECTOR_WITH_RANDOM_NUMBERS_DEFAULT_OSTRM   std::cout
-#define FILL_VECTOR_WITH_RANDOM_NUMBERS_FINISHED_MESSAGE "Finished filling vector with random goodness.\n"
 
-template<typename T>
-static inline void FillVectorWithRandomNumbersPrintStartMessage(const std::vector<T> &vec,
-                const T a, const T b, const bool verbose, std::ostream &ostrm) {
-  if (verbose) {
-    ostrm << "Started filling vector of size " << vec.size()
-          << " with random numbers from the range [" << a << ", " << b << ")." << '\n';
-    ostrm.flush();
-  }
-}
-
-template<typename T>
-void FillVectorWithRandomNumbers(std::vector<T> &vec, T a, T b,
-                                 bool verbose = FILL_VECTOR_WITH_RANDOM_NUMBERS_DEFAULT_VERBOSE,
-                                 std::ostream &ostrm = FILL_VECTOR_WITH_RANDOM_NUMBERS_DEFAULT_OSTRM) {
+//This general case is designed to work with any type T for which
+// std::is_integral<A>::value == true.
+template<class Iterator, typename T>
+void FillWithRandomNumbers(Iterator start, Iterator one_past_end, T a, T b) {
   std::random_device rnd_device;
   std::mt19937 generator(rnd_device());
   std::uniform_int_distribution<T> dist(a, b);
-  FillVectorWithRandomNumbersPrintStartMessage(vec, a, b, verbose, ostrm);
-  for (unsigned int i = 0; i < vec.size(); i++)
-    vec[i] = dist(generator);
-  if (verbose) {
-    ostrm << FILL_VECTOR_WITH_RANDOM_NUMBERS_FINISHED_MESSAGE;
-    ostrm.flush();
-  }
+  for (auto it = start; it != one_past_end; it++)
+    *it = dist(generator);
+  return ;
 }
 
-void FillVectorWithRandomNumbers(std::vector<float> &vec, float a, float b,
-                                 bool verbose = FILL_VECTOR_WITH_RANDOM_NUMBERS_DEFAULT_VERBOSE,
-                                 std::ostream &ostrm = FILL_VECTOR_WITH_RANDOM_NUMBERS_DEFAULT_OSTRM) {
+template<class Iterator>
+void FillWithRandomNumbers(Iterator start, Iterator one_past_end, float a, float b) {
   std::random_device rnd_device;
   std::mt19937_64 generator(rnd_device());
-  std::uniform_real_distribution<float> dis(a, b);
-  FillVectorWithRandomNumbersPrintStartMessage(vec, a, b, verbose, ostrm);
-  for (unsigned int i = 0; i < vec.size(); i++)
-    vec[i] = dis(generator);
-  if (verbose) {
-    ostrm << FILL_VECTOR_WITH_RANDOM_NUMBERS_FINISHED_MESSAGE;
-    ostrm.flush();
-  }
+  std::uniform_real_distribution<float> dist(a, b);
+  for (auto it = start; it != one_past_end; it++)
+    *it = dist(generator);
+  return ;
 }
 
-void FillVectorWithRandomNumbers(std::vector<double> &vec, double a, double b,
-                                 bool verbose = FILL_VECTOR_WITH_RANDOM_NUMBERS_DEFAULT_VERBOSE,
-                                 std::ostream &ostrm = FILL_VECTOR_WITH_RANDOM_NUMBERS_DEFAULT_OSTRM) {
+template<class Iterator>
+void FillWithRandomNumbers(Iterator start, Iterator one_past_end, double a, double b) {
   std::random_device rnd_device;
   std::mt19937_64 generator(rnd_device());
-  std::uniform_real_distribution<double> dis(a, b);
-  FillVectorWithRandomNumbersPrintStartMessage(vec, a, b, verbose, ostrm);
-  for (unsigned int i = 0; i < vec.size(); i++)
-    vec[i] = dis(generator);
-  if (verbose) {
-    ostrm << FILL_VECTOR_WITH_RANDOM_NUMBERS_FINISHED_MESSAGE;
-    ostrm.flush();
-  }
+  std::uniform_real_distribution<double> dist(a, b);
+  for (auto it = start; it != one_past_end; it++)
+    *it = dist(generator);
+  return ;
 }
 
-void FillVectorWithRandomNumbers(std::vector<long double> &vec, long double a, long double b,
-                                 bool verbose = FILL_VECTOR_WITH_RANDOM_NUMBERS_DEFAULT_VERBOSE,
-                                 std::ostream &ostrm = FILL_VECTOR_WITH_RANDOM_NUMBERS_DEFAULT_OSTRM) {
+template<class Iterator>
+void FillWithRandomNumbers(Iterator start, Iterator one_past_end, long double a, long double b) {
   std::random_device rnd_device;
   std::mt19937_64 generator(rnd_device());
-  std::uniform_real_distribution<long double>  dis(a, b);
-  FillVectorWithRandomNumbersPrintStartMessage(vec, a, b, verbose, ostrm);
-  for (unsigned int i = 0; i < vec.size(); i++)
-    vec[i] = dis(generator);
-  if (verbose) {
-    ostrm << FILL_VECTOR_WITH_RANDOM_NUMBERS_FINISHED_MESSAGE;
-    ostrm.flush();
-  }
-
-#undef FILL_VECTOR_WITH_RANDOM_NUMBERS_DEFAULT_VERBOSE
-#undef FILL_VECTOR_WITH_RANDOM_NUMBERS_DEFAULT_OSTRM
-#undef FILL_VECTOR_WITH_RANDOM_NUMBERS_FINISHED_MESSAGE
+  std::uniform_real_distribution<long double>  dist(a, b);
+  for (auto it = start; it != one_past_end; it++)
+    *it = dist(generator);
+  return ;
 }
 
 } //END NAMESPACE randomhelpers
