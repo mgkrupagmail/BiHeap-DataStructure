@@ -29,7 +29,8 @@
 #include "random_helpers.h"
 
 template<class T>
-std::string GetDesciption(std::vector<T> fail_counter, std::vector<T> call_counter) {
+std::string GetDesciption(std::vector<T> fail_counter,
+                          std::vector<T> call_counter) {
   int max_num_calls = 1; //The number of non-zero entries in call_counter;
   for ( ; max_num_calls < static_cast<int>(call_counter.size())
           && call_counter[max_num_calls] != 0; max_num_calls++) ;
@@ -47,7 +48,7 @@ std::string GetDesciption(std::vector<T> fail_counter, std::vector<T> call_count
   sum_calls_by_call_num[1]   = call_counter[1];
   for (int i = 1; i < max_num_calls; i++) {
     sum_success_by_call_num[i] = sum_success_by_call_num[i - 1] + success_counter[i];
-    sum_calls_by_call_num[i]   = sum_calls_by_call_num[i - 1]   + call_counter[i];
+    sum_calls_by_call_num[i]   = sum_calls_by_call_num[i - 1] + call_counter[i];
   }
   std::stringstream strstrm;
   auto max_width_success_counter = 1u;
@@ -73,17 +74,21 @@ std::string GetDesciption(std::vector<T> fail_counter, std::vector<T> call_count
             << std::setw(max_width_call_counter)    << call_counter[i];
     if (call_counter[i] != 0) {
       strstrm << std::string(" = \t")
-              << std::to_string(static_cast<long double>(success_counter[i]) / static_cast<long double>(call_counter[i]));
+              << std::to_string(static_cast<long double>(success_counter[i])
+                                / static_cast<long double>(call_counter[i]));
     }
     strstrm << std::string("  \tsum_success_leq[") << std::to_string(i)
             << std::string("]/sum_num_calls_leq[") << std::to_string(i)
             << std::string("] = ");
-    strstrm << std::setw(max_width_sum_success_by_call_num) << std::to_string(sum_success_by_call_num[i])
+    strstrm << std::setw(max_width_sum_success_by_call_num)
+            << std::to_string(sum_success_by_call_num[i])
             << std::string(" / ")
-            << std::setw(max_width_sum_calls_by_call_num) << std::to_string(sum_calls_by_call_num[i]);
+            << std::setw(max_width_sum_calls_by_call_num)
+            << std::to_string(sum_calls_by_call_num[i]);
     if (sum_calls_by_call_num[i] != 0) {
       strstrm << std::string(" = \t")
-              << std::to_string(static_cast<long double>(sum_success_by_call_num[i]) / static_cast<long double>(sum_calls_by_call_num[i]));
+         << std::to_string(static_cast<long double>(sum_success_by_call_num[i])
+                         / static_cast<long double>(sum_calls_by_call_num[i]));
     }
     strstrm << std::string("\n");
   }
@@ -96,7 +101,8 @@ std::string GetDesciption(std::vector<T> fail_counter, std::vector<T> call_count
           << std::string(" / ") << std::to_string(total_calls);
   if (total_calls != 0) {
       strstrm << std::string(" = \t")
-              << std::to_string(static_cast<long double>(total_success) / static_cast<long double>(total_calls));
+              << std::to_string(static_cast<long double>(total_success)
+                                / static_cast<long double>(total_calls));
   }
   return strstrm.str();
 }
@@ -124,7 +130,8 @@ template<class T> void MeasureBiHeapifySuccessRate(int start_total_num_nodes,
       for (int vec_counter = 0; vec_counter < num_vecs_to_try; vec_counter++) {
         int try_num = 1;
         std::vector<T> vec(total_num_nodes);
-        randomhelpers::FillVectorWithRandomNumbers(vec, std::numeric_limits<T>::min(), std::numeric_limits<T>::max());
+        randomhelpers::FillWithRandomNumbers(vec.begin(), vec.end(),
+                  std::numeric_limits<T>::min(), std::numeric_limits<T>::max());
 
         //BiHeapifySimpleSinglePass(vec.begin(), vec.size());
         //BiHeapifyEvenSinglePass(vec.begin(), vec.size());
@@ -136,7 +143,8 @@ template<class T> void MeasureBiHeapifySuccessRate(int start_total_num_nodes,
         while (IsBiheap(vec.begin(), vec.size(), 0, 0, false) == false) {
           fail_counter[try_num]++;
           if (try_num >= 10) {
-            std::cout << "Tried and failed to biheapify vector " << try_num << " times. Quitting this vector." << std::endl;
+            std::cout << "Tried and failed to biheapify vector " << try_num
+                      << " times. Quitting this vector." << std::endl;
             break;
           }
           try_num++;
@@ -154,7 +162,8 @@ template<class T> void MeasureBiHeapifySuccessRate(int start_total_num_nodes,
           total_tries++;
         }
         if (IsBiheap(vec.begin(), vec.size(), 0, 0, false) == false) {
-          std::cout << "Failed to BiHeapify() vector of size " << vec.size() << std::endl;
+          std::cout << "Failed to BiHeapify() vector of size "
+                    << vec.size() << std::endl;
           if (total_num_nodes < (1 << 10))
             PrintBiHeap(vec.begin(), i);
           return ;
