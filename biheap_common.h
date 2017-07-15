@@ -24,9 +24,15 @@ typedef std::size_t size_type;
 
 inline size_type GetLeftChildInBiheap(size_type node) { return (2 * node) + 1; }
 inline size_type GetRightChildInBiheap(size_type node) {return 2 * (node + 1); }
-inline size_type GetParentInBiheapNotRoot(size_type node) { return static_cast<size_type> ((node - 1)/2); }
-inline size_type GetParentInBiheap(size_type node) { if(node == 0) return -1; else return GetParentInBiheapNotRoot(node); }
-inline size_type GetParentInBiheapZero(size_type node) { if(node == 0) return 0; else return GetParentInBiheapNotRoot(node); }
+inline size_type GetParentInBiheapNotRoot(size_type node) {
+  return static_cast<size_type> ((node - 1)/2);
+}
+inline size_type GetParentInBiheap(size_type node) {
+  if(node == 0) return -1; else return GetParentInBiheapNotRoot(node);
+}
+inline size_type GetParentInBiheapZero(size_type node) {
+  if(node == 0) return 0; else return GetParentInBiheapNotRoot(node);
+}
 
 /*
  * This function is the most complicated part of implementing a biheapify
@@ -79,13 +85,15 @@ inline size_type GetNumNodesInHeapContainedInBiheap(size_type total_num_nodes) {
 //Calling Biheap(first, total_num_nodes, 0, 0) will change biheap_end_node_hc
 // to equal total_num_nodes - 1.
 template<class RAI>
-bool IsBiheap(RAI first, size_type total_num_nodes, size_type biheap_start_node_hc = 0,
-                     size_type biheap_end_node_hc = 0, bool should_output_failure_message_to_cout = true,
-                     std::ostream &ostrm = ISBIHEAP_OSTREAM_DEFAULT) {
+bool IsBiheap(RAI first, size_type total_num_nodes,
+           size_type biheap_start_node_hc = 0, size_type biheap_end_node_hc = 0,
+           bool should_output_failure_message_to_cout = true,
+           std::ostream &ostrm = ISBIHEAP_OSTREAM_DEFAULT) {
   if (biheap_start_node_hc > biheap_end_node_hc) {
     ostrm << "WARNING In IsBiheap():" << biheap_start_node_hc
           << " = biheap_start_node_hc > biheap_end_node_hc = "
-          << biheap_end_node_hc << ". Swapping values and continuing." << std::endl;
+          << biheap_end_node_hc << ". Swapping values and continuing."
+          << std::endl;
     std::swap(biheap_start_node_hc, biheap_end_node_hc);
   }
   if (biheap_start_node_hc == 0 && biheap_end_node_hc == 0)
@@ -105,22 +113,26 @@ bool IsBiheap(RAI first, size_type total_num_nodes, size_type biheap_start_node_
 
   auto num_nodes_in_heap = GetNumNodesInHeapContainedInBiheap(total_num_nodes);
   size_type left_child;
-  for (auto i = biheap_start_node_hc; GetLeftChildInBiheap(i) < num_nodes_in_heap
+  for (auto i = biheap_start_node_hc; GetLeftChildInBiheap(i) <num_nodes_in_heap
       && GetLeftChildInBiheap(i) <= biheap_end_node_hc; i++) {
     left_child = GetLeftChildInBiheap(i);
-    //Check that the nodes first, ..., first + num_nodes_in_heap - 1 form a min heap.
+    //Check that the nodes first, ..., first + num_nodes_in_heap - 1 form
+    // a min heap.
     if (*(first + i) > *(first + left_child)) {
       if (should_output_failure_message_to_cout)
-        ostrm << "Failed to be a MIN heap at pos_hc = " << i << " due to left_child= "
+        ostrm << "Failed to be a MIN heap at pos_hc = " << i
+              << " due to left_child= "
               << (left_child) << " \t*(first + pos_hc) = " << *(first + i)
               << " \t*(first + left_child) = " << *(first + left_child)
               << " \ttotal_num_nodes = " << total_num_nodes << std::endl;
       return false;
     }
-    //Check that the nodes FLIP_COORDINATE(first), ..., FLIP_COORDINATE(first + num_nodes_in_heap - 1) form a max heap.
+    //Check that the nodes FLIP_COORDINATE(first), ...,
+    // FLIP_COORDINATE(first + num_nodes_in_heap - 1) form a max heap.
     if (*(first + FLIP_COORDINATE(i)) < *(first + FLIP_COORDINATE(left_child))){
       if (should_output_failure_message_to_cout)
-        ostrm << "Failed to be a MAX heap at pos_hc = " << (FLIP_COORDINATE(left_child))
+        ostrm << "Failed to be a MAX heap at pos_hc = "
+              << (FLIP_COORDINATE(left_child))
               << " (pos_mc = " << i << ") due to left_child= " << (left_child)
               << " \t*(first + pos_hc) = " << *(first + FLIP_COORDINATE(i))
               << " \t*(first + left_child) = " << *(first + left_child)
@@ -129,20 +141,24 @@ bool IsBiheap(RAI first, size_type total_num_nodes, size_type biheap_start_node_
     }
 
     //If the right child is not in the heap or the biheap.
-    if (left_child + 1 >= num_nodes_in_heap || left_child + 1 >= biheap_end_node_hc)
+    if (left_child + 1 >= num_nodes_in_heap
+        || left_child + 1 >= biheap_end_node_hc)
       break;
 
     if (*(first + i) > *(first + left_child + 1)) {
       if (should_output_failure_message_to_cout)
-        ostrm << "Failed to be a MIN heap at pos_hc = " << i << " due to max heap right_child = "
+        ostrm << "Failed to be a MIN heap at pos_hc = " << i
+              << " due to max heap right_child = "
               << (left_child + 1) << " \t*(first + pos_hc) = " << *(first + i)
               << " \t*(first + right_child) = " << *(first + left_child + 1)
               << " \ttotal_num_nodes = " << total_num_nodes << std::endl;
       return false;
     }
-    if (*(first + FLIP_COORDINATE(i)) < *(first + FLIP_COORDINATE(left_child + 1))){
+    if (*(first + FLIP_COORDINATE(i)) <
+        *(first + FLIP_COORDINATE(left_child + 1))){
       if (should_output_failure_message_to_cout)
-        ostrm << "Failed to be a MAX heap at pos_hc = " << (FLIP_COORDINATE(left_child + 1))
+        ostrm << "Failed to be a MAX heap at pos_hc = "
+              << (FLIP_COORDINATE(left_child + 1))
               << " (pos_mc = " << i << ") due to max heap right_child = "
               << (left_child + 1) << " \t*(first + pos_hc) = "
               << *(first + FLIP_COORDINATE(i)) << " \t*(first + right_child) = "
@@ -155,9 +171,11 @@ bool IsBiheap(RAI first, size_type total_num_nodes, size_type biheap_start_node_
 }
 
 template<class RAI>
-inline void SiftUpMaxHeapMC(RAI first, size_type total_num_nodes, size_type pos_mc, size_type smallest_node_in_biheap_mc) {
+inline void SiftUpMaxHeapMC(RAI first, size_type total_num_nodes,
+                      size_type pos_mc, size_type smallest_node_in_biheap_mc) {
   size_type parent;
-  if (pos_mc == 0 || (parent = GetParentInBiheapNotRoot(pos_mc)) < smallest_node_in_biheap_mc)
+  if (pos_mc == 0 ||
+      (parent = GetParentInBiheapNotRoot(pos_mc)) < smallest_node_in_biheap_mc)
     return ;
   auto pos_it = first + FLIP_COORDINATE(pos_mc);
   do {
@@ -169,20 +187,25 @@ inline void SiftUpMaxHeapMC(RAI first, size_type total_num_nodes, size_type pos_
     } else {
       return ;
     }
-  } while (pos_mc > 0 && (parent = GetParentInBiheapNotRoot(pos_mc)) >= smallest_node_in_biheap_mc);
+  } while (pos_mc > 0 &&
+     (parent = GetParentInBiheapNotRoot(pos_mc)) >= smallest_node_in_biheap_mc);
   return ;
 }
 
 template<class RAI>
-inline void SiftUpMaxHeapHC(RAI first, size_type total_num_nodes, size_type pos_hc, size_type smallest_node_in_biheap_mc) {
-  SiftUpMaxHeapMC(first, total_num_nodes, FLIP_COORDINATE(pos_hc), smallest_node_in_biheap_mc);
+inline void SiftUpMaxHeapHC(RAI first, size_type total_num_nodes,
+                       size_type pos_hc, size_type smallest_node_in_biheap_mc) {
+  SiftUpMaxHeapMC(first, total_num_nodes, FLIP_COORDINATE(pos_hc),
+                  smallest_node_in_biheap_mc);
 }
 
 //Assumes that pos_hc is a node in the min heap.
 template<class RAI>
-inline void SiftUpMinHeapHC(RAI first, size_type total_num_nodes, size_type pos_hc, size_type smallest_node_in_biheap_hc) {
+inline void SiftUpMinHeapHC(RAI first, size_type total_num_nodes,
+                       size_type pos_hc, size_type smallest_node_in_biheap_hc) {
   size_type parent;
-  if (pos_hc == 0 || (parent = GetParentInBiheapNotRoot(pos_hc)) < smallest_node_in_biheap_hc)
+  if (pos_hc == 0 ||
+      (parent = GetParentInBiheapNotRoot(pos_hc)) < smallest_node_in_biheap_hc)
     return ;
   auto pos_it = first + pos_hc;
   do {
@@ -194,14 +217,17 @@ inline void SiftUpMinHeapHC(RAI first, size_type total_num_nodes, size_type pos_
     } else {
       return ;
     }
-  } while (pos_hc > 0 && (parent = GetParentInBiheapNotRoot(pos_hc)) >= smallest_node_in_biheap_hc);
+  } while (pos_hc > 0 &&
+     (parent = GetParentInBiheapNotRoot(pos_hc)) >= smallest_node_in_biheap_hc);
   return ;
 }
 
 //Assumes that pos_hc is a node in the min heap.
 template<class RAI>
-inline void SiftUpMinHeapMC(RAI first, size_type total_num_nodes, size_type pos_mc, size_type smallest_node_in_biheap_hc) {
-  SiftUpMinHeapHC(first, total_num_nodes, FLIP_COORDINATE(pos_mc), smallest_node_in_biheap_hc);
+inline void SiftUpMinHeapMC(RAI first, size_type total_num_nodes,
+                       size_type pos_mc, size_type smallest_node_in_biheap_hc) {
+  SiftUpMinHeapHC(first, total_num_nodes, FLIP_COORDINATE(pos_mc),
+                  smallest_node_in_biheap_hc);
 }
 
 #undef ISBIHEAP_OSTREAM_DEFAULT
