@@ -199,7 +199,8 @@ void BiHeapifyOdd(RAI first, size_type total_num_nodes,
                       size_type node_to_start_biheapification_at = static_cast<size_type>(-1)) {
   if (biheap_lower_bound_node_hc == 0 && biheap_upper_bound_node_hc == 0)
     biheap_upper_bound_node_hc = total_num_nodes - 1;
-  if(biheap_upper_bound_node_hc - biheap_lower_bound_node_hc < 11) { //If it's small enough that it's easiest to just sort everything.
+  //If it's small enough that it's easiest to just sort everything.
+  if(biheap_upper_bound_node_hc - biheap_lower_bound_node_hc < 11) { 
     std::sort(first + biheap_lower_bound_node_hc, first + (biheap_upper_bound_node_hc + 1));
     return ;
   }
