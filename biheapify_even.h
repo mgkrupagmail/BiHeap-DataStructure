@@ -159,7 +159,7 @@ void BiHeapifyEvenSinglePass(RAI first, size_type total_num_nodes,
     node_to_start_biheapification_at = biheap_lower_bound_node_hc
         + (num_nodes_to_biheapify / 2) + (num_nodes_to_biheapify % 2);
   }
-  size_type smallest_node_in_biheap_hc = node_to_start_biheapification_at;//FORMERLY: size_type smallest_node_in_biheap_hc = total_num_nodes / 2 + (total_num_nodes % 2); // = GetNumNodesInPureHeap();
+  size_type smallest_node_in_biheap_hc = node_to_start_biheapification_at;
   size_type largest_node_in_biheap_hc  = node_to_start_biheapification_at - 1;
 
   while(smallest_node_in_biheap_hc > 0) {
