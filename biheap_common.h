@@ -12,7 +12,6 @@
 #ifndef BIHEAP_COMMON_H_
 #define BIHEAP_COMMON_H_
 
-
 #include <iostream>
 
 namespace {
@@ -21,14 +20,13 @@ typedef std::size_t size_type;
 
 #include "biheap_ostream.h"
 
-
 #define FLIP_COORDINATE(a) (total_num_nodes - 1 - (a))
 
-static inline size_type GetLeftChildInBiheap(size_type node) { return (2 * node) + 1; }
-static inline size_type GetRightChildInBiheap(size_type node) {return 2 * (node + 1); }
-static inline size_type GetParentInBiheapNotRoot(size_type node) { return static_cast<size_type> ((node - 1)/2); }
-static inline size_type GetParentInBiheap(size_type node) { if(node == 0) return -1; else return GetParentInBiheapNotRoot(node); }
-static inline size_type GetParentInBiheapZero(size_type node) { if(node == 0) return 0; else return GetParentInBiheapNotRoot(node); }
+inline size_type GetLeftChildInBiheap(size_type node) { return (2 * node) + 1; }
+inline size_type GetRightChildInBiheap(size_type node) {return 2 * (node + 1); }
+inline size_type GetParentInBiheapNotRoot(size_type node) { return static_cast<size_type> ((node - 1)/2); }
+inline size_type GetParentInBiheap(size_type node) { if(node == 0) return -1; else return GetParentInBiheapNotRoot(node); }
+inline size_type GetParentInBiheapZero(size_type node) { if(node == 0) return 0; else return GetParentInBiheapNotRoot(node); }
 
 /*
  * This function is the most complicated part of implementing a biheapify
@@ -63,7 +61,7 @@ static inline size_type GetParentInBiheapZero(size_type node) { if(node == 0) re
  *  where num_nodes_in_heap_odd[0] == 0, num_nodes_in_heap_odd[1] == 1,
  *        num_nodes_in_heap_odd[2] == 2, (num_nodes_in_heap_odd[3] == 4, ...)
  */
-static inline size_type GetNumNodesInHeapContainedInBiheap(size_type total_num_nodes) {
+inline size_type GetNumNodesInHeapContainedInBiheap(size_type total_num_nodes) {
   auto i = total_num_nodes / 2;
   size_type num_nodes_in_heap;
   if (total_num_nodes <= 2)
@@ -81,7 +79,7 @@ static inline size_type GetNumNodesInHeapContainedInBiheap(size_type total_num_n
 //Calling Biheap(first, total_num_nodes, 0, 0) will change biheap_end_node_hc
 // to equal total_num_nodes - 1.
 template<class RAI>
-static bool IsBiheap(RAI first, size_type total_num_nodes, size_type biheap_start_node_hc = 0,
+bool IsBiheap(RAI first, size_type total_num_nodes, size_type biheap_start_node_hc = 0,
                      size_type biheap_end_node_hc = 0, bool should_output_failure_message_to_cout = true,
                      std::ostream &ostrm = ISBIHEAP_OSTREAM_DEFAULT) {
   if (biheap_start_node_hc > biheap_end_node_hc) {
