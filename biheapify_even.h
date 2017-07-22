@@ -238,18 +238,6 @@ void BiHeapifyEvenSinglePass(RAI first, size_type total_num_nodes,
   return ;
 }
 
-template<class RAI>
-std::string GetBiHeapifyEvenFailureMessage(RAI first, size_type total_num_nodes) {
-  std::stringstream strm;
-  strm << "BiHeapifyEvenSinglePass() failed to biheapify in a single pass with "
-      << "total_num_nodes = " << total_num_nodes
-      << ". The author kindly requests that you inform him of this by emailing "
-      << "to him at mgkrupa@gmail.com the value of total_num_nodes and ideally, "
-      << "also the graph below (if present)." << std::endl;
-  if (total_num_nodes <= static_cast<size_type>(1u << 7))
-    PrintBiHeap(first, total_num_nodes, strm);
-  return strm.str();
-}
 
 /*This will BiHeapify all nodes in
  * [biheap_lower_bound_node_hc, biheap_upper_bound_node_hc]
@@ -306,7 +294,7 @@ void BiHeapifyEven(RAI first, size_type total_num_nodes,
   while(!IsBiheap(first, total_num_nodes, 0, total_num_nodes - 1, false)) {
     //The line below can be removed without affecting the correctness of the
     // algorithm.
-    GetBiHeapifyEvenFailureMessage(first, total_num_nodes);
+    GetBiHeapifyFailureMessage(first, total_num_nodes);
     BiHeapifyEvenSinglePass(first, total_num_nodes, biheap_lower_bound_node_hc,
                   biheap_upper_bound_node_hc, node_to_start_biheapification_at);
   }
