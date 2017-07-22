@@ -24,4 +24,4 @@ The definition of a biheap is highly detailed but we can give a quick summary of
  
 where num_nodes_in_heap is obtained from the function GetNumNodesInHeapContainedInBiheap(), which is defined in biheap_common.h. 
 
-The quantity num_nodes_in_heap is a fundamentally important quantity associated with the biheap on total_num_nodes nodes. The formulas that define this quantity, although complicated, stem from the intuitive and natural graph-theoretic definition of a biheap given in the detailed in the comments at the top of biheapify.h.
+The quantity num_nodes_in_heap is a fundamentally important quantity associated with the biheap on total_num_nodes nodes. The formulas that define this quantity, although complicated, stem from the intuitive and natural graph-theoretic definition of a biheap given in detail in the comments at the top of biheapify.h.
