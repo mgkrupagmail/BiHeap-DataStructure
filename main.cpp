@@ -53,7 +53,6 @@ int main() {
                                  // counts.
   bool verbose = false;
 
-
   //This function will go through each of the sizes:
   // start_total_num_nodes, start_total_num_nodes + increment_size,
   // start_total_num_nodes + 2 * increment_size, ...
