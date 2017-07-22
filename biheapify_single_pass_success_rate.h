@@ -5,12 +5,10 @@
  *      Author: Matthew Gregory Krupa
  *
  *  MeasureBiHeapifySuccessRate(), which is used to measure how many times
-//   a BiHeapify pass (i.e. one of BiHeapifyEvenSinglePass(),
-//   BiHeapifyOddSinglePass(), or BiHeapifySimpleSinglePass()) must be
+//   a BiHeapify pass (i.e. one of BiHeapifyEven(),
+//   BiHeapifyOdd(), or BiHeapifySimpleSinglePass()) must be
 //   called before a BiHeap is formed.
-// - Notice that for BiHeapifyEvenSinglePass() this appears to always
-//    require only one pass while for BiHeapifyOddSinglePass() this sometimes
-//    requires multiple passes.
+// - Notice that for BiHeapify() this always require only one call.
  */
 
 #ifndef BIHEAPIFY_SINGLE_PASS_SUCCESS_RATE_H_
@@ -108,10 +106,10 @@ std::string GetDesciption(std::vector<T> fail_counter,
 }
 
 /* By default this function measures the success rate of BiHeapifySinglePass().
- * To measure the success rate of BiHeapifyEvenSinglePass() then comment
+ * To measure the success rate of BiHeapifyEven() then comment
  *  out the two instances of BiHeapifySinglePass() and un-comment out the two
- *  instances of BiHeapifyEvenSinglePass().
- *  Ditto for BiHeapifySimpleSinglePass() and BiHeapifyOddSinglePass().
+ *  instances of BiHeapifyEven().
+ *  Ditto for BiHeapifySimpleSinglePass() and BiHeapifyOdd().
  * This function will go through each of the sizes:
  *  start_total_num_nodes, start_total_num_nodes + increment_size,
  *  start_total_num_nodes + 2 * increment_size, ...
@@ -143,8 +141,8 @@ template<class T> void MeasureBiHeapifySuccessRate(long start_total_num_nodes,
         randomhelpers::FillWithRandomNumbers(vec.begin(), vec.end(),
                   0, static_cast<T>(4*total_num_nodes));//std::numeric_limits<T>::min(), std::numeric_limits<T>::max());
 //#define BIHEAPIFY_ALGORITHM BiHeapifySimpleSinglePass
-//#define BIHEAPIFY_ALGORITHM BiHeapifyEvenSinglePass
-//#define BIHEAPIFY_ALGORITHM BiHeapifyOddSinglePass
+//#define BIHEAPIFY_ALGORITHM BiHeapifyEven
+//#define BIHEAPIFY_ALGORITHM BiHeapifyOdd
 #define BIHEAPIFY_ALGORITHM BiHeapifySinglePass
 
         BIHEAPIFY_ALGORITHM(vec.begin(), vec.size());
