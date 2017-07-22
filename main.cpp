@@ -31,26 +31,47 @@
 #include "biheapify_time.h"
 
 int main() {
-  int start_total_num_nodes = 2;
-  int increment_size        = 2; //Set this to 2 to test vectors that are only
+  long start_total_num_nodes = 3;
+  long increment_size        = 1; //Set this to 2 to test vectors that are only
                                  //odd or only even in size.
-  //Will be applied to BiHeaps of sizes:
+  //The two functions below will be applied to biheaps of sizes:
   // start_total_num_nodes + (muliple) * increment_size
-  int end_total_num_nodes = static_cast<int>(1u << 15);
-  int num_vecs_to_try = static_cast<int>(1u << 9);
+  // that are <= end_total_num_nodes
+  long end_total_num_nodes = static_cast<int>(1u << 15);
+
+  //For each size, the two functions below will biheapify num_vecs_to_try
+  // vectors of that size.
+  long num_vecs_to_try = static_cast<int>(1u << 13);
 
   //For TimeBiHeapifies() only. For each std::vector that whose biheapification
   // is to be timed, repeat this process num_repititions_per_vec times.
-  int num_repititions_per_vec = static_cast<int>(1u << 11);
+  long num_repititions_per_vec = static_cast<int>(1u << 11);
 
   //For MeasureBiHeapifySuccessRate() only. Print information only after you've
   // gone through print_multiple new vector sizes.
-  int print_multiple = 32;
+  long print_multiple = 1;//32;
+  bool reset_after_print = true; //Don't show a cumulative success and failure
+                                 // counts.
+  bool verbose = false;
 
-  TimeBiHeapifies<int>(start_total_num_nodes, end_total_num_nodes,
-                       num_vecs_to_try, num_repititions_per_vec, increment_size);
+
+  //This function will go through each of the sizes:
+  // start_total_num_nodes, start_total_num_nodes + increment_size,
+  // start_total_num_nodes + 2 * increment_size, ...
+  // while start_total_num_nodes + # * increment_size
+  // remains <= end_total_num_nodes.
+  //For each size, it will biheapify num_vecs_to_try vectors of that size.
+  //However, it will only display information about the success and failure
+  // counts when # = print_multiple, 2 * print_multiple, ....
+  //Note that when a vector's size is even then the biheapify success rate
+  // on the first try is 100%.
   MeasureBiHeapifySuccessRate<int>(start_total_num_nodes, end_total_num_nodes,
                                    num_vecs_to_try, increment_size,
-                                   print_multiple);
+                                   print_multiple, reset_after_print, verbose);
+  long long divisor = num_repititions_per_vec; //Set this to 0 to get the the
+                             //average time to biheapify each individual vector.
+  TimeBiHeapifies<int>(start_total_num_nodes, end_total_num_nodes,
+                       num_vecs_to_try, num_repititions_per_vec, increment_size,
+                       divisor);
   return 0;
 }
