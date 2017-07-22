@@ -37,7 +37,7 @@ void SiftFromMinToMaxEven(RAI first, size_type total_num_nodes,
     bool is_right_child_valid = (right_child <= largest_node_in_biheap_hc) && //Is the node in the biheap?
                                 (right_child < num_nodes_in_heap);            //Is the node in the min heap?
     //Note that the equivalent of is_right_child_valid for the left child, which is
-    // (left_child <= largest_node_in_biheap_hc) && left_child  < num_nodes_in_heap)
+    // (left_child <= largest_node_in_biheap_hc) && left_child  < num_nodes_in_heap),
     // is always true when total_num_nodes is even.
     auto left_it  = first + left_child;
     auto right_it = first + right_child;
@@ -108,6 +108,66 @@ void SiftFromMaxToMinEven(RAI first, size_type total_num_nodes,
   return ;
 }
 
+/* This will BiHeapify the first total_num_nodes iterated by *first, ...,
+ *  *(first + (total_num_nodes - 1)).
+ * Assumes that total_num_nodes is even.
+ * Experimentation (as opposed to proof) indicates that BiHeapifyEven() always
+ *  succeeds in creating a biheap. Please contact the author if a
+ *  counter-example is found in which case this algorithm can be made correct
+ *  by mimicking the definitions of BiHeapifyOdd() and BiHeapifyOddSinglePass()
+ *  found in biheapify_odd.h
+ *
+ * Remark:
+ * (1) This algorithm has complexity O(total_num_nodes). To see why, recall the
+ *  argument showing that the heapify operation has O(n) complexity (e.g. as
+ *  found on pp. 115 - 116 of "The Algorithm Design Manual" 2nd edition); this
+ *  argument generalizes to prove that this algorithm also runs in O(n) times.
+ * The key observation is that the biheap is constructed by adding one node
+ *  at a time with this node alternating between a node in a min heap and a
+ *  node in the max heap. The complexity of this biheapification is easily
+ *  seen to be twice the complexity of the above mentioned heapification
+ *  operation plus a constant.
+ * (2) Unlike BiHeapifyOddSinglePass(), it appears that only one call to
+ *  BiHeapifyEven() is needed in order to obtain a biheap.
+ */
+template<class RAI>
+void BiHeapifyEvenSinglePass(RAI first, size_type total_num_nodes) {
+size_type biheap_lower_bound_node_hc = 0;
+size_type biheap_upper_bound_node_hc = 0;
+size_type node_to_start_biheapification_at = static_cast<size_type>(-1);
+  if (biheap_lower_bound_node_hc == 0 && biheap_upper_bound_node_hc == 0)
+    biheap_upper_bound_node_hc = total_num_nodes - 1;
+  if (total_num_nodes <= 0)
+    return ;
+  auto num_nodes_in_heap = GetNumNodesInHeapContainedInBiheap(total_num_nodes);
+  auto first_node_in_mirror_heap  = total_num_nodes - num_nodes_in_heap;
+
+  if (node_to_start_biheapification_at < biheap_lower_bound_node_hc
+   || node_to_start_biheapification_at > biheap_upper_bound_node_hc
+   || node_to_start_biheapification_at == static_cast<size_type>(-1)) {
+    auto num_nodes_to_biheapify = biheap_upper_bound_node_hc
+                                - biheap_lower_bound_node_hc + 1;
+    node_to_start_biheapification_at = biheap_lower_bound_node_hc
+        + (num_nodes_to_biheapify / 2) + (num_nodes_to_biheapify % 2);
+  }
+  size_type smallest_node_in_biheap_hc = node_to_start_biheapification_at;
+  size_type largest_node_in_biheap_hc  = node_to_start_biheapification_at - 1;
+
+  while(smallest_node_in_biheap_hc > 0) {
+    if (smallest_node_in_biheap_hc > biheap_lower_bound_node_hc) {
+    --smallest_node_in_biheap_hc;
+    SiftFromMinToMaxEven<RAI>(first, total_num_nodes, num_nodes_in_heap, first_node_in_mirror_heap,
+                     smallest_node_in_biheap_hc, largest_node_in_biheap_hc);
+    }
+    if (largest_node_in_biheap_hc < biheap_upper_bound_node_hc) {
+      ++largest_node_in_biheap_hc;
+      SiftFromMaxToMinEven<RAI>(first, total_num_nodes, num_nodes_in_heap, first_node_in_mirror_heap,
+                       FLIP_COORDINATE(largest_node_in_biheap_hc), smallest_node_in_biheap_hc);
+    }
+  }
+  return ;
+}
+
 /* This will BiHeapify all nodes in
  * [biheap_lower_bound_node_hc, biheap_upper_bound_node_hc]
  *  (including these endpoints).
@@ -142,7 +202,7 @@ void SiftFromMaxToMinEven(RAI first, size_type total_num_nodes,
  */
 template<class RAI>
 void BiHeapifyEvenSinglePass(RAI first, size_type total_num_nodes,
-                      size_type biheap_lower_bound_node_hc = 0,
+                      size_type biheap_lower_bound_node_hc,
                       size_type biheap_upper_bound_node_hc = 0,
                       size_type node_to_start_biheapification_at = static_cast<size_type>(-1)) {
   if (biheap_lower_bound_node_hc == 0 && biheap_upper_bound_node_hc == 0)
@@ -151,11 +211,12 @@ void BiHeapifyEvenSinglePass(RAI first, size_type total_num_nodes,
     return ;
   auto num_nodes_in_heap = GetNumNodesInHeapContainedInBiheap(total_num_nodes);
   auto first_node_in_mirror_heap  = total_num_nodes - num_nodes_in_heap;
-  auto num_nodes_to_biheapify = biheap_upper_bound_node_hc - biheap_lower_bound_node_hc + 1;
 
   if (node_to_start_biheapification_at < biheap_lower_bound_node_hc
    || node_to_start_biheapification_at > biheap_upper_bound_node_hc
    || node_to_start_biheapification_at == static_cast<size_type>(-1)) {
+    auto num_nodes_to_biheapify = biheap_upper_bound_node_hc
+                                - biheap_lower_bound_node_hc + 1;
     node_to_start_biheapification_at = biheap_lower_bound_node_hc
         + (num_nodes_to_biheapify / 2) + (num_nodes_to_biheapify % 2);
   }
@@ -175,6 +236,19 @@ void BiHeapifyEvenSinglePass(RAI first, size_type total_num_nodes,
     }
   }
   return ;
+}
+
+template<class RAI>
+std::string GetBiHeapifyEvenFailureMessage(RAI first, size_type total_num_nodes) {
+  std::stringstream strm;
+  strm << "BiHeapifyEvenSinglePass() failed to biheapify in a single pass with "
+      << "total_num_nodes = " << total_num_nodes
+      << ". The author kindly requests that you inform him of this by emailing "
+      << "to him at mgkrupa@gmail.com the value of total_num_nodes and ideally, "
+      << "also the graph below (if present)." << std::endl;
+  if (total_num_nodes <= static_cast<size_type>(1u << 7))
+    PrintBiHeap(first, total_num_nodes, strm);
+  return strm.str();
 }
 
 /*This will BiHeapify all nodes in
@@ -199,15 +273,16 @@ void BiHeapifyEven(RAI first, size_type total_num_nodes,
   if (biheap_lower_bound_node_hc == 0 && biheap_upper_bound_node_hc == 0)
     biheap_upper_bound_node_hc = total_num_nodes - 1;
   //If it's small enough that it's easiest to just sort everything.
-  if(biheap_upper_bound_node_hc - biheap_lower_bound_node_hc < 11) {
+  if(biheap_upper_bound_node_hc - biheap_lower_bound_node_hc < 2) {
     std::sort(first + biheap_lower_bound_node_hc, first + (biheap_upper_bound_node_hc + 1));
     return ;
   }
 
-  auto num_nodes_to_biheapify = biheap_upper_bound_node_hc - biheap_lower_bound_node_hc + 1;
   if (node_to_start_biheapification_at < biheap_lower_bound_node_hc
    || node_to_start_biheapification_at > biheap_upper_bound_node_hc
    || node_to_start_biheapification_at == static_cast<size_type>(-1)) {
+    auto num_nodes_to_biheapify = biheap_upper_bound_node_hc
+                                - biheap_lower_bound_node_hc + 1;
     node_to_start_biheapification_at = biheap_lower_bound_node_hc
         + (num_nodes_to_biheapify / 2) + (num_nodes_to_biheapify % 2);
   }
@@ -221,7 +296,7 @@ void BiHeapifyEven(RAI first, size_type total_num_nodes,
    *  where total_num_nodes is even.
    */
   BiHeapifyEvenSinglePass(first, total_num_nodes, biheap_lower_bound_node_hc,
-                          biheap_upper_bound_node_hc, node_to_start_biheapification_at);
+                  biheap_upper_bound_node_hc, node_to_start_biheapification_at);
 
   /* The while loop below should be redundant and is included just in case
    *  BiHeapifyEvenSinglePass() didn't successfully form a biheap. This is
@@ -229,16 +304,11 @@ void BiHeapifyEven(RAI first, size_type total_num_nodes,
    *  O(total_num_nodes) operation.
    */
   while(!IsBiheap(first, total_num_nodes, 0, total_num_nodes - 1, false)) {
-    //The line below can be removed without affecting the correctness of the algorithm.
-    std::cerr << "BiHeapifyEvenSinglePass() failed to biheapify in a single pass with "
-        << "total_num_nodes = " << total_num_nodes
-        << ". The author kindly requests that you inform him of this by emailing "
-        <<  "to him at mgkrupa@gmail.com the value of total_num_nodes and ideally, "
-        <<  "also the graph below (if present)." << std::endl;
-    if (total_num_nodes <= static_cast<size_type>(1u << 7))
-      PrintBiHeap(first, total_num_nodes, std::cerr);
+    //The line below can be removed without affecting the correctness of the
+    // algorithm.
+    GetBiHeapifyEvenFailureMessage(first, total_num_nodes);
     BiHeapifyEvenSinglePass(first, total_num_nodes, biheap_lower_bound_node_hc,
-                            biheap_upper_bound_node_hc, node_to_start_biheapification_at);
+                  biheap_upper_bound_node_hc, node_to_start_biheapification_at);
   }
   return ;
 }
