@@ -1,5 +1,5 @@
 /*
- * biheapify_single_pass_success_rate.h
+0 * biheapify_single_pass_success_rate.h
  *
  *  Created on: Jun 27, 2017
  *      Author: Matthew Gregory Krupa
@@ -112,48 +112,60 @@ std::string GetDesciption(std::vector<T> fail_counter,
  *  out the two instances of BiHeapifySinglePass() and un-comment out the two
  *  instances of BiHeapifyEvenSinglePass().
  *  Ditto for BiHeapifySimpleSinglePass() and BiHeapifyOddSinglePass().
+ * This function will go through each of the sizes:
+ *  start_total_num_nodes, start_total_num_nodes + increment_size,
+ *  start_total_num_nodes + 2 * increment_size, ...
+ *  while start_total_num_nodes + # * increment_size remains <=
+ *  end_total_num_nodes.
+ * For each size, it will biheapify num_vecs_to_try vectors of that size.
+ * However, it will only display information about the success and failure
+ *  counts when # = print_multiple, 2 * print_multiple, ....
  */
-template<class T> void MeasureBiHeapifySuccessRate(int start_total_num_nodes,
-                                                   int end_total_num_nodes,
-                                                   int num_vecs_to_try = 1,
-                                                   int increment_size = 1,
-                                                   int print_multiple = 32) {
+template<class T> void MeasureBiHeapifySuccessRate(long start_total_num_nodes,
+                                                   long end_total_num_nodes,
+                                                   long num_vecs_to_try = 1,
+                                                   long increment_size = 1,
+                                                   long print_multiple = 32,
+                                                   bool reset_after_print = false,
+                                                   bool verbose = false) {
   std::vector<long long> fail_counter(100, 0l);
   std::vector<long long> try_counter(100, 0l);
   long long total_tries = 0;
   int total_num_nodes = start_total_num_nodes;
   while (total_num_nodes <= end_total_num_nodes) {
     auto initial_size = total_num_nodes;
-    for (int i = 0; i < print_multiple; i++, total_num_nodes += increment_size) {
+    for (auto i = 0l; i < print_multiple; i++, total_num_nodes += increment_size) {
       if (total_num_nodes > end_total_num_nodes)
         break ;
-      for (int vec_counter = 0; vec_counter < num_vecs_to_try; vec_counter++) {
+      for (auto vec_counter = 0l; vec_counter < num_vecs_to_try; vec_counter++) {
         int try_num = 1;
         std::vector<T> vec(total_num_nodes);
         randomhelpers::FillWithRandomNumbers(vec.begin(), vec.end(),
-                  std::numeric_limits<T>::min(), std::numeric_limits<T>::max());
+                  0, static_cast<T>(4*total_num_nodes));//std::numeric_limits<T>::min(), std::numeric_limits<T>::max());
+//#define BIHEAPIFY_ALGORITHM BiHeapifySimpleSinglePass
+//#define BIHEAPIFY_ALGORITHM BiHeapifyEvenSinglePass
+//#define BIHEAPIFY_ALGORITHM BiHeapifyOddSinglePass
+#define BIHEAPIFY_ALGORITHM BiHeapifySinglePass
 
-        //BiHeapifySimpleSinglePass(vec.begin(), vec.size());
-        //BiHeapifyEvenSinglePass(vec.begin(), vec.size());
-        //BiHeapifyOddSinglePass(vec.begin(), vec.size());
-        BiHeapifySinglePass(vec.begin(), vec.size());
+        BIHEAPIFY_ALGORITHM(vec.begin(), vec.size());
 
         total_tries++;
         try_counter[try_num]++;
-        while (IsBiheap(vec.begin(), vec.size(), 0, 0, false) == false) {
+
+        while (!IsBiheap(vec.begin(), vec.size())) {
           fail_counter[try_num]++;
           if (try_num >= 10) {
-            std::cout << "Tried and failed to biheapify vector " << try_num
-                      << " times. Quitting this vector." << std::endl;
+            if (verbose)
+              std::cout << "Tried and failed " << try_num
+                        << " times to biheapify"
+                        << " vector. Quitting this vector." << std::endl;
             break;
           }
           try_num++;
 
-          //BiHeapifySimpleSinglePass(vec.begin(), vec.size());
-          //BiHeapifyEvenSinglePass(vec.begin(), vec.size());
-          //BiHeapifyOddSinglePass(vec.begin(), vec.size());
-          BiHeapifySinglePass(vec.begin(), vec.size());
+          BIHEAPIFY_ALGORITHM(vec.begin(), vec.size());
 
+#undef BIHEAPIFY_ALGORITHM
           if (static_cast<unsigned int>(try_num) >= try_counter.size()) {
             fail_counter.resize(2 * try_num);
             try_counter.resize(2 * try_num);
@@ -161,22 +173,28 @@ template<class T> void MeasureBiHeapifySuccessRate(int start_total_num_nodes,
           try_counter[try_num]++;
           total_tries++;
         }
-        if (IsBiheap(vec.begin(), vec.size(), 0, 0, false) == false) {
-          std::cout << "Failed to BiHeapify() vector of size "
-                    << vec.size() << std::endl;
-          if (total_num_nodes < (1 << 10))
-            PrintBiHeap(vec.begin(), i);
-          return ;
+
+        if (!IsBiheap(vec.begin(), vec.size())) {
+          if (verbose)
+            std::cout << "Failed to BiHeapify() the following vector of size "
+                      << vec.size() << std::endl;
+          if (verbose && total_num_nodes < (1 << 10))
+            PrintBiHeap(vec.begin(), total_num_nodes);
+          continue ;
         }
       }
     }
     std::cout << "BiHeap start size = " << initial_size << std::endl;
     std::cout << GetDesciption(fail_counter, try_counter) << std::endl;
     std::cout << std::endl;
+    if (reset_after_print) {
+      for (auto i = 0u; i < fail_counter.size(); i++)
+        fail_counter[i] = 0;
+      for (auto i = 0u; i < try_counter.size(); i++)
+        try_counter[i] = 0;
+    }
   }
   return ;
 }
-
-
 
 #endif /* BIHEAPIFY_SINGLE_PASS_SUCCESS_RATE_H_ */
