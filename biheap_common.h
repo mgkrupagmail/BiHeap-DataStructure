@@ -58,6 +58,7 @@ inline size_type GetParentInBiheapZero(size_type node) {
  * 2 * i - 1, (note the minus one)
  *  then for all i >= 1
  *   num_nodes_in_heap_odd[i] == 4*((i-(i%3))/3) + num_nodes_in_heap_odd[(i%3)]
+ *                            == 4*((i-(i%3))/3) + (i%3)
  * Equivalently, if total_num_nodes is odd then
  *   num_nodes_in_heap_odd[i] == 4 * (total_num_nodes / 6)
  *                               + (n < 4) ? (n + 1) / 2 : 4,
@@ -394,6 +395,19 @@ inline void SiftUpMinHeapMC(RAI first, size_type total_num_nodes,
                        size_type pos_mc, size_type smallest_node_in_biheap_hc) {
   SiftUpMinHeapHC(first, total_num_nodes, FLIP_COORDINATE(pos_mc),
                   smallest_node_in_biheap_hc);
+}
+
+template<class RAI>
+std::string GetBiHeapifyFailureMessage(RAI first, size_type total_num_nodes) {
+  std::stringstream strm;
+  strm << "Biheapification failed to biheapify in a single pass with "
+      << "total_num_nodes = " << total_num_nodes
+      << ". The author kindly requests that you inform him of this by emailing "
+      << "to him at mgkrupa@gmail.com the value of total_num_nodes and ideally, "
+      << "also the graph below (if present)." << std::endl;
+  if (total_num_nodes <= static_cast<size_type>(1u << 7))
+    PrintBiHeap(first, total_num_nodes, strm);
+  return strm.str();
 }
 
 #undef ISBIHEAP_OSTREAM_DEFAULT
