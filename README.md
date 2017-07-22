@@ -15,4 +15,13 @@ There are still many questions to be asked and answered about biheaps, including
  3) Is BiHeapifyOdd() an O(n) operation? If not then is it an O(n log n) operation?<BR>
  4) Does there exist any O(n) function that biheapifies odd-sized data.
 
-About the name: Various types of data structures called double ended heaps (also known as double ended queues) have already been discovered, but it is not clear that a biheap can be made into a double ended heap since it is not clear at the moment whether or not O(log n) pop and push operations exist for biheaps. In this sense, the biheap data structure defined here may not be a specific type of double ended heap; it is nevertheless called a biheap due to it, by definition, simultaneously being both a min heap and a max heap.
+About the name: Various types of data structures called double ended heaps (also known as double ended queues) have already been discovered, but it is not clear that a biheap can be made into a double ended heap since it is not clear at the moment whether or not O(log n) pop and push operations exist for biheaps. In this sense, the biheap data structure defined here may not be a specific type of double ended heap; it is nevertheless called a biheap due to it, by definition, simultaneously being both a min heap and a max heap.<BR>
+
+The definition of a biheap is highly detailed but we can give a quick summary of it. We're given total_num_nodes elements indexed by 0, ..., total_num_nodes - 1. These elements form a BiHeap if:
+
+ 1) the elements [0, ..., num_nodes_in_heap) form a min heap with the element at 0 being the min, and<BR>
+ 2) the elements [total_num_nodes - num_nodes_in_heap, ..., total_num_nodes) form a max heap with the element at total_num_nodes - 1 being the max,
+ 
+where num_nodes_in_heap is obtained from the function GetNumNodesInHeapContainedInBiheap(), which is defined in biheap_common.h. 
+
+The quantity num_nodes_in_heap is a fundamentally important quantity associated with the biheap on total_num_nodes nodes. The formulas that define this quantity, although complicated, stem from the intuitive and natural graph-theoretic definition of a biheap given in the detailed in the comments at the top of biheapify.h.
