@@ -11,7 +11,7 @@ Besides making the minimum and maximum elements readily available in O(n) time (
 
 There are still many questions to be asked and answered about biheaps, including:
  1) Do there exist O(log n) push and pop operations for biheaps?<BR>
- 2) Is the working hypothesis that BiHeapifyEvenSinglePass() always produces a biheap true? If so then why isn't the same true of BiHeapifyOddSinglePass()?<BR>
+ 2) Is the working hypothesis (obtained from emperical testing) that BiHeapify() always produces a biheap true?<BR>
  3) Is BiHeapifyOdd() an O(n) operation? If not then is it an O(n log n) operation?<BR>
  4) Does there exist any O(n) function that biheapifies odd-sized data.
 
