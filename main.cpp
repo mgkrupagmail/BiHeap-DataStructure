@@ -12,7 +12,8 @@
 //      a BiHeapify pass (i.e. one of BiHeapifyEven(),
 //      BiHeapifyOdd(), or BiHeapifySimpleSinglePass()) must be
 //      called before a BiHeap is formed.
-//    - Notice that for BiHeapify() this always require only one pass.
+//    - Notice that for BiHeapify() this always require only one call to 
+//      biheafiy.
 //============================================================================
 
 #include <algorithm>
