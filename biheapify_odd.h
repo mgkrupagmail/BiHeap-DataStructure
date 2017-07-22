@@ -14,14 +14,16 @@
 
 #include "biheap_common.h"
 
-//Note that FlipCo(coord1) >= coord2 iff coord1 <= FlipCo(coord2) (ditto for >, <=, and <).
+/* Note that FlipCo(coord1) >= coord2 iff coord1 <= FlipCo(coord2)
+ * (ditto for >, <=, and <).
+ */
 #define FLIP_COORDINATE(a) (total_num_nodes - 1 - (a))
 
 /* Assumes that total_num_nodes is odd, that the node pos_mc belongs to the
  *  min heap, and that pos_hc >= smallest_node_in_biheap_hc.
  */
 template<class RAI>
-void SiftFromMinToMaxOdd(RAI first, size_type total_num_nodes,
+inline void SiftFromMinToMaxOdd(RAI first, size_type total_num_nodes,
                          size_type num_nodes_in_heap,
                          size_type first_node_in_mirror_heap,
                          size_type pos_hc,
@@ -65,7 +67,7 @@ void SiftFromMinToMaxOdd(RAI first, size_type total_num_nodes,
  *  max heap.
  */
 template<class RAI>
-void SiftFromMaxToMinOdd(RAI first, size_type total_num_nodes,
+inline void SiftFromMaxToMinOdd(RAI first, size_type total_num_nodes,
                          size_type num_nodes_in_heap,
                          size_type first_node_in_mirror_heap,
                          size_type pos_mc,
@@ -111,6 +113,53 @@ void SiftFromMaxToMinOdd(RAI first, size_type total_num_nodes,
   return ;
 }
 
+/* This will BiHeapify all nodes in [0, total_num_nodes).
+ * Assumes that total_num_nodes is odd.
+ */
+/*
+ * Remark:
+ *  (1) This algorithm has complexity O(total_num_nodes). To see why, recall the
+ *   argument showing that the heapify operation has O(n) complexity (e.g. as
+ *   found on pp. 115 - 116 of "The Algorithm Design Manual" 2nd edition); this
+ *   argument generalizes to prove that this algorithm also runs in O(n) times.
+ *  The key observation is that the biheap is constructed by adding one node
+ *   at a time with this node alternating between a node in a min heap and a
+ *   node in the max heap. The complexity of this biheapification is easily
+ *   seen to be twice the complexity of the above mentioned heapification
+ *   operation plus a constant.
+ */
+template<class RAI>
+void BiHeapifyOdd(RAI first, size_type total_num_nodes) {
+  //If it's small enough that it's easiest to just sort everything.
+  if(total_num_nodes < 3) {
+    std::sort(first, first + total_num_nodes);
+    return ;
+  }
+  auto num_nodes_in_heap = GetNumNodesInHeapContainedInBiheap(total_num_nodes);
+  auto first_node_in_mirror_heap  = total_num_nodes - num_nodes_in_heap - 1;
+
+  size_type smallest_node_in_biheap_hc = (total_num_nodes / 2) + 1;
+  size_type largest_node_in_biheap_hc  = smallest_node_in_biheap_hc - 1;
+
+  largest_node_in_biheap_hc++;
+
+  while(smallest_node_in_biheap_hc > 0) {
+    if (smallest_node_in_biheap_hc > 0) {
+    --smallest_node_in_biheap_hc;
+    SiftFromMinToMaxOdd<RAI>(first, total_num_nodes, num_nodes_in_heap,
+                          first_node_in_mirror_heap, smallest_node_in_biheap_hc,
+                          largest_node_in_biheap_hc);
+    }
+    if (largest_node_in_biheap_hc < total_num_nodes - 1) {
+      ++largest_node_in_biheap_hc;
+      SiftFromMaxToMinOdd<RAI>(first, total_num_nodes, num_nodes_in_heap,
+          first_node_in_mirror_heap, FLIP_COORDINATE(largest_node_in_biheap_hc),
+          smallest_node_in_biheap_hc);
+    }
+  }
+  return ;
+}
+
 /* This will BiHeapify all nodes in
  *  [biheap_lower_bound_node_hc, biheap_upper_bound_node_hc]
  *  (including these endpoints).
@@ -138,14 +187,14 @@ void SiftFromMaxToMinOdd(RAI first, size_type total_num_nodes,
  *   operation plus a constant.
  */
 template<class RAI>
-void BiHeapifyOddSinglePass(RAI first, size_type total_num_nodes,
-                      size_type biheap_lower_bound_node_hc = 0,
+void BiHeapifyOdd(RAI first, size_type total_num_nodes,
+                      size_type biheap_lower_bound_node_hc,
                       size_type biheap_upper_bound_node_hc = 0,
                       size_type node_to_start_biheapification_at = static_cast<size_type>(-1)) {
   if (biheap_lower_bound_node_hc == 0 && biheap_upper_bound_node_hc == 0)
     biheap_upper_bound_node_hc = total_num_nodes - 1;
   //If it's small enough that it's easiest to just sort everything.
-  if(biheap_upper_bound_node_hc - biheap_lower_bound_node_hc < 4) {
+  if(biheap_upper_bound_node_hc - biheap_lower_bound_node_hc < 2) {
     std::sort(first + biheap_lower_bound_node_hc, first + (biheap_upper_bound_node_hc + 1));
     return ;
   }
@@ -173,9 +222,41 @@ void BiHeapifyOddSinglePass(RAI first, size_type total_num_nodes,
     if (largest_node_in_biheap_hc < biheap_upper_bound_node_hc) {
       ++largest_node_in_biheap_hc;
       SiftFromMaxToMinOdd<RAI>(first, total_num_nodes, num_nodes_in_heap, first_node_in_mirror_heap,
-                       FLIP_COORDINATE(largest_node_in_biheap_hc), (smallest_node_in_biheap_hc));
+                       FLIP_COORDINATE(largest_node_in_biheap_hc), smallest_node_in_biheap_hc);
     }
+  }
+  return ;
+}
 
+/* This will BiHeapify all nodes in [0, total_num_nodes).
+ *  Assumes that total_num_nodes is odd.
+ */
+template<class RAI>
+inline void BiHeapifySafeOdd(RAI first, size_type total_num_nodes) {
+  //If it's small enough that it's easiest to just sort everything.
+  if (total_num_nodes < 2)
+    return ;
+
+  /* Remarks:
+   * (1) The following do {} while(); loop will stop due to the same reasoning
+   *  that can be found in Remark (1) in BiHeapifyOdd()'s definition.
+   *
+   * (2) Experimentation shows that the only one call to
+   *  BiHeapifyEven() is ever needed to form a biheap in this case
+   *  where total_num_nodes is even.
+   */
+  BiHeapifyOdd(first, total_num_nodes);
+
+  /* The while loop below should be redundant and is included just in case
+   *  BiHeapifyOdd() didn't successfully form a biheap. This is
+   *  recommended if performance is important since IsBiheap() is an
+   *  O(total_num_nodes) operation.
+   */
+  while(!IsBiheap(first, total_num_nodes)) {
+    //The line below can be removed without affecting the correctness of the
+    // algorithm.
+    GetBiHeapifyFailureMessage(first, total_num_nodes);
+    BiHeapifyOdd(first, total_num_nodes);
   }
   return ;
 }
@@ -191,17 +272,15 @@ void BiHeapifyOddSinglePass(RAI first, size_type total_num_nodes,
 // will then be increased by 1 if the number of nodes in this interval is odd.)
 //Assumes that total_num_nodes is odd.
 template<class RAI>
-void BiHeapifyOdd(RAI first, size_type total_num_nodes,
-                      size_type biheap_lower_bound_node_hc = 0,
+void BiHeapifySafeOdd(RAI first, size_type total_num_nodes,
+                      size_type biheap_lower_bound_node_hc,
                       size_type biheap_upper_bound_node_hc = 0,
                       size_type node_to_start_biheapification_at = static_cast<size_type>(-1)) {
   if (biheap_lower_bound_node_hc == 0 && biheap_upper_bound_node_hc == 0)
     biheap_upper_bound_node_hc = total_num_nodes - 1;
   //If it's small enough that it's easiest to just sort everything.
-  if(biheap_upper_bound_node_hc - biheap_lower_bound_node_hc < 4) {
-    std::sort(first + biheap_lower_bound_node_hc, first + (biheap_upper_bound_node_hc + 1));
+  if (biheap_upper_bound_node_hc - biheap_lower_bound_node_hc < 2)
     return ;
-  }
 
   auto num_nodes_to_biheapify = biheap_upper_bound_node_hc - biheap_lower_bound_node_hc + 1;
   if (node_to_start_biheapification_at < biheap_lower_bound_node_hc
@@ -212,76 +291,33 @@ void BiHeapifyOdd(RAI first, size_type total_num_nodes,
   }
 
   /* Remarks:
-   * (1) The following do {} while(); loop will stop, as is now explained:
-   * Define a minimal path from node 0 to node total_num_nodes - 1 as being any
-   *  path in the biheap starting at node 0 and ending at node total_num_nodes-1
-   *  that goes through some node n such that the sub-path from node 0 to node
-   *  n has minimal length in the min heap and the sub-path from node n to node
-   *  total_num_nodes - 1 has minimal length in the max heap.
-   * Intuitively, such a path is any path from nodes 0 to node total_num_nodes-1
-   *  that only ever gets increasingly closer to node total_num_nodes - 1 and
-   *  never "turns around" to goes closer to node 0.
-   * It is clear that the nodes form a biheap if and only if along every minimal
-   *  path from node 0 to node total_num_nodes - 1, the values of the nodes
-   *  along this path are totally ordered.
-   * If it is not a biheap then each call to BiHeapifyOddSinglePass() causes at
-   *  least two nodes to swap positions so as to make every minimal path that
-   *  contains them to become "closer to being totally ordered" (i.e. if the
-   *  the values of nodes along a minimal path are not totally ordered then
-   *  there is a (non-unique) finite sequence of swap that will make it totally
-   *  ordered.
-   *  The function BiHeapifyOddSinglePass() determines one such sequence and
-   *  every call to it causes at least one such swap to be effected.)
-   * Hence a biheap will be formed after finitely many calls to
-   *  BiHeapifyOddSinglePass().
+   * (1) The following do {} while(); loop will stop due to the same reasoning
+   *  that can be found in Remark (1) in BiHeapifyOdd()'s definition.
    *
-   *  (2) Information on the frequency of BiHeapifyOddSinglePass()'s success
-   *   rates in forming a biheap:
-   *  We now describe the results of the following experiment where "first" is
-   *   an iterator pointing to the first element of a vector of size
-   *   total_num_nodes filled with random integers:
-   *
-   *   for (total_num_nodes = 1; total_num_nodes < large_num; total_num_nodes+=2) {
-   *     int counter = 0;
-   *     do {
-   *       bool result = BiHeapifyOddSinglePass(first, total_num_nodes);
-   *       counter++;
-   *       //Process result...
-   *     } while(!IsBiheap(first, total_num_nodes, 0, total_num_nodes - 1, false));
-   *   }
-   *
-   * It was found that BiHeapifyOddSinglePass() consistently succeeded in
-   *  biheapifying approximately 87.5% of the time regardless of the size of
-   *  large_num and how many times BiHeapifyOddSinglePass() had been previously
-   *  called on these nodes. Furthermore, this percentage appears to gradually
-   *  increase as total_num_nodes increases.
-   * Two subsequent calls to BiHeapifyOddSinglePass() resulted in approximately
-   *  98.5% of all vectors being biheapified.
-   * In all runs, whenever
-   *  total_num_nodes < approx. 686000 (this number is not an upper bound)
-   *  then three subsequent calls to BiHeapifyOddSinglePass() resulted in
-   *  approximately 100% of all vectors being biheapified, with this percentage
-   *  being exactly equal to 100% in a large majority runs.
-   *
-   * This analysis indicates that BiHeapifyOddSinglePass() is
-   *  (a) not an excessively costly operation, while simultaneously being
-   *  (b) not much more difficult to implement than a min heap and a max heap
-   *  making this biheap definition and the biheapify operation among the
-   *  simplest double-ended heaps to implement while having reasonable
-   *  performance.
+   * (2) Experimentation shows that the only one call to
+   *  BiHeapifyEven() is ever needed to form a biheap.
    */
-  do {
-    //BiHeapifyEvenSinglePass(first + 1, total_num_nodes - 1, biheap_lower_bound_node_hc, biheap_upper_bound_node_hc, node_to_start_biheapification_at);
-    //BiHeapifyEvenSinglePass(first, total_num_nodes - 1, biheap_lower_bound_node_hc, biheap_upper_bound_node_hc, node_to_start_biheapification_at);
-    BiHeapifyOddSinglePass(first, total_num_nodes, biheap_lower_bound_node_hc,
+  BiHeapifyOdd(first, total_num_nodes, biheap_lower_bound_node_hc,
                   biheap_upper_bound_node_hc, node_to_start_biheapification_at);
-  } while(!IsBiheap(first, total_num_nodes, 0, total_num_nodes - 1, false));
+
+  /* The while loop below should be redundant and is included just in case
+   *  BiHeapifyOdd() didn't successfully form a biheap. This is
+   *  recommended if performance is important since IsBiheap() is an
+   *  O(total_num_nodes) operation.
+   */
+  while(!IsBiheap(first, total_num_nodes, 0, total_num_nodes - 1, false)) {
+    //The call to GetBiHeapifyFailureMessage() below can be removed without
+    // affecting the correctness of the algorithm.
+    GetBiHeapifyFailureMessage(first, total_num_nodes);
+    BiHeapifyOdd(first, total_num_nodes, biheap_lower_bound_node_hc,
+                  biheap_upper_bound_node_hc, node_to_start_biheapification_at);
+  }
   return ;
 }
 
 /* Similar to BiHeapifyOdd(), except that it biheapifies an odd collection of
- *  elements using a pair of calls to BiHeapifyEvenSinglePass() in lieu of the
- *  single call to BiHeapifyOddSinglePass() that's done in BiHeapifyOdd().
+ *  elements using a pair of calls to BiHeapifyEven() in lieu of the
+ *  single call to BiHeapifyOdd() that's done in BiHeapifyOdd().
  * It is not clear why this function empirically succeeds in biheapifying
  *  an odd number of elements.
  */
@@ -293,7 +329,7 @@ void BiHeapifyOddUsingBiheapifyEven(RAI first, size_type total_num_nodes,
   if (biheap_lower_bound_node_hc == 0 && biheap_upper_bound_node_hc == 0)
     biheap_upper_bound_node_hc = total_num_nodes - 1;
   //If it's small enough that it's easiest to just sort everything.
-  if(biheap_upper_bound_node_hc - biheap_lower_bound_node_hc < 4) {
+  if (biheap_upper_bound_node_hc - biheap_lower_bound_node_hc < 4) {
     std::sort(first + biheap_lower_bound_node_hc, first + (biheap_upper_bound_node_hc + 1));
     return ;
   }
@@ -307,9 +343,9 @@ void BiHeapifyOddUsingBiheapifyEven(RAI first, size_type total_num_nodes,
   }
 
   do {
-    BiHeapifyEvenSinglePass(first + 1, total_num_nodes - 1, biheap_lower_bound_node_hc,
+    BiHeapifyEven(first + 1, total_num_nodes - 1, biheap_lower_bound_node_hc,
                   biheap_upper_bound_node_hc, node_to_start_biheapification_at);
-    BiHeapifyEvenSinglePass(first, total_num_nodes - 1, biheap_lower_bound_node_hc,
+    BiHeapifyEven(first, total_num_nodes - 1, biheap_lower_bound_node_hc,
                   biheap_upper_bound_node_hc, node_to_start_biheapification_at);
   } while(!IsBiheap(first, total_num_nodes, 0, total_num_nodes - 1, false));
   return ;
