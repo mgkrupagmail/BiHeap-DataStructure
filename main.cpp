@@ -9,12 +9,10 @@
 //  BiHeapify functions; these are:
 // (1) TimeBiHeapifies(), which times the various BiHeapify functions, and
 // (2) MeasureBiHeapifySuccessRate(), which is used to measure how many times
-//      a BiHeapify pass (i.e. one of BiHeapifyEvenSinglePass(),
-//      BiHeapifyOddSinglePass(), or BiHeapifySimpleSinglePass()) must be
+//      a BiHeapify pass (i.e. one of BiHeapifyEven(),
+//      BiHeapifyOdd(), or BiHeapifySimpleSinglePass()) must be
 //      called before a BiHeap is formed.
-//    - Notice that for BiHeapifyEvenSinglePass() this appears to always
-//       require only one pass while for BiHeapifyOddSinglePass() this
-//       sometimes requires multiple passes.
+//    - Notice that for BiHeapify() this always require only one pass.
 //============================================================================
 
 #include <algorithm>
@@ -31,7 +29,7 @@
 #include "biheapify_time.h"
 
 int main() {
-  long start_total_num_nodes = 3;
+  long start_total_num_nodes = 1;
   long increment_size        = 1; //Set this to 2 to test vectors that are only
                                  //odd or only even in size.
   //The two functions below will be applied to biheaps of sizes:
@@ -41,7 +39,7 @@ int main() {
 
   //For each size, the two functions below will biheapify num_vecs_to_try
   // vectors of that size.
-  long num_vecs_to_try = static_cast<int>(1u << 13);
+  long num_vecs_to_try = static_cast<int>(1u << 14);
 
   //For TimeBiHeapifies() only. For each std::vector that whose biheapification
   // is to be timed, repeat this process num_repititions_per_vec times.
@@ -49,7 +47,7 @@ int main() {
 
   //For MeasureBiHeapifySuccessRate() only. Print information only after you've
   // gone through print_multiple new vector sizes.
-  long print_multiple = 1;//32;
+  long print_multiple = 1;;
   bool reset_after_print = true; //Don't show a cumulative success and failure
                                  // counts.
   bool verbose = false;
