@@ -251,11 +251,11 @@ void BiHeapifySinglePass(RAI first, size_type total_num_nodes,
                       size_type node_to_start_biheapification_at = static_cast<size_type>(-1)) {
   if (total_num_nodes % 2 == 1)
     BiHeapifyOddSinglePass(first, total_num_nodes, biheap_lower_bound_node_hc,
-                           biheap_upper_bound_node_hc, node_to_start_biheapification_at);
+                  biheap_upper_bound_node_hc, node_to_start_biheapification_at);
   else
 
     BiHeapifyEvenSinglePass(first, total_num_nodes, biheap_lower_bound_node_hc,
-                           biheap_upper_bound_node_hc, node_to_start_biheapification_at);
+                  biheap_upper_bound_node_hc, node_to_start_biheapification_at);
 }
 
 //This will BiHeapify all nodes in [biheap_lower_bound_node_hc, biheap_upper_bound_node_hc]
@@ -276,11 +276,13 @@ void BiHeapify(RAI first, size_type total_num_nodes,
     biheap_upper_bound_node_hc = total_num_nodes - 1;
   //If it's small enough that it's easiest to just sort everything.
   if(biheap_upper_bound_node_hc - biheap_lower_bound_node_hc < 11) {
-    std::sort(first + biheap_lower_bound_node_hc, first + (biheap_upper_bound_node_hc + 1));
+    std::sort(first + biheap_lower_bound_node_hc,
+              first + (biheap_upper_bound_node_hc + 1));
     return ;
   }
 
-  auto num_nodes_to_biheapify = biheap_upper_bound_node_hc - biheap_lower_bound_node_hc + 1;
+  auto num_nodes_to_biheapify = biheap_upper_bound_node_hc
+                              - biheap_lower_bound_node_hc + 1;
   if (node_to_start_biheapification_at < biheap_lower_bound_node_hc
    || node_to_start_biheapification_at > biheap_upper_bound_node_hc
    || node_to_start_biheapification_at == static_cast<size_type>(-1)) {
@@ -289,10 +291,10 @@ void BiHeapify(RAI first, size_type total_num_nodes,
   }
 
   if (total_num_nodes % 2 == 1)
-    BiHeapifyOdd(first, total_num_nodes, biheap_lower_bound_node_hc, 
+    BiHeapifyOdd(first, total_num_nodes, biheap_lower_bound_node_hc,
                  biheap_upper_bound_node_hc, node_to_start_biheapification_at);
   else
-    BiHeapifyEven(first, total_num_nodes, biheap_lower_bound_node_hc, 
+    BiHeapifyEven(first, total_num_nodes, biheap_lower_bound_node_hc,
                   biheap_upper_bound_node_hc, node_to_start_biheapification_at);
   return ;
 }
