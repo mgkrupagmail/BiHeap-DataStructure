@@ -16,7 +16,7 @@ GetNumNodesInHeapContainedInBiheap(), which is defined in biheap_common.h.
 The quantity num_nodes_in_heap is a fundamentally important quantity associated
  with the biheap on total_num_nodes nodes. The formulas that define this
  quantity, although complicated, stem from the intuitive and natural
- graph-theoretic definition of a biheap given in the detailed definition  below.
+ graph-theoretic definition of a biheap given in the detailed definition below.
 Given an iterator first, the function IsBiheap(), defined in biheap_common.h,
  may be used to check that the first total_num_nodes elements iterated by first
  (i.e. *first, *(first + 1), ..., *(first + total_num_nodes - 1))
@@ -54,8 +54,7 @@ sorting it may help to speed up certain sorting algorithms such as quicksort.
 
 There are still many questions to be asked and answered about biheaps, including:
  1) Do there exist O(log n) push and pop operations for biheaps?
- 2) Is the working hypothesis that BiHeapifyEvenSinglePass() always produces
-    a biheap true? If so then why isn't the same true of BiHeapifyOddSinglePass()?
+ 2) Is the working hypothesis that BiHeapify() always produces a biheap true?
  3) Is BiHeapifyOdd() an O(n) operation? If not then is it an O(n log n)
  operation?
  4) Does there exist any O(n) function that biheapifies odd-sized data.
@@ -227,8 +226,7 @@ Although the above definition of a biheap is relatively complicated, the author
  that appears to have gone unnoticed until now. There are still many questions
  to be asked about biheaps, including:
  1) Do there exist O(log n) push and pop operations for biheaps?
- 2) Is the working hypothesis that BiHeapifyEvenSinglePass() always produces
-    a biheap true? If so then why isn't the same true of BiHeapifyOddSinglePass()?
+ 2) Is the working hypothesis that BiHeapify() always produces a biheap true?
  3) Is BiHeapifyOdd() an O(n) operation? If not then is it an O(n log n)
     operation?
  4) Does there exist any O(n) function that biheapifies odd-sized data.
@@ -250,12 +248,26 @@ void BiHeapifySinglePass(RAI first, size_type total_num_nodes,
                       size_type biheap_upper_bound_node_hc = 0,
                       size_type node_to_start_biheapification_at = static_cast<size_type>(-1)) {
   if (total_num_nodes % 2 == 1)
-    BiHeapifyOddSinglePass(first, total_num_nodes, biheap_lower_bound_node_hc,
+    BiHeapifyOdd(first, total_num_nodes, biheap_lower_bound_node_hc,
                   biheap_upper_bound_node_hc, node_to_start_biheapification_at);
   else
 
-    BiHeapifyEvenSinglePass(first, total_num_nodes, biheap_lower_bound_node_hc,
+    BiHeapifyEven(first, total_num_nodes, biheap_lower_bound_node_hc,
                   biheap_upper_bound_node_hc, node_to_start_biheapification_at);
+}
+
+//This will BiHeapify all nodes in [0, total_num_nodes).
+template<class RAI>
+inline void BiHeapifySafe(RAI first, size_type total_num_nodes) {
+  //If it's small enough that it's easiest to just sort everything.
+  if (total_num_nodes < 2)
+    return ;
+
+  if (total_num_nodes % 2 == 1)
+    BiHeapifySafeOdd(first, total_num_nodes);
+  else
+    BiHeapifySafeEven(first, total_num_nodes);
+  return ;
 }
 
 //This will BiHeapify all nodes in [biheap_lower_bound_node_hc, biheap_upper_bound_node_hc]
@@ -269,13 +281,13 @@ void BiHeapifySinglePass(RAI first, size_type total_num_nodes,
 // will then be increased by 1 if the number of nodes in this interval is odd.)
 template<class RAI>
 void BiHeapify(RAI first, size_type total_num_nodes,
-                      size_type biheap_lower_bound_node_hc = 0,
+                      size_type biheap_lower_bound_node_hc,
                       size_type biheap_upper_bound_node_hc = 0,
                       size_type node_to_start_biheapification_at = static_cast<size_type>(-1)) {
   if (biheap_lower_bound_node_hc == 0 && biheap_upper_bound_node_hc == 0)
     biheap_upper_bound_node_hc = total_num_nodes - 1;
   //If it's small enough that it's easiest to just sort everything.
-  if(biheap_upper_bound_node_hc - biheap_lower_bound_node_hc < 11) {
+  if (biheap_upper_bound_node_hc - biheap_lower_bound_node_hc < 11) {
     std::sort(first + biheap_lower_bound_node_hc,
               first + (biheap_upper_bound_node_hc + 1));
     return ;
@@ -298,6 +310,5 @@ void BiHeapify(RAI first, size_type total_num_nodes,
                   biheap_upper_bound_node_hc, node_to_start_biheapification_at);
   return ;
 }
-
 
 #endif /* BIHEAPIFY_H_ */
