@@ -171,52 +171,59 @@ std::chrono::nanoseconds::rep TimeBiHeapifySimpleSinglePassOnGivenSize(
   return total.count();
 }
 
-template<class T> void TimeBiHeapifies(int start_total_num_nodes,
-                                       int end_total_num_nodes,
-                                       int num_vecs_to_try = 1,
-                                       int num_repititions_per_vec = 1,
-                                       int increment_size = 1) {
-  std::size_t divisor = num_repititions_per_vec;
-                    //= num_vecs_to_try * num_repititions_per_vec;
+std::string GetTimeString(std::chrono::nanoseconds::rep time_rep, long long divisor) {
+  std::stringstream strm;
+  strm << time_rep/divisor << " ns  = "
+       << (time_rep/divisor)/1000 << " mus  = "
+       << (time_rep/divisor)/1000000 << " ms ";
+  return strm.str();
+}
+
+template<class T> void TimeBiHeapifies(long start_total_num_nodes,
+                                       long end_total_num_nodes,
+                                       long num_vecs_to_try = 1,
+                                       long num_repititions_per_vec = 1,
+                                       long increment_size = 1,
+                                       long long divisor = 0) {
+  if (divisor == 0)
+    divisor = num_vecs_to_try * num_repititions_per_vec;
+  else if (divisor < 0)
+    divisor = num_repititions_per_vec;
   auto num_sizes_tested = (end_total_num_nodes + 1 - start_total_num_nodes)
                                                                / increment_size;
   std::vector<std::chrono::nanoseconds::rep> biheapify_times(num_sizes_tested,
                                            std::chrono::nanoseconds{0}.count());
-  for (int i = start_total_num_nodes; i <= end_total_num_nodes; i +=
+  for (auto i = start_total_num_nodes; i <= end_total_num_nodes; i +=
                                                               increment_size) {
-    std::cout << "total_num_nodes = \t" << i << std::endl;
+    std::cout << "total_num_nodes = \t" << i << '\n';
+    std::cout << "BiHeapify() ave       = ";
+    std::cout.flush();
     auto biheapify = TimeBiHeapifyOnGivenSize<T>(i, num_vecs_to_try,
                                                  num_repititions_per_vec);
     biheapify_times[(i - start_total_num_nodes) / increment_size] = biheapify;
-    std::cout << "BiHeapify() ave       = "
-        << biheapify/divisor << " ns  = "
-        << (biheapify/divisor)/1000 << " mus  = "
-        << (biheapify/divisor)/1000000 << " ms ";
+    std::cout << GetTimeString(biheapify, divisor);
+
+    std::cout << "  \tBiHeapifySinglePass() ave       = ";
     std::cout.flush();
     auto biheapify_single_pass = TimeBiHeapifySinglePassOnGivenSize<T>(i,
                                       num_vecs_to_try, num_repititions_per_vec);
-    std::cout << "  \tBiHeapifySinglePass() ave       = "
-        << biheapify_single_pass/divisor << " ns  = "
-        << (biheapify_single_pass/divisor)/1000 << " mus  = "
-        << (biheapify_single_pass/divisor)/1000000 << " ms " << std::endl;
+    std::cout << GetTimeString(biheapify_single_pass, divisor) << '\n';
+
+    std::cout << "BiHeapifySimple() ave = ";
+    std::cout.flush();
     auto biheapify_simple = TimeBiHeapifySimpleOnGivenSize<T>(i,
                                       num_vecs_to_try, num_repititions_per_vec);
-    std::cout << "BiHeapifySimple() ave = "
-        << biheapify_simple/divisor << " ns  = "
-        << (biheapify_simple/divisor)/1000 << " mus  = "
-        << (biheapify_simple/divisor)/1000000 << " ms ";
+    std::cout << GetTimeString(biheapify_simple, divisor);
+
+    std::cout << "  \tBiHeapifySimpleSinglePass() ave = ";
     std::cout.flush();
     auto biheapify_simple_single_pass = TimeBiHeapifySimpleSinglePassOnGivenSize<T>(
                                   i, num_vecs_to_try, num_repititions_per_vec);
-    std::cout << "  \tBiHeapifySimpleSinglePass() ave = "
-        << biheapify_simple_single_pass/divisor << " ns  = "
-        << (biheapify_simple_single_pass/divisor)/1000 << " mus  = "
-        << (biheapify_simple_single_pass/divisor)/1000000 << " ms."
-        << std::endl;
+    std::cout << GetTimeString(biheapify_simple_single_pass, divisor) ;
+    std::cout << std::endl;
   }
 
-  std::cout << "\nTime differences between consecutive biheap sizes:"
-            << std::endl;
+  std::cout << "\nTime differences between consecutive biheap sizes:\n";
   for (auto i = 1u; i < biheapify_times.size(); i++) {
     auto diff = static_cast<std::size_t>(biheapify_times[i]
                                          - biheapify_times[i - 1]);
@@ -224,7 +231,5 @@ template<class T> void TimeBiHeapifies(int start_total_num_nodes,
   }
   std::cout .flush();
 }
-
-
 
 #endif /* BIHEAPIFY_TIME_H_ */
