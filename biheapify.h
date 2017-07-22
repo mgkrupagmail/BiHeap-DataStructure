@@ -4,8 +4,29 @@
  *  Created on: Jun 12, 2017
  *      Author: Matthew Gregory Krupa
  */
+/* BIHEAP DEFINITION (QUICK):
+We're given total_num_nodes elements indexed by 0, ..., total_num_nodes - 1.
+These elements form a BiHeap if:
+(1) the elements [0, ..., num_nodes_in_heap) form a min heap with the element
+    at 0 being the min, and
+(2) the elements [total_num_nodes - num_nodes_in_heap, ..., total_num_nodes)
+   form a max heap with the element at total_num_nodes - 1 being the max,
+ where num_nodes_in_heap is obtained from the function
+GetNumNodesInHeapContainedInBiheap(), which is defined in biheap_common.h.
+The quantity num_nodes_in_heap is a fundamentally important quantity associated
+ with the biheap on total_num_nodes nodes. The formulas that define this
+ quantity, although complicated, stem from the intuitive and natural
+ graph-theoretic definition of a biheap given in the detailed definition  below.
+Given an iterator first, the function IsBiheap(), defined in biheap_common.h,
+ may be used to check that the first total_num_nodes elements iterated by first
+ (i.e. *first, *(first + 1), ..., *(first + total_num_nodes - 1))
+ form a biheap.
+It would likely be instructive to read the definition of
+ IsBiheap(RAI first, size_type total_num_nodes) found in biheap_common.h
+ before reading the more detailed definition of a biheap given below.
+ */
 /*
-BIHEAP DEFINITION:
+BIHEAP DEFINITION (DETAILED):
 We define a new type of data structure, called a biheap, that
 (a) is not excessively computationally costly to create, especially when
     there are an even number of elements being considered, and
@@ -268,9 +289,11 @@ void BiHeapify(RAI first, size_type total_num_nodes,
   }
 
   if (total_num_nodes % 2 == 1)
-    BiHeapifyOdd(first, total_num_nodes, biheap_lower_bound_node_hc, biheap_upper_bound_node_hc, node_to_start_biheapification_at);
+    BiHeapifyOdd(first, total_num_nodes, biheap_lower_bound_node_hc, 
+                 biheap_upper_bound_node_hc, node_to_start_biheapification_at);
   else
-    BiHeapifyEven(first, total_num_nodes, biheap_lower_bound_node_hc, biheap_upper_bound_node_hc, node_to_start_biheapification_at);
+    BiHeapifyEven(first, total_num_nodes, biheap_lower_bound_node_hc, 
+                  biheap_upper_bound_node_hc, node_to_start_biheapification_at);
   return ;
 }
 
