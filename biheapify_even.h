@@ -20,8 +20,8 @@
 #define FLIP_COORDINATE(a) (total_num_nodes - 1 - (a))
 
 namespace {
-/* Assumes that total_num_nodes is even and that the node pos_mc belongs to the
- *  min heap.
+/* Assumes that total_num_nodes is even, that the node pos_mc belongs to the
+ *  min heap, and that pos_hc <= largest_node_in_biheap_hc.
  */
 template<class RAI>
 inline void SiftFromMinToMaxEven(RAI first, size_type total_num_nodes,
@@ -30,12 +30,6 @@ inline void SiftFromMinToMaxEven(RAI first, size_type total_num_nodes,
                           size_type pos_hc,
                           size_type largest_node_in_biheap_hc) {
   while (pos_hc < first_node_in_mirror_heap) {
-    if (pos_hc > largest_node_in_biheap_hc)//If node pos_hc isn't in the biheap.
-      //Note that the inequality pos_hc >= smallest_node_in_biheap_hc
-      // necessarily holds. which is why it suffices to check the above
-      // inequality.
-      return ;
-
     auto left_child     = GetLeftChildInBiheap(pos_hc);
     auto right_child    = left_child + 1;
 
@@ -68,8 +62,8 @@ inline void SiftFromMinToMaxEven(RAI first, size_type total_num_nodes,
   return ;
 }
 
-/* Assumes that total_num_nodes is even and that the node pos_mc belongs to the
- *  max heap.
+/* Assumes that total_num_nodes is even, that the node pos_mc belongs to the
+ *  max heap, and that FLIP_COORDINATE(pos_mc) >= smallest_node_in_biheap_hc.
  */
 template<class RAI>
 inline void SiftFromMaxToMinEven(RAI first, size_type total_num_nodes,
@@ -80,9 +74,6 @@ inline void SiftFromMaxToMinEven(RAI first, size_type total_num_nodes,
   auto pos_hc = FLIP_COORDINATE(pos_mc);
   //While node pos_mc is NOT in the min heap.
   while (pos_mc < first_node_in_mirror_heap) {
-    if (pos_hc < smallest_node_in_biheap_hc) //If the node is not in the biheap.
-      return ;
-
     auto left_child_mc  = GetLeftChildInBiheap(pos_mc);
     auto right_child_mc = left_child_mc + 1; //= GetRightChildInBiheap(pos_mc);
     auto left_child_hc  = FLIP_COORDINATE(left_child_mc);
