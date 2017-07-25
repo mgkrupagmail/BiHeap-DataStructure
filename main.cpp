@@ -12,8 +12,8 @@
 //      a BiHeapify pass (i.e. one of BiHeapifyEven(),
 //      BiHeapifyOdd(), or BiHeapifySimpleSinglePass()) must be
 //      called before a BiHeap is formed.
-//    - Notice that for BiHeapify() this always require only one call to 
-//      biheafiy.
+//    - Notice that for BiHeapify() this always require only one call to
+//      biheapify.
 //============================================================================
 
 #include <algorithm>
@@ -25,9 +25,12 @@
 #include <vector>
 
 #include "biheapify.h"
+#include "biheap_sift.h"
+
 #include "biheapify_simple.h"
 #include "biheapify_single_pass_success_rate.h"
 #include "biheapify_time.h"
+#include "biheap_sift_test_correctness.h"
 
 int main() {
   long start_total_num_nodes = 1;
@@ -71,5 +74,7 @@ int main() {
   TimeBiHeapifies<int>(start_total_num_nodes, end_total_num_nodes,
                        num_vecs_to_try, num_repititions_per_vec, increment_size,
                        divisor);
+  BiHeapSiftTestCorrectness<int>(start_total_num_nodes, end_total_num_nodes,
+                                 num_vecs_to_try, increment_size);
   return 0;
 }
