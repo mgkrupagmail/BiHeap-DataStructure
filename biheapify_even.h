@@ -19,6 +19,7 @@
  */
 #define FLIP_COORDINATE(a) (total_num_nodes - 1 - (a))
 
+namespace {
 /* Assumes that total_num_nodes is even and that the node pos_mc belongs to the
  *  min heap.
  */
@@ -29,18 +30,22 @@ inline void SiftFromMinToMaxEven(RAI first, size_type total_num_nodes,
                           size_type pos_hc,
                           size_type largest_node_in_biheap_hc) {
   while (pos_hc < first_node_in_mirror_heap) {
-    if (pos_hc > largest_node_in_biheap_hc) //If node pos_hc is not in the biheap.
-      //Note that the inequality pos_hc >= smallest_node_in_biheap_hc necessarily holds.
-      // which is why it suffices to check the above inequality.
+    if (pos_hc > largest_node_in_biheap_hc)//If node pos_hc isn't in the biheap.
+      //Note that the inequality pos_hc >= smallest_node_in_biheap_hc
+      // necessarily holds. which is why it suffices to check the above
+      // inequality.
       return ;
 
     auto left_child     = GetLeftChildInBiheap(pos_hc);
     auto right_child    = left_child + 1;
-    bool is_right_child_valid = (right_child <= largest_node_in_biheap_hc) && //Is the node in the biheap?
-                                (right_child < num_nodes_in_heap);            //Is the node in the min heap?
-    //Note that the equivalent of is_right_child_valid for the left child, which is
-    // (left_child <= largest_node_in_biheap_hc) && left_child  < num_nodes_in_heap),
-    // is always true when total_num_nodes is even.
+
+    //Is the node in the biheap? && Is the node in the min heap?
+    bool is_right_child_valid = (right_child <= largest_node_in_biheap_hc) &&
+                                (right_child < num_nodes_in_heap);
+    //Note that the equivalent of is_right_child_valid for the left child,
+    // which is: (left_child <= largest_node_in_biheap_hc) &&
+    // left_child  < num_nodes_in_heap), is always true when total_num_nodes
+    // is even.
     auto left_it  = first + left_child;
     auto right_it = first + right_child;
     auto pos_it   = first + pos_hc;
@@ -58,7 +63,8 @@ inline void SiftFromMinToMaxEven(RAI first, size_type total_num_nodes,
     else
       return ;
   }
-  SiftUpMaxHeapHC(first, total_num_nodes, pos_hc, FLIP_COORDINATE(largest_node_in_biheap_hc));
+  SiftUpMaxHeapHC(first, total_num_nodes, pos_hc,
+                  FLIP_COORDINATE(largest_node_in_biheap_hc));
   return ;
 }
 
@@ -74,7 +80,7 @@ inline void SiftFromMaxToMinEven(RAI first, size_type total_num_nodes,
   auto pos_hc = FLIP_COORDINATE(pos_mc);
   //While node pos_mc is NOT in the min heap.
   while (pos_mc < first_node_in_mirror_heap) {
-    if (pos_hc < smallest_node_in_biheap_hc) //If the node is not in the biheap
+    if (pos_hc < smallest_node_in_biheap_hc) //If the node is not in the biheap.
       return ;
 
     auto left_child_mc  = GetLeftChildInBiheap(pos_mc);
@@ -85,11 +91,13 @@ inline void SiftFromMaxToMinEven(RAI first, size_type total_num_nodes,
     auto left_it  = first + left_child_hc;
     auto right_it = first + right_child_hc;
 
-    bool is_right_child_valid = (right_child_hc >= smallest_node_in_biheap_hc)  //Is the node in the biheap?
-                                && (right_child_mc < num_nodes_in_heap);        //Is the node in the max heap?
-    //Note that the equivalent of is_right_child_valid for the left child, which is
-    // (left_child <= largest_node_in_biheap_hc) && left_child  < num_nodes_in_heap)
-    // is always true when total_num_nodes is even.
+    //Is the node in the biheap? && Is the node in the min heap?
+    bool is_right_child_valid = (right_child_hc >= smallest_node_in_biheap_hc)
+                                && (right_child_mc < num_nodes_in_heap);
+    //Note that the equivalent of is_right_child_valid for the left child,
+    // which is (left_child <= largest_node_in_biheap_hc) &&
+    // left_child  < num_nodes_in_heap) is always true when total_num_nodes is
+    // even.
 
     RAI larger_it;
     if (is_right_child_valid && *right_it > *left_it) {
@@ -107,9 +115,11 @@ inline void SiftFromMaxToMinEven(RAI first, size_type total_num_nodes,
     else
       return ;
   }
-  SiftUpMinHeapHC(first, total_num_nodes, pos_hc, smallest_node_in_biheap_hc);
+  SiftUpMinHeapHC(first, pos_hc, smallest_node_in_biheap_hc);
   return ;
 }
+
+} //End anonymous namespace
 
 /* This will BiHeapify the first total_num_nodes iterated by *first, ...,
  *  *(first + (total_num_nodes - 1)).
@@ -135,7 +145,7 @@ inline void SiftFromMaxToMinEven(RAI first, size_type total_num_nodes,
  */
 template<class RAI>
 void BiHeapifyEven(RAI first, size_type total_num_nodes) {
-  if (total_num_nodes <= 1)
+  if (total_num_nodes < 2)
     return ;
   auto num_nodes_in_heap = GetNumNodesInHeapContainedInBiheap(total_num_nodes);
   auto first_node_in_mirror_heap  = total_num_nodes - num_nodes_in_heap;
@@ -144,18 +154,16 @@ void BiHeapifyEven(RAI first, size_type total_num_nodes) {
   size_type largest_node_in_biheap_hc  = smallest_node_in_biheap_hc - 1;
 
   while(smallest_node_in_biheap_hc > 0) {
-    if (smallest_node_in_biheap_hc > 0) {
     --smallest_node_in_biheap_hc;
     SiftFromMinToMaxEven<RAI>(first, total_num_nodes, num_nodes_in_heap,
                          first_node_in_mirror_heap, smallest_node_in_biheap_hc,
                          largest_node_in_biheap_hc);
-    }
-    if (largest_node_in_biheap_hc < total_num_nodes - 1) {
-      ++largest_node_in_biheap_hc;
-      SiftFromMaxToMinEven<RAI>(first, total_num_nodes, num_nodes_in_heap,
-          first_node_in_mirror_heap, FLIP_COORDINATE(largest_node_in_biheap_hc),
-          smallest_node_in_biheap_hc);
-    }
+    ++largest_node_in_biheap_hc;
+    //Note that FLIP_COORDINATE(largest_node_in_biheap_hc) ==
+    //                                               smallest_node_in_biheap_hc.
+    SiftFromMaxToMinEven<RAI>(first, total_num_nodes, num_nodes_in_heap,
+        first_node_in_mirror_heap, smallest_node_in_biheap_hc,
+        smallest_node_in_biheap_hc);
   }
   return ;
 }
@@ -215,7 +223,7 @@ void BiHeapifyEven(RAI first, size_type total_num_nodes,
   size_type smallest_node_in_biheap_hc = node_to_start_biheapification_at;
   size_type largest_node_in_biheap_hc  = node_to_start_biheapification_at - 1;
 
-  while(smallest_node_in_biheap_hc > 0) {
+  while (smallest_node_in_biheap_hc > 0) {
     if (smallest_node_in_biheap_hc > biheap_lower_bound_node_hc) {
     --smallest_node_in_biheap_hc;
     SiftFromMinToMaxEven<RAI>(first, total_num_nodes, num_nodes_in_heap,
