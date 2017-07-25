@@ -243,31 +243,11 @@ Although the above definition of a biheap is relatively complicated, the author
 #include "biheapify_odd.h"
 
 template<class RAI>
-void BiHeapifySinglePass(RAI first, size_type total_num_nodes,
-                      size_type biheap_lower_bound_node_hc = 0,
-                      size_type biheap_upper_bound_node_hc = 0,
-                      size_type node_to_start_biheapification_at = static_cast<size_type>(-1)) {
-  if (total_num_nodes % 2 == 1)
-    BiHeapifyOdd(first, total_num_nodes, biheap_lower_bound_node_hc,
-                  biheap_upper_bound_node_hc, node_to_start_biheapification_at);
+void BiHeapify(RAI first, size_type total_num_nodes) {
+  if (total_num_nodes % 2 == 0)
+    BiHeapifyEven(first, total_num_nodes);
   else
-
-    BiHeapifyEven(first, total_num_nodes, biheap_lower_bound_node_hc,
-                  biheap_upper_bound_node_hc, node_to_start_biheapification_at);
-}
-
-//This will BiHeapify all nodes in [0, total_num_nodes).
-template<class RAI>
-inline void BiHeapifySafe(RAI first, size_type total_num_nodes) {
-  //If it's small enough that it's easiest to just sort everything.
-  if (total_num_nodes < 2)
-    return ;
-
-  if (total_num_nodes % 2 == 1)
-    BiHeapifySafeOdd(first, total_num_nodes);
-  else
-    BiHeapifySafeEven(first, total_num_nodes);
-  return ;
+    BiHeapifyOdd(first, total_num_nodes);
 }
 
 //This will BiHeapify all nodes in [biheap_lower_bound_node_hc, biheap_upper_bound_node_hc]
@@ -284,30 +264,25 @@ void BiHeapify(RAI first, size_type total_num_nodes,
                       size_type biheap_lower_bound_node_hc,
                       size_type biheap_upper_bound_node_hc = 0,
                       size_type node_to_start_biheapification_at = static_cast<size_type>(-1)) {
-  if (biheap_lower_bound_node_hc == 0 && biheap_upper_bound_node_hc == 0)
-    biheap_upper_bound_node_hc = total_num_nodes - 1;
-  //If it's small enough that it's easiest to just sort everything.
-  if (biheap_upper_bound_node_hc - biheap_lower_bound_node_hc < 11) {
-    std::sort(first + biheap_lower_bound_node_hc,
-              first + (biheap_upper_bound_node_hc + 1));
-    return ;
-  }
-
-  auto num_nodes_to_biheapify = biheap_upper_bound_node_hc
-                              - biheap_lower_bound_node_hc + 1;
-  if (node_to_start_biheapification_at < biheap_lower_bound_node_hc
-   || node_to_start_biheapification_at > biheap_upper_bound_node_hc
-   || node_to_start_biheapification_at == static_cast<size_type>(-1)) {
-    node_to_start_biheapification_at = biheap_lower_bound_node_hc
-        + (num_nodes_to_biheapify / 2) + (num_nodes_to_biheapify % 2);
-  }
-
-  if (total_num_nodes % 2 == 1)
-    BiHeapifyOdd(first, total_num_nodes, biheap_lower_bound_node_hc,
-                 biheap_upper_bound_node_hc, node_to_start_biheapification_at);
-  else
+  if (total_num_nodes % 2 == 0)
     BiHeapifyEven(first, total_num_nodes, biheap_lower_bound_node_hc,
                   biheap_upper_bound_node_hc, node_to_start_biheapification_at);
+  else
+    BiHeapifyOdd(first, total_num_nodes, biheap_lower_bound_node_hc,
+                  biheap_upper_bound_node_hc, node_to_start_biheapification_at);
+}
+
+//This will BiHeapify all nodes in [0, total_num_nodes).
+template<class RAI>
+inline void BiHeapifySafe(RAI first, size_type total_num_nodes) {
+  //If it's small enough that it's easiest to just sort everything.
+  if (total_num_nodes < 2)
+    return ;
+
+  if (total_num_nodes % 2 == 0)
+    BiHeapifySafeEven(first, total_num_nodes);
+  else
+    BiHeapifySafeOdd(first, total_num_nodes);
   return ;
 }
 
