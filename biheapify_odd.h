@@ -22,7 +22,7 @@
 namespace {
 
 /* Assumes that total_num_nodes is odd, that the node pos_mc belongs to the
- *  min heap, and that pos_hc >= smallest_node_in_biheap_hc.
+ *  min heap, and that pos_hc <= largest_node_in_biheap_hc.
  */
 template<class RAI>
 inline void SiftFromMinToMaxOdd(RAI first, size_type total_num_nodes,
@@ -31,9 +31,6 @@ inline void SiftFromMinToMaxOdd(RAI first, size_type total_num_nodes,
                          size_type pos_hc,
                          size_type largest_node_in_biheap_hc) {
   while (pos_hc <= total_num_nodes / 2) {
-    if (pos_hc > largest_node_in_biheap_hc) //If the node is not in the biheap.
-      return ;
-
     auto left_child     = GetLeftChildInBiheap(pos_hc);
     auto right_child    = left_child + 1;
 
@@ -67,8 +64,8 @@ inline void SiftFromMinToMaxOdd(RAI first, size_type total_num_nodes,
   return ;
 }
 
-/* Assumes that total_num_nodes is odd and that the node pos_mc belongs to the
- *  max heap.
+/* Assumes that total_num_nodes is odd, that the node pos_mc belongs to the
+ *  max heap, and that FLIP_COORDINATE(pos_mc) >= smallest_node_in_biheap_hc.
  */
 template<class RAI>
 inline void SiftFromMaxToMinOdd(RAI first, size_type total_num_nodes,
@@ -78,9 +75,6 @@ inline void SiftFromMaxToMinOdd(RAI first, size_type total_num_nodes,
                          size_type smallest_node_in_biheap_hc) {
   auto pos_hc = FLIP_COORDINATE(pos_mc);
   while (pos_mc <= total_num_nodes / 2) {
-    if (pos_hc < smallest_node_in_biheap_hc) //If the node is not in the biheap.
-      return ;
-
     auto left_child_mc  = GetLeftChildInBiheap(pos_mc);
     auto right_child_mc = left_child_mc + 1; //= GetRightChildInBiheap(pos_mc);
     auto left_child_hc  = FLIP_COORDINATE(left_child_mc);//= pos_hc - pos_mc - 1
