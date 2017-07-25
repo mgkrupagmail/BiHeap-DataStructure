@@ -66,44 +66,6 @@ std::chrono::nanoseconds TimeBiHeapifyGivenVec(T &vec,
 }
 
 template<class T>
-std::chrono::nanoseconds TimeBiHeapifySimpleGivenVec(T &vec,
-                             const T &vec_original, std::size_t total_num_nodes,
-                             int num_repititions_per_vec = 1) {
-  std::chrono::nanoseconds total{0};
-  {
-  BiHeapifySimple(vec.begin(), total_num_nodes);
-  vec = vec_original;
-  }
-  for (int num_repititions_counter = 0; num_repititions_counter <
-                           num_repititions_per_vec; num_repititions_counter++) {
-    auto start_time = std::chrono::high_resolution_clock::now();
-    BiHeapifySimple(vec.begin(), total_num_nodes);
-    total += std::chrono::high_resolution_clock::now() - start_time;
-    vec = vec_original;
-  }
-  return total;
-}
-
-template<class T>
-std::chrono::nanoseconds TimeBiHeapifySimpleSinglePassGivenVec(T &vec,
-                           const T &vec_original, std::size_t total_num_nodes,
-                           int num_repititions_per_vec = 1) {
-  std::chrono::nanoseconds total{0};
-  {
-  BiHeapifySimpleSinglePass(vec.begin(), total_num_nodes);
-  vec = vec_original;
-  }
-  for (int num_repititions_counter = 0; num_repititions_counter <
-                           num_repititions_per_vec; num_repititions_counter++) {
-    auto start_time = std::chrono::high_resolution_clock::now();
-    BiHeapifySimpleSinglePass(vec.begin(), total_num_nodes);
-    total += std::chrono::high_resolution_clock::now() - start_time;
-    vec = vec_original;
-  }
-  return total;
-}
-
-template<class T>
 std::chrono::nanoseconds::rep TimeBiHeapifySafeOnGivenSize(
                           std::size_t total_num_nodes, int num_vecs_to_try = 1,
                           int num_repititions_per_vec = 1) {
@@ -131,38 +93,6 @@ std::chrono::nanoseconds::rep TimeBiHeapifyOnGivenSize(
     vec_original = vec;
     total += TimeBiHeapifyGivenVec(vec, vec_original, total_num_nodes,
                                              num_repititions_per_vec);
-  }
-  return total.count();
-}
-
-template<class T>
-std::chrono::nanoseconds::rep TimeBiHeapifySimpleOnGivenSize(
-                           std::size_t total_num_nodes, int num_vecs_to_try = 1,
-                           int num_repititions_per_vec = 1) {
-  std::chrono::nanoseconds total{0};
-  std::vector<T> vec(total_num_nodes), vec_original(total_num_nodes);
-  for (int i = 0; i < num_vecs_to_try; i++) {
-    randomhelpers::FillWithRandomNumbers(vec.begin(), vec.end(),
-                  std::numeric_limits<T>::min(), std::numeric_limits<T>::max());
-    vec_original = vec;
-    total += TimeBiHeapifySimpleGivenVec(vec, vec_original, total_num_nodes,
-                                         num_repititions_per_vec);
-  }
-  return total.count();
-}
-
-template<class T>
-std::chrono::nanoseconds::rep TimeBiHeapifySimpleSinglePassOnGivenSize(
-                          std::size_t total_num_nodes, int num_vecs_to_try = 1,
-                          int num_repititions_per_vec = 1) {
-  std::chrono::nanoseconds total{0};
-  std::vector<T> vec(total_num_nodes), vec_original(total_num_nodes);
-  for (int i = 0; i < num_vecs_to_try; i++) {
-    randomhelpers::FillWithRandomNumbers(vec.begin(), vec.end(),
-                  std::numeric_limits<T>::min(), std::numeric_limits<T>::max());
-    vec_original = vec;
-    total += TimeBiHeapifySimpleSinglePassGivenVec(vec, vec_original,
-                                      total_num_nodes, num_repititions_per_vec);
   }
   return total.count();
 }
@@ -204,20 +134,7 @@ template<class T> void TimeBiHeapifies(long start_total_num_nodes,
     auto biheapify = TimeBiHeapifySafeOnGivenSize<T>(i, num_vecs_to_try,
                                                  num_repititions_per_vec);
     biheapify_times[(i - start_total_num_nodes) / increment_size] = biheapify;
-    std::cout << GetTimeString(biheapify, divisor) << '\n';
-
-    std::cout << "BiHeapifySimple() ave = ";
-    std::cout.flush();
-    auto biheapify_simple = TimeBiHeapifySimpleOnGivenSize<T>(i,
-                                      num_vecs_to_try, num_repititions_per_vec);
-    std::cout << GetTimeString(biheapify_simple, divisor);
-
-    std::cout << "  \tBiHeapifySimpleSinglePass() ave = ";
-    std::cout.flush();
-    auto biheapify_simple_single_pass = TimeBiHeapifySimpleSinglePassOnGivenSize<T>(
-                                  i, num_vecs_to_try, num_repititions_per_vec);
-    std::cout << GetTimeString(biheapify_simple_single_pass, divisor) ;
-    std::cout << std::endl;
+    std::cout << GetTimeString(biheapify, divisor) << std::endl;
   }
 
   std::cout << "\nTime differences between consecutive biheap sizes:\n";
