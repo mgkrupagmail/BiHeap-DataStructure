@@ -122,7 +122,7 @@ void SiftFromMaxToMinSimple(RAI first, size_type total_num_nodes,
     else
       return ;
   }
-  SiftUpMinHeapHC(first, total_num_nodes, pos_hc, smallest_node_in_biheap_hc);
+  SiftUpMinHeapHC(first, pos_hc, smallest_node_in_biheap_hc);
   return ;
 }
 
