@@ -107,7 +107,6 @@ bool IsBiheap(RAI first, size_type total_num_nodes) {
     auto i = 0;
     for (size_type right_child; (right_child = GetRightChildInBiheap(i))
                                                      < num_nodes_in_heap; i++) {
-      assert(right_child == GetRightChildInBiheap(i));
       auto parent_val = *(first + i);
       //Check that the parent and left child satisfy the min heap condition.
       if (parent_val > *(first + (right_child - 1)))
@@ -133,7 +132,6 @@ bool IsBiheap(RAI first, size_type total_num_nodes) {
     auto i = 0;
     for (size_type right_child; (right_child = GetRightChildInBiheap(i))
                                                      < num_nodes_in_heap; i++) {
-      assert(GetRightChildInBiheap(i) < total_num_nodes);
       auto parent_val = *(first + FLIP_COORDINATE(i));
       auto mirror_left_child_hc = FLIP_COORDINATE(right_child - 1);
       //Check that the parent and left child satisfy the max heap condition.
@@ -368,8 +366,8 @@ inline void SiftUpMaxHeapHC(RAI first, size_type total_num_nodes,
 
 //Assumes that pos_hc is a node in the min heap.
 template<class RAI>
-inline void SiftUpMinHeapHC(RAI first, size_type total_num_nodes,
-                       size_type pos_hc, size_type smallest_node_in_biheap_hc) {
+inline void SiftUpMinHeapHC(RAI first, size_type pos_hc,
+                            size_type smallest_node_in_biheap_hc) {
   size_type parent;
   if (pos_hc == 0 ||
       (parent = GetParentInBiheapNotRoot(pos_hc)) < smallest_node_in_biheap_hc)
@@ -411,4 +409,5 @@ std::string GetBiHeapifyFailureMessage(RAI first, size_type total_num_nodes) {
 }
 
 #undef ISBIHEAP_OSTREAM_DEFAULT
+#undef FLIP_COORDINATE
 #endif /* BIHEAP_COMMON_H_ */
