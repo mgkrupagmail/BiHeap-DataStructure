@@ -121,15 +121,15 @@ template<class T> void TimeBiHeapifies(long start_total_num_nodes,
                                            std::chrono::nanoseconds{0}.count());
   for (auto i = start_total_num_nodes; i <= end_total_num_nodes; i +=
                                                               increment_size) {
-    std::cout << "total_num_nodes = \t" << i << '\n';
+    std::cout << "total_num_nodes = " << i << " \t";
 
-    std::cout << "BiHeapify() ave       = ";
+    std::cout << "BiHeapify() ave = ";
     std::cout.flush();
     auto biheapify_single_pass = TimeBiHeapifyOnGivenSize<T>(i,
                                       num_vecs_to_try, num_repititions_per_vec);
     std::cout << GetTimeString(biheapify_single_pass, divisor);
 
-    std::cout << "  \tBiHeapifySafe() ave             = ";
+    std::cout << "  \tBiHeapifySafe() ave = ";
     std::cout.flush();
     auto biheapify = TimeBiHeapifySafeOnGivenSize<T>(i, num_vecs_to_try,
                                                  num_repititions_per_vec);
