@@ -27,7 +27,6 @@ namespace {
 template<class RAI>
 inline void SiftFromMinToMaxOdd(RAI first, size_type total_num_nodes,
                          size_type num_nodes_in_heap,
-                         size_type first_node_in_mirror_heap,
                          size_type pos_hc,
                          size_type largest_node_in_biheap_hc) {
   while (pos_hc <= total_num_nodes / 2) {
@@ -70,7 +69,6 @@ inline void SiftFromMinToMaxOdd(RAI first, size_type total_num_nodes,
 template<class RAI>
 inline void SiftFromMaxToMinOdd(RAI first, size_type total_num_nodes,
                          size_type num_nodes_in_heap,
-                         size_type first_node_in_mirror_heap,
                          size_type pos_mc,
                          size_type smallest_node_in_biheap_hc) {
   auto pos_hc = FLIP_COORDINATE(pos_mc);
@@ -133,7 +131,6 @@ void BiHeapifyOdd(RAI first, size_type total_num_nodes) {
   if(total_num_nodes < 2)
     return ;
   auto num_nodes_in_heap = GetNumNodesInHeapContainedInBiheap(total_num_nodes);
-  auto first_node_in_mirror_heap  = total_num_nodes - num_nodes_in_heap - 1;
 
   size_type smallest_node_in_biheap_hc = (total_num_nodes / 2) + 1;
   size_type largest_node_in_biheap_hc  = smallest_node_in_biheap_hc - 1;
@@ -143,12 +140,12 @@ void BiHeapifyOdd(RAI first, size_type total_num_nodes) {
   while(smallest_node_in_biheap_hc > 0) {
     --smallest_node_in_biheap_hc;
     SiftFromMinToMaxOdd<RAI>(first, total_num_nodes, num_nodes_in_heap,
-                          first_node_in_mirror_heap, smallest_node_in_biheap_hc,
+                          smallest_node_in_biheap_hc,
                           largest_node_in_biheap_hc);
     if (largest_node_in_biheap_hc < total_num_nodes - 1) {
       ++largest_node_in_biheap_hc;
       SiftFromMaxToMinOdd<RAI>(first, total_num_nodes, num_nodes_in_heap,
-          first_node_in_mirror_heap, FLIP_COORDINATE(largest_node_in_biheap_hc),
+          FLIP_COORDINATE(largest_node_in_biheap_hc),
           smallest_node_in_biheap_hc);
     }
   }
@@ -194,7 +191,6 @@ void BiHeapifyOdd(RAI first, size_type total_num_nodes,
     return ;
   }
   auto num_nodes_in_heap = GetNumNodesInHeapContainedInBiheap(total_num_nodes);
-  auto first_node_in_mirror_heap  = total_num_nodes - num_nodes_in_heap - 1;
   auto num_nodes_to_biheapify = biheap_upper_bound_node_hc - biheap_lower_bound_node_hc + 1;
 
   if (node_to_start_biheapification_at < biheap_lower_bound_node_hc
@@ -211,13 +207,14 @@ void BiHeapifyOdd(RAI first, size_type total_num_nodes,
   while(smallest_node_in_biheap_hc > 0) {
     if (smallest_node_in_biheap_hc > biheap_lower_bound_node_hc) {
     --smallest_node_in_biheap_hc;
-    SiftFromMinToMaxOdd<RAI>(first, total_num_nodes, num_nodes_in_heap, first_node_in_mirror_heap,
+    SiftFromMinToMaxOdd<RAI>(first, total_num_nodes, num_nodes_in_heap,
                      smallest_node_in_biheap_hc, largest_node_in_biheap_hc);
     }
     if (largest_node_in_biheap_hc < biheap_upper_bound_node_hc) {
       ++largest_node_in_biheap_hc;
-      SiftFromMaxToMinOdd<RAI>(first, total_num_nodes, num_nodes_in_heap, first_node_in_mirror_heap,
-                       FLIP_COORDINATE(largest_node_in_biheap_hc), smallest_node_in_biheap_hc);
+      SiftFromMaxToMinOdd<RAI>(first, total_num_nodes, num_nodes_in_heap,
+                       FLIP_COORDINATE(largest_node_in_biheap_hc),
+                       smallest_node_in_biheap_hc);
     }
   }
   return ;
