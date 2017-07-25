@@ -105,9 +105,9 @@ std::string GetDesciption(std::vector<T> fail_counter,
   return strstrm.str();
 }
 
-/* By default this function measures the success rate of BiHeapifySinglePass().
+/* By default this function measures the success rate of BiHeapify().
  * To measure the success rate of BiHeapifyEven() then comment
- *  out the two instances of BiHeapifySinglePass() and un-comment out the two
+ *  out the two instances of BiHeapify() and un-comment out the two
  *  instances of BiHeapifyEven().
  *  Ditto for BiHeapifySimpleSinglePass() and BiHeapifyOdd().
  * This function will go through each of the sizes:
@@ -119,13 +119,14 @@ std::string GetDesciption(std::vector<T> fail_counter,
  * However, it will only display information about the success and failure
  *  counts when # = print_multiple, 2 * print_multiple, ....
  */
-template<class T> void MeasureBiHeapifySuccessRate(long start_total_num_nodes,
-                                                   long end_total_num_nodes,
-                                                   long num_vecs_to_try = 1,
-                                                   long increment_size = 1,
-                                                   long print_multiple = 32,
-                                                   bool reset_after_print = false,
-                                                   bool verbose = false) {
+template<class T>
+void MeasureBiHeapifySuccessRate(long start_total_num_nodes,
+                                 long end_total_num_nodes,
+                                 long num_vecs_to_try = 1,
+                                 long increment_size = 1,
+                                 long print_multiple = 32,
+                                 bool reset_after_print = false,
+                                 bool verbose = false) {
   std::vector<long long> fail_counter(100, 0l);
   std::vector<long long> try_counter(100, 0l);
   long long total_tries = 0;
@@ -135,15 +136,15 @@ template<class T> void MeasureBiHeapifySuccessRate(long start_total_num_nodes,
     for (auto i = 0l; i < print_multiple; i++, total_num_nodes += increment_size) {
       if (total_num_nodes > end_total_num_nodes)
         break ;
+      std::vector<T> vec(total_num_nodes);
       for (auto vec_counter = 0l; vec_counter < num_vecs_to_try; vec_counter++) {
         int try_num = 1;
-        std::vector<T> vec(total_num_nodes);
         randomhelpers::FillWithRandomNumbers(vec.begin(), vec.end(),
                   0, static_cast<T>(4*total_num_nodes));//std::numeric_limits<T>::min(), std::numeric_limits<T>::max());
 //#define BIHEAPIFY_ALGORITHM BiHeapifySimpleSinglePass
 //#define BIHEAPIFY_ALGORITHM BiHeapifyEven
 //#define BIHEAPIFY_ALGORITHM BiHeapifyOdd
-#define BIHEAPIFY_ALGORITHM BiHeapifySinglePass
+#define BIHEAPIFY_ALGORITHM BiHeapify
 
         BIHEAPIFY_ALGORITHM(vec.begin(), vec.size());
 
