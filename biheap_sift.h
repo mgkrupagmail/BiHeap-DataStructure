@@ -176,7 +176,6 @@ inline void SiftFromMaxToMinEven(RAI first, size_type total_num_nodes,
 template<class RAI>
 inline void SiftFromMinToMaxOdd(RAI first, size_type total_num_nodes,
                          size_type num_nodes_in_heap,
-                         size_type first_node_in_mirror_heap,
                          size_type pos_hc) {
   while (pos_hc <= total_num_nodes / 2) {
     if (pos_hc >= total_num_nodes) //If the node is not in the biheap.
@@ -215,7 +214,6 @@ inline void SiftFromMinToMaxOdd(RAI first, size_type total_num_nodes,
 template<class RAI>
 inline void SiftFromMaxToMinOdd(RAI first, size_type total_num_nodes,
                          size_type num_nodes_in_heap,
-                         size_type first_node_in_mirror_heap,
                          size_type pos_mc) {
   auto pos_hc = FLIP_COORDINATE(pos_mc);
   while (pos_mc <= total_num_nodes / 2) {
@@ -289,7 +287,6 @@ void BiHeapSiftEven(RAI first, size_type total_num_nodes, size_type pos_hc) {
 template<class RAI>
 void BiHeapSiftOdd(RAI first, size_type total_num_nodes, size_type pos_hc) {
   auto num_nodes_in_heap = GetNumNodesInHeapContainedInBiheap(total_num_nodes);
-  auto first_node_in_mirror_heap  = total_num_nodes - num_nodes_in_heap;
 
   if (pos_hc < num_nodes_in_heap) { //If the node is in the min heap.
     auto parent_hc = GetParentInBiheapZero(pos_hc);
@@ -297,7 +294,7 @@ void BiHeapSiftOdd(RAI first, size_type total_num_nodes, size_type pos_hc) {
       SiftUpMinHeapHC(first, pos_hc);
     } else {
       SiftFromMinToMaxOdd<RAI>(first, total_num_nodes, num_nodes_in_heap,
-                                first_node_in_mirror_heap, pos_hc);
+                               pos_hc);
     }
     return ;
   }
@@ -310,7 +307,7 @@ void BiHeapSiftOdd(RAI first, size_type total_num_nodes, size_type pos_hc) {
       SiftUpMaxHeapMC(first, total_num_nodes, pos_mc);
     } else {
       SiftFromMaxToMinOdd<RAI>(first, total_num_nodes, num_nodes_in_heap,
-                                first_node_in_mirror_heap, pos_mc);
+                               pos_mc);
     }
   }
   return ;
