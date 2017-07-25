@@ -42,7 +42,7 @@ int main() {
 
   //For each size, the two functions below will biheapify num_vecs_to_try
   // vectors of that size.
-  long num_vecs_to_try = static_cast<int>(1u << 3);
+  long num_vecs_to_try = static_cast<int>(1u << 9);
 
   //For TimeBiHeapifies() only. For each std::vector that whose biheapification
   // is to be timed, repeat this process num_repititions_per_vec times.
