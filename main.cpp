@@ -27,7 +27,6 @@
 #include "biheapify.h"
 #include "biheap_sift.h"
 
-#include "biheapify_simple.h"
 #include "biheapify_single_pass_success_rate.h"
 #include "biheapify_time.h"
 #include "biheap_sift_test_correctness.h"
@@ -39,11 +38,11 @@ int main() {
   //The two functions below will be applied to biheaps of sizes:
   // start_total_num_nodes + (muliple) * increment_size
   // that are <= end_total_num_nodes
-  long end_total_num_nodes = static_cast<int>(1u << 15);
+  long end_total_num_nodes = static_cast<int>(1u << 10);
 
   //For each size, the two functions below will biheapify num_vecs_to_try
   // vectors of that size.
-  long num_vecs_to_try = static_cast<int>(1u << 14);
+  long num_vecs_to_try = static_cast<int>(1u << 3);
 
   //For TimeBiHeapifies() only. For each std::vector that whose biheapification
   // is to be timed, repeat this process num_repititions_per_vec times.
