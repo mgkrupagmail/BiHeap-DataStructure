@@ -39,7 +39,7 @@ class biheap_ostream {
   std::ostream &ostrm_;
 public:
   biheap_ostream(iterator first, iterator one_past_last, std::ostream &ostrm = BIHEAP_OSTREAM_DEFAULT) :
-      ostrm_(ostrm), first_(first), one_past_last_(one_past_last) {
+      first_(first), one_past_last_(one_past_last), ostrm_(ostrm) {
     ComputeMemberVariables();
   }
   ~biheap_ostream() {}
