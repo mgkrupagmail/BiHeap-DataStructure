@@ -250,28 +250,6 @@ void BiHeapify(RAI first, size_type total_num_nodes) {
     BiHeapifyOdd(first, total_num_nodes);
 }
 
-//This will BiHeapify all nodes in [biheap_lower_bound_node_hc, biheap_upper_bound_node_hc]
-// (including these endpoints).
-//If biheap_start_node_hc == biheap_end_node_hc == 0 then biheap_end_node_hc
-// will be replaced by total_num_nodes - 1.
-//If node_to_start_biheapification_at == static_cast<size_type>(-1) or is otherwise
-// outside of the interval [biheap_lower_bound_node_hc, biheap_upper_bound_node_hc]
-// then node_to_start_biheapification_at will be set to the midpoint of the interval
-// [biheap_lower_bound_node_hc, biheap_upper_bound_node_hc], rounded up (i.e. it
-// will then be increased by 1 if the number of nodes in this interval is odd.)
-template<class RAI>
-void BiHeapify(RAI first, size_type total_num_nodes,
-                      size_type biheap_lower_bound_node_hc,
-                      size_type biheap_upper_bound_node_hc = 0,
-                      size_type node_to_start_biheapification_at = static_cast<size_type>(-1)) {
-  if (total_num_nodes % 2 == 0)
-    BiHeapifyEven(first, total_num_nodes, biheap_lower_bound_node_hc,
-                  biheap_upper_bound_node_hc, node_to_start_biheapification_at);
-  else
-    BiHeapifyOdd(first, total_num_nodes, biheap_lower_bound_node_hc,
-                  biheap_upper_bound_node_hc, node_to_start_biheapification_at);
-}
-
 //This will BiHeapify all nodes in [0, total_num_nodes).
 template<class RAI>
 inline void BiHeapifySafe(RAI first, size_type total_num_nodes) {
