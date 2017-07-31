@@ -5,7 +5,7 @@ Created on Jul 16, 2017
 
 Excluding IsBiHeap(), the functions given below  
 are the minimum needed to biheapify a collection
-of objects comparable objects.
+of comparable objects.
 For the commented versions of these functions 
 containing explanations of the source code, 
 see the C++ files biheapify_common.h, biheapify_even.h
