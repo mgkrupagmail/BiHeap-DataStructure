@@ -144,6 +144,7 @@ void MeasureBiHeapifySuccessRate(long start_total_num_nodes,
 //#define BIHEAPIFY_ALGORITHM BiHeapifySimpleSinglePass
 //#define BIHEAPIFY_ALGORITHM BiHeapifyEven
 //#define BIHEAPIFY_ALGORITHM BiHeapifyOdd
+//#define BIHEAPIFY_ALGORITHM BiHeapifyUsingBiHeapifyEven
 #define BIHEAPIFY_ALGORITHM BiHeapify
 
         BIHEAPIFY_ALGORITHM(vec.begin(), vec.size());
