@@ -51,14 +51,6 @@ are near the max and many of the smaller elements are near the min and the
 value in middle of the data to be close to the median. Therefore, it is
 reasonable to expect that applying BiHeapify to a collection of data before
 sorting it may help to speed up certain sorting algorithms such as quicksort.
-
-There are still many questions to be asked and answered about biheaps, including:
- 1) Do there exist O(log n) push and pop operations for biheaps?
- 2) Is the working hypothesis that BiHeapify() always produces a biheap true?
- 3) Is BiHeapifyOdd() an O(n) operation? If not then is it an O(n log n)
- operation?
- 4) Does there exist any O(n) function that biheapifies odd-sized data.
-
 About the name: Various types of data structures called double ended heaps
 (also known as double ended queues) have already been discovered, but it is
 not clear that a biheap can be made into a double ended heap since it
