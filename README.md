@@ -3,7 +3,7 @@ A biheap is a new independently developed data structure, with a part of its dat
 This new data structure:
 <BR>
 1) is not excessively computationally costly to create, and<BR>
-2) is not an excessively complicated operation, being not much more difficult to implement than a min heap and a max heap; indeed the BiHeapify() operation is primarily a combination of the four standard sifting operations, which are sifting elements up/down in a min/max heap operations.
+2) is not an excessively complicated operation, being not much more difficult to implement than a min heap and a max heap; indeed the BiHeapify() operation is primarily a combination of the four standard sifting operations, which are sifting elements up/down in a min/max heap.
 
 These properties make the biheap definition and the biheapify operation easier to implement than double-ended heaps, its nearest counterpart, while also having good performance. The author considers the definition of a biheap to be a very natural data structure to define. It is also a definition that appears to have gone unnoticed until now.
 
