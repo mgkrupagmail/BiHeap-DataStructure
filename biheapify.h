@@ -227,9 +227,6 @@ Although the above definition of a biheap is relatively complicated, the author
  to be asked about biheaps, including:
  1) Do there exist O(log n) push and pop operations for biheaps?
  2) Is the working hypothesis that BiHeapify() always produces a biheap true?
- 3) Is BiHeapifyOdd() an O(n) operation? If not then is it an O(n log n)
-    operation?
- 4) Does there exist any O(n) function that biheapifies odd-sized data.
 */
 
 #ifndef BIHEAPIFY_H_
