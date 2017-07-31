@@ -48,17 +48,32 @@ std::chrono::nanoseconds TimeBiHeapifyGivenVec(T &vec,
                              int num_repititions = 1) {
   std::chrono::nanoseconds total{0};
   {
-    if (total_num_nodes % 2 == 0){
-      BiHeapifyEven(vec.begin(), total_num_nodes);
-    } else {
-      BiHeapifyOdd(vec.begin(), total_num_nodes);
-  }
-  vec = vec_original;
+    BiHeapify(vec.begin(), total_num_nodes);
+    vec = vec_original;
   }
   for (int num_repititions_counter = 0; num_repititions_counter <
                                    num_repititions; num_repititions_counter++) {
     auto start_time = std::chrono::high_resolution_clock::now();
     BiHeapify(vec.begin(), total_num_nodes);
+    total += std::chrono::high_resolution_clock::now() - start_time;
+    vec = vec_original;
+  }
+  return static_cast<std::chrono::nanoseconds>(total);
+}
+
+template<class T>
+std::chrono::nanoseconds TimeBiHeapifyUsingBiHeapifyEvenGivenVec(T &vec,
+                             const T &vec_original, std::size_t total_num_nodes,
+                             int num_repititions = 1) {
+  std::chrono::nanoseconds total{0};
+  {
+    BiHeapifyUsingBiHeapifyEven(vec.begin(), total_num_nodes);
+    vec = vec_original;
+  }
+  for (int num_repititions_counter = 0; num_repititions_counter <
+                                   num_repititions; num_repititions_counter++) {
+    auto start_time = std::chrono::high_resolution_clock::now();
+    BiHeapifyUsingBiHeapifyEven(vec.begin(), total_num_nodes);
     total += std::chrono::high_resolution_clock::now() - start_time;
     vec = vec_original;
   }
@@ -97,6 +112,22 @@ std::chrono::nanoseconds::rep TimeBiHeapifyOnGivenSize(
   return total.count();
 }
 
+template<class T>
+std::chrono::nanoseconds::rep TimeBiHeapifyUsingBiHeapifyEvenOnGivenSize(
+                           std::size_t total_num_nodes, int num_vecs_to_try = 1,
+                           int num_repititions_per_vec = 1) {
+  std::chrono::nanoseconds total{0};
+  std::vector<T> vec(total_num_nodes), vec_original(total_num_nodes);
+  for (int i = 0; i < num_vecs_to_try; i++) {
+    randomhelpers::FillWithRandomNumbers(vec.begin(), vec.end(),
+                  std::numeric_limits<T>::min(), std::numeric_limits<T>::max());
+    vec_original = vec;
+    total += TimeBiHeapifyUsingBiHeapifyEvenGivenVec(vec, vec_original,
+                                      total_num_nodes, num_repititions_per_vec);
+  }
+  return total.count();
+}
+
 std::string GetTimeString(std::chrono::nanoseconds::rep time_rep, long long divisor) {
   std::stringstream strm;
   strm << time_rep/divisor << " ns  = "
@@ -110,7 +141,11 @@ template<class T> void TimeBiHeapifies(long start_total_num_nodes,
                                        long num_vecs_to_try = 1,
                                        long num_repititions_per_vec = 1,
                                        long increment_size = 1,
-                                       long long divisor = 0) {
+                                       long long divisor = 0,
+                                       bool should_time_BiHeapify = true,
+                                       bool should_time_BiHeapifySafe = true,
+                                       bool should_time_BiHeapifyUsingEven =
+                                                                         true) {
   if (divisor == 0)
     divisor = num_vecs_to_try * num_repititions_per_vec;
   else if (divisor < 0)
@@ -123,18 +158,42 @@ template<class T> void TimeBiHeapifies(long start_total_num_nodes,
                                                               increment_size) {
     std::cout << "total_num_nodes = " << i << " \t";
 
-    std::cout << "BiHeapify() ave = ";
-    std::cout.flush();
-    auto biheapify_single_pass = TimeBiHeapifyOnGivenSize<T>(i,
-                                      num_vecs_to_try, num_repititions_per_vec);
-    std::cout << GetTimeString(biheapify_single_pass, divisor);
+    if (should_time_BiHeapify) {
+      std::cout << "BiHeapify() ave = ";
+      std::cout.flush();
+      auto biheapify = TimeBiHeapifyOnGivenSize<T>(i, num_vecs_to_try,
+                                                   num_repititions_per_vec);
+      biheapify_times[(i - start_total_num_nodes) / increment_size] = biheapify;
+      std::cout << GetTimeString(biheapify, divisor);
+    }
 
-    std::cout << "  \tBiHeapifySafe() ave = ";
-    std::cout.flush();
-    auto biheapify = TimeBiHeapifySafeOnGivenSize<T>(i, num_vecs_to_try,
-                                                 num_repititions_per_vec);
-    biheapify_times[(i - start_total_num_nodes) / increment_size] = biheapify;
-    std::cout << GetTimeString(biheapify, divisor) << std::endl;
+    if (should_time_BiHeapifySafe) {
+      if (should_time_BiHeapify)
+        std::cout << "  \t";
+      std::cout << "BiHeapifySafe() ave = ";
+      std::cout.flush();
+      auto biheapify_safe = TimeBiHeapifySafeOnGivenSize<T>(i, num_vecs_to_try,
+                                                       num_repititions_per_vec);
+      if (!should_time_BiHeapify)
+        biheapify_times[(i - start_total_num_nodes) / increment_size] =
+                                                                 biheapify_safe;
+      std::cout << GetTimeString(biheapify_safe, divisor);
+    }
+
+    if (should_time_BiHeapifyUsingEven) {
+      if (should_time_BiHeapify || should_time_BiHeapifySafe)
+        std::cout << "  \t";
+      std::cout << "BiHeapifyUsingBiHeapifyEven() ave = ";
+      std::cout.flush();
+      auto biheapify_using_even = TimeBiHeapifyUsingBiHeapifyEvenOnGivenSize<T>(
+                                   i, num_vecs_to_try, num_repititions_per_vec);
+
+      if (!should_time_BiHeapify && !should_time_BiHeapifySafe)
+        biheapify_times[(i - start_total_num_nodes) / increment_size] =
+                                                           biheapify_using_even;
+      std::cout << GetTimeString(biheapify_using_even, divisor);
+    }
+    std::cout << std::endl;
   }
 
   std::cout << "\nTime differences between consecutive biheap sizes:\n";
