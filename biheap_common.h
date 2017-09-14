@@ -6,7 +6,7 @@
  *
  * See biheapify.h for the definition of a biheap.
  * This file contains function definitions that are used by other biheapify
- *  files, such as biheapify_even.h, biheapify_odd.h, and biheapify_simple.h.
+ *  files, such as biheapify_even.h and biheapify_odd.h.
  */
 
 #ifndef BIHEAP_COMMON_H_
