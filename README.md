@@ -21,5 +21,5 @@ Besides making the minimum and maximum elements readily available in O(n) time (
 About the name: Various types of data structures called double ended heaps (also known as double ended queues) have already been discovered, but it is not clear that a biheap can be made into a double ended heap since it is not clear at the moment whether or not O(log n) pop and push operations exist for biheaps. In this sense, the biheap data structure defined here may not be a specific type of double ended heap; it is nevertheless called a biheap due to it, by definition, simultaneously being both a min heap and a max heap.<BR>
 
 There are still many questions to be asked and answered about biheaps, including:
- 1) Do there exist O(log n) push and pop operations for biheaps?<BR>
- 2) Is the working hypothesis (obtained from emperical testing) that BiHeapify() always produces a biheap true?
+ 1) Do there exist O(log n) push and pop operations for biheaps?
+ 2) How do BiHeaps relate to the median of a set?
