@@ -23,3 +23,5 @@ About the name: Various types of data structures called double ended heaps (also
 There are still many questions to be asked and answered about biheaps, including:
  1) Do there exist O(log n) push and pop operations for biheaps?
  2) How do BiHeaps relate to the median of a set?
+
+Copyright Matthew Gregory Krupa
