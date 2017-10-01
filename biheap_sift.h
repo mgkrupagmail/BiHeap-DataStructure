@@ -23,18 +23,16 @@
 /* Note that FlipCo(coord1) >= coord2 iff coord1 <= FlipCo(coord2)
  * (ditto for >, <=, and <).
  */
-#define FLIP_COORDINATE(a) (total_num_nodes - 1 - (a))
+#define FLIP(a) (total_num_nodes - 1 - (a))
 
-namespace {
-
-template<class RAI>
+template<class RAI, typename size_type = std::size_t>
 inline void SiftUpMaxHeapMC(RAI first, size_type total_num_nodes,
                             size_type pos_mc) {
   size_type parent;
-  auto pos_it = first + FLIP_COORDINATE(pos_mc);
+  auto pos_it = first + FLIP(pos_mc);
   while (pos_mc > 0) {
-    parent = GetParentInBiheapNotRoot(pos_mc);
-    auto parent_it = first + FLIP_COORDINATE(parent);
+    parent = Parent<size_type>(pos_mc);
+    auto parent_it = first + FLIP(parent);
     if (*pos_it > *parent_it) {
       std::iter_swap(pos_it, parent_it);
       pos_mc = parent;
@@ -46,19 +44,19 @@ inline void SiftUpMaxHeapMC(RAI first, size_type total_num_nodes,
   return ;
 }
 
-template<class RAI>
+template<class RAI, typename size_type = std::size_t>
 inline void SiftUpMaxHeapHC(RAI first, size_type total_num_nodes,
                             size_type pos_hc) {
-  SiftUpMaxHeapMC(first, total_num_nodes, FLIP_COORDINATE(pos_hc));
+  SiftUpMaxHeapMC<RAI, size_type>(first, total_num_nodes, FLIP(pos_hc));
 }
 
 //Assumes that pos_hc is a node in the min heap.
-template<class RAI>
+template<class RAI, typename size_type = std::size_t>
 inline void SiftUpMinHeapHC(RAI first, size_type pos_hc) {
   size_type parent;
   auto pos_it = first + pos_hc;
   while (pos_hc > 0) {
-    parent = GetParentInBiheapNotRoot(pos_hc);
+    parent = Parent<size_type>(pos_hc);
     auto parent_it = first + parent;
     if (*pos_it < *parent_it) {
       std::iter_swap(pos_it, parent_it);
@@ -72,17 +70,17 @@ inline void SiftUpMinHeapHC(RAI first, size_type pos_hc) {
 }
 
 //Assumes that pos_hc is a node in the min heap.
-template<class RAI>
+template<class RAI, typename size_type = std::size_t>
 inline void SiftUpMinHeapMC(RAI first, size_type total_num_nodes,
                             size_type pos_mc) {
-  SiftUpMinHeapHC(first, FLIP_COORDINATE(pos_mc));
+  SiftUpMinHeapHC<RAI, size_type>(first, FLIP(pos_mc));
 }
 
 
 /* Assumes that total_num_nodes is even and that the node pos_mc belongs to the
  *  min heap.
  */
-template<class RAI>
+template<class RAI, typename size_type = std::size_t>
 inline void SiftFromMinToMaxEven(RAI first, size_type total_num_nodes,
                           size_type num_nodes_in_heap,
                           size_type first_node_in_mirror_heap,
@@ -93,7 +91,7 @@ inline void SiftFromMinToMaxEven(RAI first, size_type total_num_nodes,
       // which is why it suffices to check the above inequality.
       return ;
 
-    auto left_child     = GetLeftChildInBiheap(pos_hc);
+    auto left_child     = LeftChild<size_type>(pos_hc);
     auto right_child    = left_child + 1;
     bool is_right_child_valid = (right_child < total_num_nodes) && //Is the node in the biheap?
                                 (right_child < num_nodes_in_heap);            //Is the node in the min heap?
@@ -117,28 +115,28 @@ inline void SiftFromMinToMaxEven(RAI first, size_type total_num_nodes,
     else
       return ;
   }
-  SiftUpMaxHeapHC(first, total_num_nodes, pos_hc);
+  SiftUpMaxHeapHC<RAI, size_type>(first, total_num_nodes, pos_hc);
   return ;
 }
 
 /* Assumes that total_num_nodes is even and that the node pos_mc belongs to the
  *  max heap.
  */
-template<class RAI>
+template<class RAI, typename size_type = std::size_t>
 inline void SiftFromMaxToMinEven(RAI first, size_type total_num_nodes,
                           size_type num_nodes_in_heap,
                           size_type first_node_in_mirror_heap,
                           size_type pos_mc) {
-  auto pos_hc = FLIP_COORDINATE(pos_mc);
+  auto pos_hc = FLIP(pos_mc);
   //While node pos_mc is NOT in the min heap.
   while (pos_mc < first_node_in_mirror_heap) {
     if (pos_hc < 0) //If the node is not in the biheap.
       return ;
 
-    auto left_child_mc  = GetLeftChildInBiheap(pos_mc);
+    auto left_child_mc  = LeftChild<size_type>(pos_mc);
     auto right_child_mc = left_child_mc + 1; //= GetRightChildInBiheap(pos_mc);
-    auto left_child_hc  = FLIP_COORDINATE(left_child_mc);
-    auto right_child_hc = left_child_hc - 1; //= FLIP_COORDINATE(right_child_mc)
+    auto left_child_hc  = FLIP(left_child_mc);
+    auto right_child_hc = left_child_hc - 1; //= FLIP(right_child_mc)
     auto pos_it   = first + pos_hc;
     auto left_it  = first + left_child_hc;
     auto right_it = first + right_child_hc;
@@ -165,7 +163,7 @@ inline void SiftFromMaxToMinEven(RAI first, size_type total_num_nodes,
     else
       return ;
   }
-  SiftUpMinHeapHC(first, pos_hc);
+  SiftUpMinHeapHC<RAI, size_type>(first, pos_hc);
   return ;
 }
 
@@ -173,7 +171,7 @@ inline void SiftFromMaxToMinEven(RAI first, size_type total_num_nodes,
 /* Assumes that total_num_nodes is odd, that the node pos_mc belongs to the
  *  min heap, and that pos_hc >= smallest_node_in_biheap_hc.
  */
-template<class RAI>
+template<class RAI, typename size_type = std::size_t>
 inline void SiftFromMinToMaxOdd(RAI first, size_type total_num_nodes,
                          size_type num_nodes_in_heap,
                          size_type pos_hc) {
@@ -181,7 +179,7 @@ inline void SiftFromMinToMaxOdd(RAI first, size_type total_num_nodes,
     if (pos_hc >= total_num_nodes) //If the node is not in the biheap.
       return ;
 
-    auto left_child     = GetLeftChildInBiheap(pos_hc);
+    auto left_child     = LeftChild<size_type>(pos_hc);
     auto right_child    = left_child + 1;
     if (left_child >= num_nodes_in_heap) //If the node is not in the min heap.
       break ;
@@ -204,26 +202,26 @@ inline void SiftFromMinToMaxOdd(RAI first, size_type total_num_nodes,
     else
       return ;
   }
-  SiftUpMaxHeapHC(first, total_num_nodes, pos_hc);
+  SiftUpMaxHeapHC<RAI, size_type>(first, total_num_nodes, pos_hc);
   return ;
 }
 
 /* Assumes that total_num_nodes is odd and that the node pos_mc belongs to the
  *  max heap.
  */
-template<class RAI>
+template<class RAI, typename size_type = std::size_t>
 inline void SiftFromMaxToMinOdd(RAI first, size_type total_num_nodes,
                          size_type num_nodes_in_heap,
                          size_type pos_mc) {
-  auto pos_hc = FLIP_COORDINATE(pos_mc);
+  auto pos_hc = FLIP(pos_mc);
   while (pos_mc <= total_num_nodes / 2) {
     if (pos_hc < 0) //If the node is not in the biheap.
       return ;
 
-    auto left_child_mc  = GetLeftChildInBiheap(pos_mc);
+    auto left_child_mc  = LeftChild<size_type>(pos_mc);
     auto right_child_mc = left_child_mc + 1; //= GetRightChildInBiheap(pos_mc);
-    auto left_child_hc  = FLIP_COORDINATE(left_child_mc);//= pos_hc - pos_mc - 1
-    auto right_child_hc = left_child_hc - 1; //= FLIP_COORDINATE(right_child_mc)
+    auto left_child_hc  = FLIP(left_child_mc);//= pos_hc - pos_mc - 1
+    auto right_child_hc = left_child_hc - 1; //= FLIP(right_child_mc)
     auto pos_it   = first + pos_hc;
     auto left_it  = first + left_child_hc;
     auto right_it = first + right_child_hc;
@@ -248,81 +246,98 @@ inline void SiftFromMaxToMinOdd(RAI first, size_type total_num_nodes,
     else
       return ;
   }
-  SiftUpMinHeapHC(first, pos_hc);
+  SiftUpMinHeapHC<RAI, size_type>(first, pos_hc);
   return ;
 }
 
-} //End anonymous namespace
-
-template<class RAI>
-void BiHeapSiftEven(RAI first, size_type total_num_nodes, size_type pos_hc) {
-  auto num_nodes_in_heap = GetNumNodesInHeapContainedInBiheap(total_num_nodes);
+template<class RAI, typename size_type = std::size_t>
+inline void BiHeapSiftEven(RAI first, size_type total_num_nodes, size_type pos_hc) {
+  auto num_nodes_in_heap = HeapSize(total_num_nodes);
   auto first_node_in_mirror_heap  = total_num_nodes - num_nodes_in_heap;
 
   if (pos_hc < num_nodes_in_heap) { //If the node is in the min heap.
-    auto parent_hc = GetParentInBiheapZero(pos_hc);
+    auto parent_hc = Parent<size_type>(pos_hc);
     if (pos_hc != 0 && *(first + parent_hc) > *(first + pos_hc)) {
-      SiftUpMinHeapHC(first, pos_hc);
+      SiftUpMinHeapHC<RAI, size_type>(first, pos_hc);
     } else {
-      SiftFromMinToMaxEven<RAI>(first, total_num_nodes, num_nodes_in_heap,
+      SiftFromMinToMaxEven<RAI, size_type>(first, total_num_nodes, num_nodes_in_heap,
                                 first_node_in_mirror_heap, pos_hc);
     }
     return ;
   }
 
-  auto pos_mc = FLIP_COORDINATE(pos_hc);
-  auto parent_mc = GetParentInBiheapZero(pos_mc);
+  auto pos_mc = FLIP(pos_hc);
+  auto parent_mc = Parent<size_type>(pos_mc);
   if (pos_mc < num_nodes_in_heap) { //If the node is in the max heap.
-    auto parent_hc = GetParentInBiheapZero(parent_mc);
+    auto parent_hc = Parent<size_type>(parent_mc);
     if (pos_hc != 0 && *(first + parent_hc) < *(first + pos_hc)) {
-      SiftUpMaxHeapMC(first, total_num_nodes, pos_mc);
+      SiftUpMaxHeapMC<RAI, size_type>(first, total_num_nodes, pos_mc);
     } else {
-      SiftFromMaxToMinEven<RAI>(first, total_num_nodes, num_nodes_in_heap,
+      SiftFromMaxToMinEven<RAI, size_type>(first, total_num_nodes, num_nodes_in_heap,
                                 first_node_in_mirror_heap, pos_mc);
     }
   }
   return ;
 }
 
-template<class RAI>
-void BiHeapSiftOdd(RAI first, size_type total_num_nodes, size_type pos_hc) {
-  auto num_nodes_in_heap = GetNumNodesInHeapContainedInBiheap(total_num_nodes);
+template<class RAI, typename size_type = std::size_t>
+inline void BiHeapSiftOdd(RAI first, size_type total_num_nodes, size_type pos_hc) {
+  auto num_nodes_in_heap = HeapSize(total_num_nodes);
 
   if (pos_hc < num_nodes_in_heap) { //If the node is in the min heap.
-    auto parent_hc = GetParentInBiheapZero(pos_hc);
+    auto parent_hc = Parent<size_type>(pos_hc);
     if (pos_hc != 0 && *(first + parent_hc) > *(first + pos_hc)) {
-      SiftUpMinHeapHC(first, pos_hc);
+      SiftUpMinHeapHC<RAI, size_type>(first, pos_hc);
     } else {
-      SiftFromMinToMaxOdd<RAI>(first, total_num_nodes, num_nodes_in_heap,
-                               pos_hc);
+      SiftFromMinToMaxOdd<RAI, size_type>(first, total_num_nodes,
+                                          num_nodes_in_heap, pos_hc);
     }
     return ;
   }
 
-  auto pos_mc = FLIP_COORDINATE(pos_hc);
-  auto parent_mc = GetParentInBiheapZero(pos_mc);
+  auto pos_mc = FLIP(pos_hc);
+  auto parent_mc = Parent<size_type>(pos_mc);
   if (pos_mc < num_nodes_in_heap) { //If the node is in the max heap.
-    auto parent_hc = GetParentInBiheapZero(parent_mc);
+    auto parent_hc = Parent<size_type>(parent_mc);
     if (pos_hc != 0 && *(first + parent_hc) < *(first + pos_hc)) {
-      SiftUpMaxHeapMC(first, total_num_nodes, pos_mc);
+      SiftUpMaxHeapMC<RAI, size_type>(first, total_num_nodes, pos_mc);
     } else {
-      SiftFromMaxToMinOdd<RAI>(first, total_num_nodes, num_nodes_in_heap,
-                               pos_mc);
+      SiftFromMaxToMinOdd<RAI, size_type>(first, total_num_nodes,
+                                          num_nodes_in_heap, pos_mc);
     }
   }
   return ;
 }
 
-template<class RAI>
-void BiHeapSift(RAI first, size_type total_num_nodes, size_type pos_hc) {
+template<class RAI, typename size_type = std::size_t>
+inline void BiHeapSift(RAI first, size_type total_num_nodes, size_type pos_hc) {
   if (total_num_nodes % 2 == 0) {
-    BiHeapSiftEven(first, total_num_nodes, pos_hc);
+    BiHeapSiftEven<RAI, size_type>(first, total_num_nodes, pos_hc);
   } else {
-    BiHeapSiftOdd(first, total_num_nodes, pos_hc);
+    BiHeapSiftOdd<RAI, size_type>(first, total_num_nodes, pos_hc);
   }
   return ;
 }
 
-#undef FLIP_COORDINATE
+template<class RAI, typename size_type = std::size_t>
+inline void BiHeapSift(RAI first, RAI one_past_last, size_type pos_hc) {
+  size_type total_num_nodes = std::distance(first, one_past_last);
+  BiHeapSift<RAI, size_type>(first, total_num_nodes, pos_hc);
+  return ;
+}
+
+template<class RAI, typename size_type = std::size_t>
+inline void BiHeapSiftMC(RAI first, size_type total_num_nodes, size_type pos_mc) {
+  BiHeapSift<RAI, size_type>(first, total_num_nodes, FLIP(pos_mc));
+}
+
+template<class RAI, typename size_type = std::size_t>
+inline void BiHeapSift(RAI first, RAI one_past_last, RAI pos_hc) {
+  BiHeapSift<RAI, size_type>(first, std::distance(first, one_past_last),
+                             std::distance(first, pos_hc));
+}
+
+
+#undef FLIP
 
 #endif /* BIHEAP_SIFT_H_ */
