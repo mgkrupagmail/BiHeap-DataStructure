@@ -2,7 +2,7 @@
 // Name        : main.cpp
 // Author      : Matthew Gregory Krupa
 // Version     :
-// Copyright   : MIT License
+// Copyright   : Copyright
 // Description : For the definition of a BiHeap, see the comments at the top
 //  of biheapify.h.
 // This file contains calls to functions that time and test the various
@@ -24,6 +24,10 @@
 #include <random>
 #include <vector>
 
+#include "biheap_common.h"
+#include "biheap_ostream.h"
+//#include "biheap_tikz_graph.h"
+
 #include "biheapify.h"
 #include "biheap_sift.h"
 
@@ -42,11 +46,11 @@ int main() {
 
   //For each size, the two functions below will biheapify num_vecs_to_try
   // vectors of that size.
-  long num_vecs_to_try = static_cast<int>(1u << 9);
+  long num_vecs_to_try = static_cast<int>(1u << 18);
 
   //For TimeBiHeapifies() only. For each std::vector that whose biheapification
   // is to be timed, repeat this process num_repititions_per_vec times.
-  long num_repititions_per_vec = static_cast<int>(1u << 11);
+  long num_repititions_per_vec = static_cast<int>(1u << 4);
 
   //For MeasureBiHeapifySuccessRate() only. Print information only after you've
   // gone through print_multiple new vector sizes.
