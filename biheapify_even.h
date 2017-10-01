@@ -17,20 +17,19 @@
 /* Note that FlipCo(coord1) >= coord2 iff coord1 <= FlipCo(coord2)
  * (ditto for >, <=, and <).
  */
-#define FLIP_COORDINATE(a) (total_num_nodes - 1 - (a))
+#define FLIP(a) (total_num_nodes - 1 - (a))
 
-namespace {
 /* Assumes that total_num_nodes is even, that the node pos_mc belongs to the
  *  min heap, and that pos_hc <= largest_node_in_biheap_hc.
  */
-template<class RAI>
+template<class RAI, typename size_type = std::size_t>
 inline void SiftFromMinToMaxEven(RAI first, size_type total_num_nodes,
                           size_type num_nodes_in_heap,
                           size_type first_node_in_mirror_heap,
                           size_type pos_hc,
                           size_type largest_node_in_biheap_hc) {
   while (pos_hc < first_node_in_mirror_heap) {
-    auto left_child     = GetLeftChildInBiheap(pos_hc);
+    auto left_child     = LeftChild<size_type>(pos_hc);
     auto right_child    = left_child + 1;
     auto left_it  = first + left_child;
     auto right_it = first + right_child;
@@ -49,27 +48,27 @@ inline void SiftFromMinToMaxEven(RAI first, size_type total_num_nodes,
     else
       return ;
   }
-  SiftUpMaxHeapHC<RAI>(first, total_num_nodes, pos_hc,
-                       FLIP_COORDINATE(largest_node_in_biheap_hc));
+  SiftUpMaxHeapHC<RAI, size_type>(first, total_num_nodes, pos_hc,
+                       FLIP(largest_node_in_biheap_hc));
   return ;
 }
 
 /* Assumes that total_num_nodes is even, that the node pos_mc belongs to the
- *  max heap, and that FLIP_COORDINATE(pos_mc) >= smallest_node_in_biheap_hc.
+ *  max heap, and that FLIP(pos_mc) >= smallest_node_in_biheap_hc.
  */
-template<class RAI>
+template<class RAI, typename size_type = std::size_t>
 inline void SiftFromMaxToMinEven(RAI first, size_type total_num_nodes,
                           size_type num_nodes_in_heap,
                           size_type first_node_in_mirror_heap,
                           size_type pos_mc,
                           size_type smallest_node_in_biheap_hc) {
-  auto pos_hc = FLIP_COORDINATE(pos_mc);
+  auto pos_hc = FLIP(pos_mc);
   //While node pos_mc is NOT in the min heap.
   while (pos_mc < first_node_in_mirror_heap) {
-    auto left_child_mc  = GetLeftChildInBiheap(pos_mc);
+    auto left_child_mc  = LeftChild<size_type>(pos_mc);
     auto right_child_mc = left_child_mc + 1; //= GetRightChildInBiheap(pos_mc);
-    auto left_child_hc  = FLIP_COORDINATE(left_child_mc);
-    auto right_child_hc = left_child_hc - 1; //= FLIP_COORDINATE(right_child_mc)
+    auto left_child_hc  = FLIP(left_child_mc);
+    auto right_child_hc = left_child_hc - 1; //= FLIP(right_child_mc)
     auto pos_it   = first + pos_hc;
     auto left_it  = first + left_child_hc;
     auto right_it = first + right_child_hc;
@@ -90,20 +89,13 @@ inline void SiftFromMaxToMinEven(RAI first, size_type total_num_nodes,
     else
       return ;
   }
-  SiftUpMinHeapHC<RAI>(first, pos_hc, smallest_node_in_biheap_hc);
+  SiftUpMinHeapHC<RAI, size_type>(first, pos_hc, smallest_node_in_biheap_hc);
   return ;
 }
-
-} //End anonymous namespace
 
 /* This will BiHeapify the first total_num_nodes iterated by *first, ...,
  *  *(first + (total_num_nodes - 1)).
  * Assumes that total_num_nodes is even.
- * Experimentation (as opposed to proof) indicates that BiHeapifyEven() always
- *  succeeds in creating a biheap. Please contact the author if a
- *  counter-example is found in which case this algorithm can be made correct
- *  by mimicking the definitions of BiHeapifyOdd() and BiHeapifyOdd()
- *  found in biheapify_odd.h
  *
  * Remark:
  * (1) This algorithm has complexity O(total_num_nodes). To see why, recall the
@@ -118,11 +110,11 @@ inline void SiftFromMaxToMinEven(RAI first, size_type total_num_nodes,
  * (2) It appears that only one call to BiHeapifyEven() is needed in order to
  *  obtain a biheap.
  */
-template<class RAI>
+template<class RAI, typename size_type = std::size_t>
 void BiHeapifyEven(RAI first, size_type total_num_nodes) {
   if (total_num_nodes < 2)
     return ;
-  auto num_nodes_in_heap = GetNumNodesInHeapContainedInBiheap(total_num_nodes);
+  auto num_nodes_in_heap = HeapSize(total_num_nodes);
   auto first_node_in_mirror_heap  = total_num_nodes - num_nodes_in_heap;
 
   size_type smallest_node_in_biheap_hc = total_num_nodes / 2;
@@ -130,48 +122,22 @@ void BiHeapifyEven(RAI first, size_type total_num_nodes) {
 
   while (smallest_node_in_biheap_hc > 0) {
     smallest_node_in_biheap_hc--;
-    SiftFromMinToMaxEven<RAI>(first, total_num_nodes, num_nodes_in_heap,
+    SiftFromMinToMaxEven<RAI, size_type>(first, total_num_nodes, num_nodes_in_heap,
                          first_node_in_mirror_heap, smallest_node_in_biheap_hc,
                          largest_node_in_biheap_hc);
     largest_node_in_biheap_hc++;
-    //Note that FLIP_COORDINATE(largest_node_in_biheap_hc) ==
+    //Note that FLIP(largest_node_in_biheap_hc) ==
     //                                               smallest_node_in_biheap_hc.
-    SiftFromMaxToMinEven<RAI>(first, total_num_nodes, num_nodes_in_heap,
+    SiftFromMaxToMinEven<RAI, size_type>(first, total_num_nodes, num_nodes_in_heap,
         first_node_in_mirror_heap, smallest_node_in_biheap_hc,
         smallest_node_in_biheap_hc);
   }
   return ;
 }
 
-/*This will BiHeapify all nodes in [0, total_num_nodes).
- * Assumes that total_num_nodes is even.
- */
-template<class RAI>
-inline void BiHeapifySafeEven(RAI first, size_type total_num_nodes) {
-  if (total_num_nodes < 2)
-    return ;
-
-  /* Remarks:
-   * (1) The following do {} while(); loop will stop due to the same reasoning
-   *  that can be found in Remark (1) in BiHeapifyOdd()'s definition.
-   *
-   * (2) Experimentation shows that the only one call to
-   *  BiHeapifyEven() is ever needed to form a biheap.
-   */
-  BiHeapifyEven(first, total_num_nodes);
-
-  /* The while loop below should be redundant and is included just in case
-   *  BiHeapifyEven() didn't successfully form a biheap. This is
-   *  recommended if performance is important since IsBiheap() is an
-   *  O(total_num_nodes) operation.
-   */
-  while (!IsBiheap(first, total_num_nodes)) {
-    //The line below can be removed without affecting the correctness of the
-    // algorithm.
-    GetBiHeapifyFailureMessage(first, total_num_nodes);
-    BiHeapifyEven(first, total_num_nodes);
-  }
-  return ;
+template<class RAI, typename size_type = std::size_t>
+inline void BiHeapifyEven(RAI first, RAI one_past_last) {
+  BiHeapifyEven<RAI, size_type>(first, std::distance(first, one_past_last));
 }
 
 /* Similar to BiHeapifyOdd(), except that it biheapifies an odd collection of
@@ -190,8 +156,8 @@ inline void BiHeapifySafeEven(RAI first, size_type total_num_nodes) {
  *      appears to produce a biheap while this fails to be true if
  *      BiHeapifyEven() is replaced with BiHeapifyOdd().
  */
-template<class RAI>
-void BiHeapifyUsingBiHeapifyEven(RAI first, size_type total_num_nodes) {
+template<class RAI, typename size_type = std::size_t>
+inline void BiHeapifyUsingBiHeapifyEven(RAI first, size_type total_num_nodes) {
   if (total_num_nodes < 3) {
     if (total_num_nodes == 2 && *first > *(first + 1))
       std::iter_swap(first, first + 1);
@@ -200,18 +166,18 @@ void BiHeapifyUsingBiHeapifyEven(RAI first, size_type total_num_nodes) {
 
   auto counter = 0u;
   do {
-    BiHeapifyEven(first + 1, total_num_nodes - 1);
-    BiHeapifyEven(first, total_num_nodes - 1);
+    BiHeapifyEven<RAI, size_type>(first + 1, total_num_nodes - 1);
+    BiHeapifyEven<RAI, size_type>(first, total_num_nodes - 1);
     if (counter != 0 && counter % 3 == 0) {
       std::cerr << "BiHeapifyUsingBiHeapifyEven() could not biheapify after "
                 << (counter + 1) << " call(s)." << std::endl;
       assert(false);
     }
     counter++;
-  } while(!IsBiheap(first, total_num_nodes));
+  } while(!IsBiheap<RAI, size_type>(first, total_num_nodes));
   return ;
 }
 
-#undef FLIP_COORDINATE
+#undef FLIP
 
 #endif /* BIHEAPIFY_EVEN_H_ */
