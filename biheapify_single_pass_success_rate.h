@@ -1,14 +1,14 @@
 /*
-0 * biheapify_single_pass_success_rate.h
+ * biheapify_single_pass_success_rate.h
  *
  *  Created on: Jun 27, 2017
  *      Author: Matthew Gregory Krupa
  *
  *  MeasureBiHeapifySuccessRate(), which is used to measure how many times
-//   a BiHeapify pass (i.e. one of BiHeapifyEven(),
-//   BiHeapifyOdd(), or BiHeapifySimpleSinglePass()) must be
-//   called before a BiHeap is formed.
-// - Notice that for BiHeapify() this always require only one call.
+ *   a BiHeapify pass (i.e. one of BiHeapifyEven(),
+ *   BiHeapifyOdd(), or BiHeapifySimpleSinglePass()) must be
+ *   called before a BiHeap is formed.
+ * - Notice that for BiHeapify() this always require only one call.
  */
 
 #ifndef BIHEAPIFY_SINGLE_PASS_SUCCESS_RATE_H_
@@ -26,7 +26,7 @@
 #include "biheapify_simple.h"
 #include "random_helpers.h"
 
-template<class T>
+template<class T, typename size_type = std::size_t>
 std::string GetDesciption(std::vector<T> fail_counter,
                           std::vector<T> call_counter) {
   int max_num_calls = 1; //The number of non-zero entries in call_counter;
@@ -119,7 +119,7 @@ std::string GetDesciption(std::vector<T> fail_counter,
  * However, it will only display information about the success and failure
  *  counts when # = print_multiple, 2 * print_multiple, ....
  */
-template<class T>
+template<class T, typename size_type = std::size_t>
 void MeasureBiHeapifySuccessRate(long start_total_num_nodes,
                                  long end_total_num_nodes,
                                  long num_vecs_to_try = 1,
