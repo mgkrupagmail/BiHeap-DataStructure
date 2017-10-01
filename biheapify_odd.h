@@ -17,20 +17,18 @@
 /* Note that FlipCo(coord1) >= coord2 iff coord1 <= FlipCo(coord2)
  * (ditto for >, <=, and <).
  */
-#define FLIP_COORDINATE(a) (total_num_nodes - 1 - (a))
-
-namespace {
+#define FLIP(a) (total_num_nodes - 1 - (a))
 
 /* Assumes that total_num_nodes is odd, that the node pos_mc belongs to the
  *  min heap, and that pos_hc <= largest_node_in_biheap_hc.
  */
-template<class RAI>
+template<class RAI, typename size_type = std::size_t>
 inline void SiftFromMinToMaxOdd(RAI first, size_type total_num_nodes,
                          size_type num_nodes_in_heap,
                          size_type pos_hc,
                          size_type largest_node_in_biheap_hc) {
   while (pos_hc <= total_num_nodes / 2) {
-    auto left_child     = GetLeftChildInBiheap(pos_hc);
+    auto left_child     = LeftChild<size_type>(pos_hc);
     auto right_child    = left_child + 1;
 
     //Note that removing the conditions:
@@ -42,8 +40,6 @@ inline void SiftFromMinToMaxOdd(RAI first, size_type total_num_nodes,
     //Is the node in the biheap? && Is the node in the min heap?
     bool is_left_child_valid  = //(left_child <= largest_node_in_biheap_hc) &&
                                 left_child  < num_nodes_in_heap;
-    bool is_right_child_valid = //(right_child <= largest_node_in_biheap_hc) &&
-                                right_child < num_nodes_in_heap;
     if (!is_left_child_valid)
       break ;
     //At this point left_child < num_nodes_in_heap.
@@ -55,7 +51,9 @@ inline void SiftFromMinToMaxOdd(RAI first, size_type total_num_nodes,
     // NOT affect this algorithm's O(n) complexity. In addition, this does
     // not affect this algorithm's correctness. The same argument applies to
     // right_child.
-
+    
+    bool is_right_child_valid = //(right_child <= largest_node_in_biheap_hc) &&
+                                right_child < num_nodes_in_heap;
     auto left_it  = first + left_child;
     auto right_it = first + right_child;
     auto pos_it   = first + pos_hc;
@@ -73,25 +71,25 @@ inline void SiftFromMinToMaxOdd(RAI first, size_type total_num_nodes,
     else
       return ;
   }
-  SiftUpMaxHeapHC<RAI>(first, total_num_nodes, pos_hc,
-                       FLIP_COORDINATE(largest_node_in_biheap_hc));
+  SiftUpMaxHeapHC<RAI, size_type>(first, total_num_nodes, pos_hc,
+                       FLIP(largest_node_in_biheap_hc));
   return ;
 }
 
 /* Assumes that total_num_nodes is odd, that the node pos_mc belongs to the
- *  max heap, and that FLIP_COORDINATE(pos_mc) >= smallest_node_in_biheap_hc.
+ *  max heap, and that FLIP(pos_mc) >= smallest_node_in_biheap_hc.
  */
-template<class RAI>
+template<class RAI, typename size_type = std::size_t>
 inline void SiftFromMaxToMinOdd(RAI first, size_type total_num_nodes,
                          size_type num_nodes_in_heap,
                          size_type pos_mc,
                          size_type smallest_node_in_biheap_hc) {
-  auto pos_hc = FLIP_COORDINATE(pos_mc);
+  auto pos_hc = FLIP(pos_mc);
   while (pos_mc <= total_num_nodes / 2) {
-    auto left_child_mc  = GetLeftChildInBiheap(pos_mc);
+    auto left_child_mc  = LeftChild<size_type>(pos_mc);
     auto right_child_mc = left_child_mc + 1; //= GetRightChildInBiheap(pos_mc);
-    auto left_child_hc  = FLIP_COORDINATE(left_child_mc);//= pos_hc - pos_mc - 1
-    auto right_child_hc = left_child_hc - 1; //= FLIP_COORDINATE(right_child_mc)
+    auto left_child_hc  = FLIP(left_child_mc);//= pos_hc - pos_mc - 1
+    auto right_child_hc = left_child_hc - 1; //= FLIP(right_child_mc)
     auto pos_it   = first + pos_hc;
     auto left_it  = first + left_child_hc;
     auto right_it = first + right_child_hc;
@@ -109,10 +107,10 @@ inline void SiftFromMaxToMinOdd(RAI first, size_type total_num_nodes,
     // SiftFromMinToMaxOdd() in BiHeapifyOdd().
     bool is_left_child_valid  = (left_child_hc >= smallest_node_in_biheap_hc) &&
                                 (left_child_mc < num_nodes_in_heap);
-    bool is_right_child_valid =//right_child_hc >= smallest_node_in_biheap_hc &&
-                                right_child_mc < num_nodes_in_heap;
     if (!is_left_child_valid)
       break ;
+    bool is_right_child_valid =//right_child_hc >= smallest_node_in_biheap_hc &&
+                                right_child_mc < num_nodes_in_heap;
 
     RAI larger_it;
     if (is_right_child_valid && *right_it > *left_it) {
@@ -130,11 +128,9 @@ inline void SiftFromMaxToMinOdd(RAI first, size_type total_num_nodes,
     else
       return ;
   }
-  SiftUpMinHeapHC<RAI>(first, pos_hc, smallest_node_in_biheap_hc);
+  SiftUpMinHeapHC<RAI, size_type>(first, pos_hc, smallest_node_in_biheap_hc);
   return ;
 }
-
-} //End anonymous namespace
 
 /* This will BiHeapify all nodes in [0, total_num_nodes).
  * Assumes that total_num_nodes is odd.
@@ -151,11 +147,11 @@ inline void SiftFromMaxToMinOdd(RAI first, size_type total_num_nodes,
  *   seen to be twice the complexity of the above mentioned heapification
  *   operation plus a constant.
  */
-template<class RAI>
-void BiHeapifyOdd(RAI first, size_type total_num_nodes) {
+template<class RAI, typename size_type = std::size_t>
+inline void BiHeapifyOdd(RAI first, size_type total_num_nodes) {
   if(total_num_nodes < 2)
     return ;
-  auto num_nodes_in_heap = GetNumNodesInHeapContainedInBiheap(total_num_nodes);
+  auto num_nodes_in_heap = HeapSize(total_num_nodes);
 
   size_type smallest_node_in_biheap_hc = (total_num_nodes / 2) + 1;
   size_type largest_node_in_biheap_hc  = smallest_node_in_biheap_hc - 1;
@@ -164,51 +160,24 @@ void BiHeapifyOdd(RAI first, size_type total_num_nodes) {
 
   while (smallest_node_in_biheap_hc > 0) {
     --smallest_node_in_biheap_hc;
-    SiftFromMinToMaxOdd<RAI>(first, total_num_nodes, num_nodes_in_heap,
+    SiftFromMinToMaxOdd<RAI, size_type>(first, total_num_nodes, num_nodes_in_heap,
                           smallest_node_in_biheap_hc,
                           largest_node_in_biheap_hc);
     if (largest_node_in_biheap_hc < total_num_nodes - 1) {
       ++largest_node_in_biheap_hc;
-      SiftFromMaxToMinOdd<RAI>(first, total_num_nodes, num_nodes_in_heap,
-          FLIP_COORDINATE(largest_node_in_biheap_hc),
+      SiftFromMaxToMinOdd<RAI, size_type>(first, total_num_nodes, num_nodes_in_heap,
+          FLIP(largest_node_in_biheap_hc),
           smallest_node_in_biheap_hc);
     }
   }
   return ;
 }
 
-/* This will BiHeapify all nodes in [0, total_num_nodes).
- *  Assumes that total_num_nodes is odd.
- */
-template<class RAI>
-inline void BiHeapifySafeOdd(RAI first, size_type total_num_nodes) {
-  if (total_num_nodes < 2)
-    return ;
-
-  /* Remarks:
-   * (1) The following do {} while(); loop will stop due to the same reasoning
-   *  that can be found in Remark (1) in BiHeapifyOdd()'s definition.
-   *
-   * (2) Experimentation shows that the only one call to
-   *  BiHeapifyEven() is ever needed to form a biheap in this case
-   *  where total_num_nodes is even.
-   */
-  BiHeapifyOdd(first, total_num_nodes);
-
-  /* The while loop below should be redundant and is included just in case
-   *  BiHeapifyOdd() didn't successfully form a biheap. This is
-   *  recommended if performance is important since IsBiheap() is an
-   *  O(total_num_nodes) operation.
-   */
-  while (!IsBiheap(first, total_num_nodes)) {
-    //The line below can be removed without affecting the correctness of the
-    // algorithm.
-    GetBiHeapifyFailureMessage(first, total_num_nodes);
-    BiHeapifyOdd(first, total_num_nodes);
-  }
-  return ;
+template<class RAI, typename size_type = std::size_t>
+inline void BiHeapifyOdd(RAI first, RAI one_past_last) {
+  BiHeapifyOdd<RAI, size_type>(first, std::distance(first, one_past_last));
 }
 
-#undef FLIP_COORDINATE
+#undef FLIP
 
 #endif /* BIHEAPIFY_ODD_H_ */
