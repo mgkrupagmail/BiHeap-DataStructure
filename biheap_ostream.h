@@ -20,11 +20,8 @@ namespace biheap_ostream_ns {
 
 #define BIHEAP_OSTREAM_DEFAULT std::cout
 
-template<class iterator>
+template<class iterator, typename size_type = std::size_t>
 class biheap_ostream {
-
-  typedef std::size_t size_type;
-
   iterator first_, one_past_last_; //The iterators defining the biheap.
   size_type biheap_size_;
   size_type num_nodes_in_heap_;
@@ -189,7 +186,7 @@ public:
     auto strs_lower = ConstructLowerHeap(biheap_size/2,
                                          num_spaces_in_between_elements_in_last_level,
                                          max_width_of_elements, ele_it);
-    for (size_type i = 0; i < strs_lower.size(); i++) {
+    for (size_type i = 0; i < static_cast<size_type>(strs_lower.size()); i++) {
       strs[original_strs_size + i] = strs_lower[i];
     }
     return strs;
@@ -208,7 +205,6 @@ public:
                               num_spaces_in_between_elements_in_last_level,
                               max_width_of_elements);
     std::vector<std::vector<char>> strs(max_level_of_even_pure_heap_, std::vector<char>(num_chars_in_row, ' '));
-    size_type node_num = 0;
     auto element_str_width = max_width_of_elements + num_spaces_in_between_elements_in_last_level;
     for (size_type row_num = 0; row_num < static_cast<size_type>(strs.size()); row_num++) {
       auto row_str_it = strs[row_num].begin();
@@ -255,7 +251,6 @@ public:
                               num_spaces_in_between_elements_in_last_level,
                               max_width_of_elements);
     std::vector<std::vector<char>> strs(max_level_of_even_pure_heap_, std::vector<char>(num_chars_in_row, ' '));
-    size_type node_num = 0;
     auto element_str_width = max_width_of_elements + num_spaces_in_between_elements_in_last_level;
     for (size_type row_num = 0; row_num < static_cast<size_type>(strs.size()); row_num++) {
       auto row_str_it = strs[row_num].begin();
@@ -269,7 +264,7 @@ public:
                                     max_width_of_elements,
                                     num_nodes_in_heap);
       auto num_nodes_this_level = NumNodesInGivenLevelOfFullHeap(row_num);
-      if (row_num == strs.size() - 1)
+      if (row_num == static_cast<size_type>(strs.size()) - 1)
         num_nodes_this_level = NumNodesInLastRowHeapOfSize(num_nodes_in_heap);
       for (size_type i = 0; i < num_nodes_this_level; i++) {
         auto ele_str = std::to_string(*ele_it);
@@ -283,7 +278,9 @@ public:
     return strs;
   }
 
-  size_type ElementWidth(iterator it) { return static_cast<size_type>(std::to_string(*it).length()); }
+  size_type ElementWidth(iterator it) {
+    return static_cast<size_type>(std::to_string(*it).length());
+  }
 
   size_type FindMaxWidthOfElements(iterator first, iterator one_past_last) {
     size_type max = 0;
@@ -296,10 +293,10 @@ public:
   }
 
   static size_type GetNumLeadingSpaces(size_type row_num,
-                                                  size_type num_chars_in_row,
-                                                  size_type num_spaces_in_between_elements_in_last_level,
-                                                  size_type max_width_of_elements,
-                                                  size_type num_nodes_in_heap) {
+                       size_type num_chars_in_row,
+                       size_type num_spaces_in_between_elements_in_last_level,
+                       size_type max_width_of_elements,
+                       size_type num_nodes_in_heap) {
     auto num_spaces_in_between_elements = GetNumSpacesInbetweenElementsInGivenRow(row_num,
                                             num_chars_in_row, num_spaces_in_between_elements_in_last_level,
                                             max_width_of_elements, num_nodes_in_heap);
@@ -307,10 +304,10 @@ public:
 }
 
   static size_type GetNumSpacesInbetweenElementsInGivenRow(size_type row_num,
-                                                  size_type num_chars_in_row,
-                                                  size_type num_spaces_in_between_elements_in_last_level,
-                                                  size_type max_width_of_elements,
-                                                  size_type num_nodes_in_heap) {
+                        size_type num_chars_in_row,
+                        size_type num_spaces_in_between_elements_in_last_level,
+                        size_type max_width_of_elements,
+                        size_type num_nodes_in_heap) {
     auto max_level = MaxLevelOfHeapOfGivenSize(num_nodes_in_heap);
     if (num_nodes_in_heap <= 1 || max_level == 0 || row_num == max_level || num_chars_in_row <= 0)
       return 1;
@@ -340,7 +337,8 @@ public:
     if (print_extra_info)
       ostrm_ << "num nodes in biheap = " << biheap_size_
              << " \tnum nodes in heap = " << num_nodes_in_heap_
-             << " \tfirst node in mirror heap = " << first_node_in_mirror_heap_ << std::endl;
+             << " \tfirst node in mirror heap = " << first_node_in_mirror_heap_
+             << std::endl;
     if (biheap_size_ <= 3) {
       if (biheap_size_ >= 1) {
         ostrm_ << *first_ << '\n';
@@ -427,15 +425,14 @@ public:
   }
 };
 
-} //biheap_ostream_ns
+} //End biheap_ostream_ns
 
-namespace {
-typedef std::size_t size_type;
-}
 
-template<class iterator>
-void PrintBiHeap(iterator first, size_type total_num_nodes, std::ostream &ostrm = BIHEAP_OSTREAM_DEFAULT) {
-  biheap_ostream_ns::biheap_ostream<iterator> bho(first, first + total_num_nodes, ostrm);
+template<class iterator, typename size_type = std::size_t>
+void PrintBiHeap(iterator first, size_type total_num_nodes,
+                 std::ostream &ostrm = BIHEAP_OSTREAM_DEFAULT) {
+  biheap_ostream_ns::biheap_ostream<iterator, size_type> bho(first,
+                                               first + total_num_nodes, ostrm);
   bho.Print();
   return ;
 }
