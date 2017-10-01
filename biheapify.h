@@ -51,6 +51,11 @@ are near the max and many of the smaller elements are near the min and the
 value in middle of the data to be close to the median. Therefore, it is
 reasonable to expect that applying BiHeapify to a collection of data before
 sorting it may help to speed up certain sorting algorithms such as quicksort.
+
+There are still many questions to be asked and answered about biheaps, including:
+ 1) Do there exist O(log n) push and pop operations for biheaps?
+ 2) How do BiHeaps relate to the median(s) of a set.
+
 About the name: Various types of data structures called double ended heaps
 (also known as double ended queues) have already been discovered, but it is
 not clear that a biheap can be made into a double ended heap since it
@@ -218,7 +223,6 @@ Although the above definition of a biheap is relatively complicated, the author
  that appears to have gone unnoticed until now. There are still many questions
  to be asked about biheaps, including:
  1) Do there exist O(log n) push and pop operations for biheaps?
- 2) Is the working hypothesis that BiHeapify() always produces a biheap true?
 */
 
 #ifndef BIHEAPIFY_H_
@@ -231,26 +235,17 @@ Although the above definition of a biheap is relatively complicated, the author
 #include "biheapify_even.h"
 #include "biheapify_odd.h"
 
-template<class RAI>
+template<class RAI, typename size_type = std::size_t>
 void BiHeapify(RAI first, size_type total_num_nodes) {
   if (total_num_nodes % 2 == 0)
-    BiHeapifyEven(first, total_num_nodes);
+    BiHeapifyEven<RAI, size_type>(first, total_num_nodes);
   else
-    BiHeapifyOdd(first, total_num_nodes);
+    BiHeapifyOdd<RAI, size_type>(first, total_num_nodes);
 }
 
-//This will BiHeapify all nodes in [0, total_num_nodes).
-template<class RAI>
-inline void BiHeapifySafe(RAI first, size_type total_num_nodes) {
-  //If it's small enough that it's easiest to just sort everything.
-  if (total_num_nodes < 2)
-    return ;
-
-  if (total_num_nodes % 2 == 0)
-    BiHeapifySafeEven(first, total_num_nodes);
-  else
-    BiHeapifySafeOdd(first, total_num_nodes);
-  return ;
-}
+template<class RAI, typename size_type = std::size_t>
+inline void BiHeapify(RAI first, RAI one_past_last) {
+   BiHeapify<RAI, size_type>(first, std::distance(first, one_past_last));
+ }
 
 #endif /* BIHEAPIFY_H_ */
