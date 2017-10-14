@@ -24,16 +24,26 @@
 #include <random>
 #include <vector>
 
-#include "biheap_common.h"
-#include "biheap_ostream.h"
-//#include "biheap_tikz_graph.h"
-
 #include "biheapify.h"
 #include "biheap_sift.h"
 
+#include "biheap_tikz_graph.h"
+
 #include "biheapify_single_pass_success_rate.h"
-#include "biheapify_time.h"
 #include "biheap_sift_test_correctness.h"
+
+void PrintTikzGraphs() {
+  std::vector<int> vec = {0,11,1,12,13,2,3,14,15,16,17,4,5,6,7,18,19,8,9,20,10,21};
+  std::cout << GetTikzGraph<int, std::size_t>(22, -6, 6, -3, 3, vec);
+
+  vec = {0,23,1,24,25,2,3,26,27,28,29,4,5,6,7,30,31,32,33,34,35,36,37,8,9,10,11,12,13,14,15,38,39,40,41,16,17,18,19,42,43,20,21,44,22,45};
+  std::cout << GetTikzGraph<int, std::size_t>(46, -6, 6, -3, 3, vec);
+
+  std::cout << GetTikzGraph<int, std::size_t>(11, -8, 8, -4, 4);
+  std::cout << GetTikzGraph<int, std::size_t>(46, -8, 8, -4, 4);
+  std::cout << GetTikzGraph<int, std::size_t>(70, -10, 10, -6, 6);
+  return ;
+}
 
 int main() {
   long start_total_num_nodes = 1;
@@ -72,12 +82,8 @@ int main() {
   MeasureBiHeapifySuccessRate<int>(start_total_num_nodes, end_total_num_nodes,
                                    num_vecs_to_try, increment_size,
                                    print_multiple, reset_after_print, verbose);
-  long long divisor = num_repititions_per_vec; //Set this to 0 to get the the
-                             //average time to biheapify each individual vector.
-  TimeBiHeapifies<int>(start_total_num_nodes, end_total_num_nodes,
-                       num_vecs_to_try, num_repititions_per_vec, increment_size,
-                       divisor);
   BiHeapSiftTestCorrectness<int>(start_total_num_nodes, end_total_num_nodes,
                                  num_vecs_to_try, increment_size);
+  PrintTikzGraphs();
   return 0;
 }
