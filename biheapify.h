@@ -394,7 +394,7 @@ inline void SiftUpMinHeapMC(RAI first, size_type total_num_nodes,
                        smallest_node_in_biheap_hc);
 }
 
-/* Assumes that total_num_nodes is odd, that the node pos_mc belongs to the
+/* Assumes that the node pos_mc belongs to the
  *  min heap, and that pos_hc <= largest_node_in_biheap_hc.
  */
 template<class RAI, typename size_type = std::size_t>
@@ -431,7 +431,7 @@ inline void BiHeapifySiftFromMinToMax(RAI first, size_type total_num_nodes,
   return ;
 }
 
-/* Assumes that total_num_nodes is odd, that the node pos_mc belongs to the
+/* Assumes that the node pos_mc belongs to the
  *  max heap, and that FLIP(pos_mc) >= smallest_node_in_biheap_hc.
  */
 template<class RAI, typename size_type = std::size_t>
