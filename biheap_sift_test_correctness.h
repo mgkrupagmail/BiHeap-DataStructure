@@ -3,6 +3,7 @@
  *
  *  Created on: Jul 25, 2017
  *      Author: Matthew Gregory Krupa
+ *   Copyright: Matthew Gregory Krupa
  */
 
 #ifndef BIHEAP_SIFT_TEST_CORRECTNESS_H_
@@ -10,8 +11,6 @@
 
 #include <random>
 #include "random_helpers.h"
-#include "biheap_common.h"
-#include "biheapify.h"
 #include "biheap_sift.h"
 
 template<class T, typename size_type = std::size_t>
@@ -23,6 +22,8 @@ bool BiHeapSiftTestCorrectness(long start_total_num_nodes,
   std::random_device rnd_device;
   std::mt19937 generator(rnd_device());
   while (total_num_nodes <= end_total_num_nodes) {
+    std::cout << "Sifting in BiHeaps of size " << total_num_nodes << " \t";
+    std::cout.flush();
     std::vector<T> vec(total_num_nodes + 1);
     std::uniform_int_distribution<T> dist(0, total_num_nodes - 1);
     for (auto vec_counter = 0l; vec_counter < num_vecs_to_try; vec_counter++) {
@@ -30,7 +31,7 @@ bool BiHeapSiftTestCorrectness(long start_total_num_nodes,
                 0, static_cast<T>(4*total_num_nodes));//std::numeric_limits<T>::min(), std::numeric_limits<T>::max());
       size_type pos_hc;
       pos_hc = dist(generator);
-      //Form a biheap.
+      //Form a BiHeap.
       BiHeapify<typename std::vector<T>::iterator, size_type>(vec.begin(), total_num_nodes);
       //Change one randomly selected element to some random value (which was
       // stored outside of the biheap in vec[total_num_nodes]).
@@ -45,6 +46,8 @@ bool BiHeapSiftTestCorrectness(long start_total_num_nodes,
         return false;
       }
     }
+    std::cout << "Successfully Sifted in BiHeaps of size " << total_num_nodes << std::endl;
+    total_num_nodes += increment_size;
   }
   return true;
 }
