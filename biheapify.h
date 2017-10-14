@@ -3,6 +3,7 @@
  *
  *  Created on: Jun 12, 2017
  *      Author: Matthew Gregory Krupa
+ *   Copyright: Copyright Matthew Gregory Krupa
  */
 /* BIHEAP DEFINITION (QUICK):
 We're given total_num_nodes elements indexed by 0, ..., total_num_nodes - 1.
@@ -228,24 +229,290 @@ Although the above definition of a biheap is relatively complicated, the author
 #ifndef BIHEAPIFY_H_
 #define BIHEAPIFY_H_
 
-#include <iostream>
+#define FLIP(a) (total_num_nodes - 1 - (a))
 
-#include "biheap_common.h"
+template<typename size_type = std::size_t>
+inline size_type LeftChild(size_type node) { return (2 * node) + 1; }
 
-#include "biheapify_even.h"
-#include "biheapify_odd.h"
+template<typename size_type = std::size_t>
+inline size_type RightChild(size_type node) {return 2 * (node + 1); }
+
+//Note that even if size_type is unsigned, Parent(0) == 0.
+template<typename size_type = std::size_t>
+inline size_type Parent(size_type node) {
+  return static_cast<size_type>((static_cast<long long>(node - 1))/2);
+}
+
+//Unlike Parent(), this assumes that node > 0.
+//If size_type is unsigned, then ParentNotRoot(0) != 0.
+template<typename size_type = std::size_t>
+inline size_type ParentNotRoot(size_type node) {
+  return static_cast<size_type>((node - 1)/2);
+}
+
+template<typename size_type = std::size_t>
+inline size_type HeapSize(size_type total_num_nodes) {
+  //assert((total_num_nodes - static_cast<size_type>(total_num_nodes / 3)) == (total_num_nodes - (total_num_nodes - (total_num_nodes % 3)) / 3));
+  return total_num_nodes - static_cast<size_type>(total_num_nodes / 3);
+}
+
+template<typename size_type = std::size_t>
+inline size_type IndexOfLastMinHeapNodeGivenHeapSize(size_type size_of_heap) {
+  return size_of_heap - 1;
+}
+
+/* Checks whether or not the first total_um_nodes given given the iterator
+ *  first define a biheap.
+ */
+template<class RAI, typename size_type = std::size_t>
+bool IsBiheap(RAI first, size_type total_num_nodes) {
+  if (total_num_nodes <= 3) {
+    if(total_num_nodes <= 1)
+      return true;
+    else if (total_num_nodes == 2)
+      return *first <= *(first + 1);
+    else if (total_num_nodes == 3)
+      return *first <= *(first + 1) && *(first + 1) <= *(first + 2);
+  }
+  size_type num_nodes_in_heap = HeapSize<size_type>(total_num_nodes);
+  //Check that the nodes first, ..., first + num_nodes_in_heap - 1 form
+  // a min heap with min at first. This is half of the biheap condition.
+  {
+    size_type i = 0;
+    for (size_type right_child; (right_child = RightChild<size_type>(i))
+                                                    < num_nodes_in_heap; i++) {
+      auto parent_val = *(first + i);
+      //Check that the parent and left child satisfy the min heap condition.
+      if (parent_val > *(first + (right_child - 1)))
+        return false;
+
+      //Check that the parent and right child satisfy the min heap condition.
+      if (parent_val > *(first + right_child))
+        return false;
+    }
+    //If the min heap's last element is an only child then check that it and
+    // its parent satisfy the min heap condition (i.e. the biheap condition).
+    {
+      size_type left_child;
+      if ((left_child = LeftChild<size_type>(i)) < num_nodes_in_heap
+          && *(first + i) > *(first + left_child))
+        return false;
+    }
+  }
+  //Check that the nodes FLIP(first), ...,
+  // FLIP(first + num_nodes_in_heap - 1) form a max heap with max
+  // at first + total_num_nodes - 1.
+  {
+    size_type i = 0;
+    for (size_type right_child; (right_child = RightChild<size_type>(i))
+                                                    < num_nodes_in_heap; i++) {
+      auto parent_val = *(first + FLIP(i));
+      size_type mirror_left_child_hc = FLIP(right_child - 1);
+      //Check that the parent and left child satisfy the max heap condition.
+      if (parent_val < *(first + mirror_left_child_hc))
+        return false;
+
+      //right_child_hc = FLIP(right_child_mc)
+      // = FLIPleft_child + 1)
+      // = total_num_nodes - 1 - (left_child + 1) = mirror_left_child_hc - 1.
+      //assert(FLIP(left_child + 1) == mirror_left_child_hc - 1);
+      //Check that the parent and right child satisfy the max heap condition.
+      if (parent_val < *(first + (mirror_left_child_hc - 1)))
+        return false;
+    }
+    //If the max heap's last element is an only child then check that it and
+    // its parent satisfy the max heap condition (i.e. the biheap condition).
+    {
+      size_type left_child;
+      if ((left_child = LeftChild<size_type>(i)) < num_nodes_in_heap
+          && *(first + FLIP(i))
+           < *(first + FLIP(left_child)))
+        return false;
+    }
+  }
+  return true;
+}
+
+//Assumes that pos_mc is a node in the max heap.
+template<class RAI, typename size_type = std::size_t>
+inline void SiftUpMaxHeapMC(RAI first, size_type total_num_nodes,
+                      size_type pos_mc, size_type smallest_node_in_biheap_mc) {
+  size_type parent;
+  if (pos_mc == 0 ||
+      (parent = Parent<size_type>(pos_mc)) < smallest_node_in_biheap_mc)
+    return ;
+  auto pos_it = first + FLIP(pos_mc);
+  do {
+    auto parent_it = first + FLIP(parent);
+    if (*pos_it > *parent_it) {
+      std::iter_swap(pos_it, parent_it);
+      pos_mc = parent;
+      pos_it = parent_it;
+    } else {
+      return ;
+    }
+  } while (pos_mc > 0 &&
+     (parent = Parent<size_type>(pos_mc)) >= smallest_node_in_biheap_mc);
+  return ;
+}
 
 template<class RAI, typename size_type = std::size_t>
-void BiHeapify(RAI first, size_type total_num_nodes) {
-  if (total_num_nodes % 2 == 0)
-    BiHeapifyEven<RAI, size_type>(first, total_num_nodes);
-  else
-    BiHeapifyOdd<RAI, size_type>(first, total_num_nodes);
+inline void SiftUpMaxHeapHC(RAI first, size_type total_num_nodes,
+                       size_type pos_hc, size_type smallest_node_in_biheap_mc) {
+  SiftUpMaxHeapMC<RAI, size_type>(first, total_num_nodes, FLIP(pos_hc),
+                                  smallest_node_in_biheap_mc);
+}
+
+//Assumes that pos_hc is a node in the min heap.
+template<class RAI, typename size_type = std::size_t>
+inline void SiftUpMinHeapHC(RAI first, size_type pos_hc,
+                            size_type smallest_node_in_biheap_hc) {
+  size_type parent;
+  if (pos_hc == 0 ||
+      (parent = Parent<size_type>(pos_hc)) < smallest_node_in_biheap_hc)
+    return ;
+  auto pos_it = first + pos_hc;
+  do {
+    auto parent_it = first + parent;
+    if (*pos_it < *parent_it) {
+      std::iter_swap(pos_it, parent_it);
+      pos_hc = parent;
+      pos_it = parent_it;
+    } else {
+      return ;
+    }
+  } while (pos_hc > 0 &&
+     (parent = Parent<size_type>(pos_hc)) >= smallest_node_in_biheap_hc);
+  return ;
+}
+
+//Assumes that pos_hc is a node in the min heap.
+template<class RAI, typename size_type = std::size_t>
+inline void SiftUpMinHeapMC(RAI first, size_type total_num_nodes,
+                       size_type pos_mc, size_type smallest_node_in_biheap_hc) {
+  SiftUpMinHeapHC<RAI, size_type>(first, total_num_nodes, FLIP(pos_mc),
+                       smallest_node_in_biheap_hc);
+}
+
+/* Assumes that total_num_nodes is odd, that the node pos_mc belongs to the
+ *  min heap, and that pos_hc <= largest_node_in_biheap_hc.
+ */
+template<class RAI, typename size_type = std::size_t>
+inline void BiHeapifySiftFromMinToMax(RAI first, size_type total_num_nodes,
+                                      size_type num_nodes_in_heap,
+                                      size_type first_node_in_mirror_heap,
+                                      size_type pos_hc,
+                                      size_type largest_node_in_biheap_hc) {
+  while (pos_hc < first_node_in_mirror_heap) {
+    auto left_child_hc  = LeftChild<size_type>(pos_hc);
+    auto right_child_hc = left_child_hc + 1;
+    auto left_it        = first + left_child_hc;
+    auto right_it       = first + right_child_hc;
+    auto pos_it         = first + pos_hc;
+
+    //assert((left_child_hc  < num_nodes_in_heap) && (left_child_hc  <= largest_node_in_biheap_hc));
+    bool is_right_child_valid = right_child_hc <= largest_node_in_biheap_hc &&
+                                right_child_hc < num_nodes_in_heap;
+    RAI smaller_it;
+    if (is_right_child_valid && *right_it < *left_it) {
+      smaller_it = right_it;
+      pos_hc     = right_child_hc;
+    } else {
+      smaller_it = left_it;
+      pos_hc     = left_child_hc;
+    }
+    if (*pos_it > *smaller_it)
+      std::iter_swap(pos_it, smaller_it);
+    else
+      return ;
+  }
+  SiftUpMaxHeapHC<RAI, size_type>(first, total_num_nodes, pos_hc,
+                                  FLIP(largest_node_in_biheap_hc));
+  return ;
+}
+
+/* Assumes that total_num_nodes is odd, that the node pos_mc belongs to the
+ *  max heap, and that FLIP(pos_mc) >= smallest_node_in_biheap_hc.
+ */
+template<class RAI, typename size_type = std::size_t>
+inline void BiHeapifySiftFromMaxToMin(RAI first, size_type total_num_nodes,
+                                      size_type num_nodes_in_heap,
+                                      size_type first_node_in_mirror_heap,
+                                      size_type pos_mc,
+                                      size_type smallest_node_in_biheap_hc) {
+  auto pos_hc = FLIP(pos_mc);
+  while (pos_mc < first_node_in_mirror_heap) {
+    auto left_child_mc  = LeftChild<size_type>(pos_mc);
+    auto right_child_mc = left_child_mc + 1; //= RightChild(pos_mc);
+    auto left_child_hc  = FLIP(left_child_mc);//= pos_hc - pos_mc - 1
+    auto right_child_hc = left_child_hc - 1; //= FLIP(right_child_mc)
+    auto pos_it         = first + pos_hc;
+    auto left_it        = first + left_child_hc;
+    auto right_it       = first + right_child_hc;
+
+    //assert((left_child_mc < num_nodes_in_heap) && (left_child_hc >= smallest_node_in_biheap_hc) && (right_child_hc >= smallest_node_in_biheap_hc));
+    bool is_right_child_valid = right_child_mc < num_nodes_in_heap;
+    RAI larger_it;
+    if (is_right_child_valid && *right_it > *left_it) {
+      larger_it = right_it;
+      pos_hc    = right_child_hc;
+      pos_mc    = right_child_mc;
+    } else {
+      larger_it = left_it;
+      pos_hc    = left_child_hc;
+      pos_mc    = left_child_mc;
+    }
+    if (*pos_it < *larger_it)
+      std::iter_swap(pos_it, larger_it);
+    else
+      return ;
+  }
+  SiftUpMinHeapHC<RAI, size_type>(first, pos_hc, smallest_node_in_biheap_hc);
+  return ;
+}
+
+/* This will BiHeapify all nodes in [0, total_num_nodes).
+ * Assumes that total_num_nodes is odd.
+ */
+/*
+ * Remark:
+ *  This algorithm has complexity O(total_num_nodes). To see why, recall the
+ *   argument showing that the heapify operation has O(n) complexity (e.g. as
+ *   found on pp. 115 - 116 of "The Algorithm Design Manual" 2nd edition); this
+ *   argument generalizes to prove that this algorithm also runs in O(n) times.
+ *  The key observation is that the biheap is constructed by adding one node
+ *   at a time with this node alternating between a node in a min heap and a
+ *   node in the max heap. The complexity of this biheapification is easily
+ *   seen to be twice the complexity of the above mentioned heapification
+ *   operation plus a constant.
+ */
+template<class RAI, typename size_type = std::size_t>
+inline void BiHeapify(RAI first, size_type total_num_nodes) {
+  if(total_num_nodes < 2)
+    return ;
+  size_type num_nodes_in_heap          = HeapSize(total_num_nodes);
+  size_type first_node_in_mirror_heap  = total_num_nodes - num_nodes_in_heap;
+  //Ignore all extended in arrows, unless total_num_nodes % 3 == 2, in which
+  // case ignore all but the middle two extended in arrows.
+  size_type largest_node_in_biheap_hc  = IndexOfLastMinHeapNodeGivenHeapSize(num_nodes_in_heap)
+                                         - (total_num_nodes % 3 == 2);
+  size_type smallest_node_in_biheap_hc = FLIP(largest_node_in_biheap_hc);
+  while (smallest_node_in_biheap_hc > 0) {
+    BiHeapifySiftFromMinToMax<RAI, size_type>(first, total_num_nodes,
+        num_nodes_in_heap, first_node_in_mirror_heap,
+        --smallest_node_in_biheap_hc, largest_node_in_biheap_hc);
+    BiHeapifySiftFromMaxToMin<RAI, size_type>(first, total_num_nodes,
+        num_nodes_in_heap, first_node_in_mirror_heap,
+        FLIP(++largest_node_in_biheap_hc), smallest_node_in_biheap_hc);
+  }
+  return ;
 }
 
 template<class RAI, typename size_type = std::size_t>
 inline void BiHeapify(RAI first, RAI one_past_last) {
-   BiHeapify<RAI, size_type>(first, std::distance(first, one_past_last));
- }
+  BiHeapify<RAI, size_type>(first, std::distance(first, one_past_last));
+}
+
+#undef FLIP
 
 #endif /* BIHEAPIFY_H_ */
