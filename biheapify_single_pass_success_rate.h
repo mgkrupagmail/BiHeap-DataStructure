@@ -3,6 +3,7 @@
  *
  *  Created on: Jun 27, 2017
  *      Author: Matthew Gregory Krupa
+ *   Copyright: Copyright Matthew Gregory Krupa
  *
  *  MeasureBiHeapifySuccessRate(), which is used to measure how many times
  *   a BiHeapify pass (i.e. one of BiHeapifyEven(),
@@ -21,9 +22,7 @@
 #include <random>
 #include <vector>
 
-#include "biheap_common.h"
 #include "biheapify.h"
-#include "biheapify_simple.h"
 #include "random_helpers.h"
 
 template<class T, typename size_type = std::size_t>
@@ -137,21 +136,15 @@ void MeasureBiHeapifySuccessRate(long start_total_num_nodes,
       if (total_num_nodes > end_total_num_nodes)
         break ;
       std::vector<T> vec(total_num_nodes);
+      auto range_lower_bound = 0; //= std::numeric_limits<T>::min();
+      auto range_upper_bound = static_cast<T>(4*total_num_nodes); //= std::numeric_limits<T>::max();
       for (auto vec_counter = 0l; vec_counter < num_vecs_to_try; vec_counter++) {
         int try_num = 1;
         randomhelpers::FillWithRandomNumbers(vec.begin(), vec.end(),
-                  0, static_cast<T>(4*total_num_nodes));//std::numeric_limits<T>::min(), std::numeric_limits<T>::max());
-//#define BIHEAPIFY_ALGORITHM BiHeapifySimpleSinglePass
-//#define BIHEAPIFY_ALGORITHM BiHeapifyEven
-//#define BIHEAPIFY_ALGORITHM BiHeapifyOdd
-//#define BIHEAPIFY_ALGORITHM BiHeapifyUsingBiHeapifyEven
-#define BIHEAPIFY_ALGORITHM BiHeapify
-
-        BIHEAPIFY_ALGORITHM(vec.begin(), vec.size());
-
+                                         range_lower_bound, range_upper_bound);
+        BiHeapify(vec.begin(), vec.size());
         total_tries++;
         try_counter[try_num]++;
-
         while (!IsBiheap(vec.begin(), vec.size())) {
           fail_counter[try_num]++;
           if (try_num >= 10) {
@@ -162,10 +155,7 @@ void MeasureBiHeapifySuccessRate(long start_total_num_nodes,
             break;
           }
           try_num++;
-
-          BIHEAPIFY_ALGORITHM(vec.begin(), vec.size());
-
-#undef BIHEAPIFY_ALGORITHM
+          BiHeapify(vec.begin(), vec.size());
           if (static_cast<unsigned int>(try_num) >= try_counter.size()) {
             fail_counter.resize(2 * try_num);
             try_counter.resize(2 * try_num);
@@ -173,7 +163,6 @@ void MeasureBiHeapifySuccessRate(long start_total_num_nodes,
           try_counter[try_num]++;
           total_tries++;
         }
-
         if (!IsBiheap(vec.begin(), vec.size())) {
           if (verbose)
             std::cout << "Failed to BiHeapify() the following vector of size "
@@ -184,8 +173,8 @@ void MeasureBiHeapifySuccessRate(long start_total_num_nodes,
         }
       }
     }
-    std::cout << "BiHeap start size = " << initial_size << std::endl;
-    std::cout << GetDesciption(fail_counter, try_counter) << std::endl;
+    std::cout << "BiHeap start size = " << initial_size << '\n';
+    std::cout << GetDesciption(fail_counter, try_counter) << '\n';
     std::cout << std::endl;
     if (reset_after_print) {
       for (auto i = 0u; i < fail_counter.size(); i++)
