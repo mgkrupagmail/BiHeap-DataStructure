@@ -58,10 +58,6 @@ int main() {
   // vectors of that size.
   long num_vecs_to_try = static_cast<int>(1u << 18);
 
-  //For TimeBiHeapifies() only. For each std::vector that whose biheapification
-  // is to be timed, repeat this process num_repititions_per_vec times.
-  long num_repititions_per_vec = static_cast<int>(1u << 4);
-
   //For MeasureBiHeapifySuccessRate() only. Print information only after you've
   // gone through print_multiple new vector sizes.
   long print_multiple = 1;;
