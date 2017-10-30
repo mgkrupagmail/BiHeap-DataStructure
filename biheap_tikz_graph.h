@@ -3,7 +3,7 @@
  *
  *  Created on: Sep 26, 2017
  *      Author: Matthew Gregory Krupa
- *   Copyright: Copyright Matthew Gregory Krupa
+ *   Copyright: Matthew Gregory Krupa
  */
 
 #ifndef BIHEAP_TIKZ_GRAPH_H_
