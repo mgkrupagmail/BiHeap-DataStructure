@@ -252,7 +252,6 @@ inline size_type ParentNotRoot(size_type node) {
 
 template<typename size_type = std::size_t>
 inline size_type HeapSize(size_type total_num_nodes) {
-  //assert((total_num_nodes - static_cast<size_type>(total_num_nodes / 3)) == (total_num_nodes - (total_num_nodes - (total_num_nodes % 3)) / 3));
   return total_num_nodes - static_cast<size_type>(total_num_nodes / 3);
 }
 
@@ -315,7 +314,6 @@ bool IsBiheap(RAI first, size_type total_num_nodes) {
       //right_child_hc = FLIP(right_child_mc)
       // = FLIPleft_child + 1)
       // = total_num_nodes - 1 - (left_child + 1) = mirror_left_child_hc - 1.
-      //assert(FLIP(left_child + 1) == mirror_left_child_hc - 1);
       //Check that the parent and right child satisfy the max heap condition.
       if (parent_val < *(first + (mirror_left_child_hc - 1)))
         return false;
@@ -410,7 +408,6 @@ inline void BiHeapifySiftFromMinToMax(RAI first, size_type total_num_nodes,
     auto right_it       = first + right_child_hc;
     auto pos_it         = first + pos_hc;
 
-    //assert((left_child_hc  < num_nodes_in_heap) && (left_child_hc  <= largest_node_in_biheap_hc));
     bool is_right_child_valid = right_child_hc <= largest_node_in_biheap_hc &&
                                 right_child_hc < num_nodes_in_heap;
     RAI smaller_it;
@@ -450,7 +447,6 @@ inline void BiHeapifySiftFromMaxToMin(RAI first, size_type total_num_nodes,
     auto left_it        = first + left_child_hc;
     auto right_it       = first + right_child_hc;
 
-    //assert((left_child_mc < num_nodes_in_heap) && (left_child_hc >= smallest_node_in_biheap_hc) && (right_child_hc >= smallest_node_in_biheap_hc));
     bool is_right_child_valid = right_child_mc < num_nodes_in_heap;
     RAI larger_it;
     if (is_right_child_valid && *right_it > *left_it) {
