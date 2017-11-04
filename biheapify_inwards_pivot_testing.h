@@ -226,12 +226,15 @@ template<class ValueType, typename size_type>
 long double TestBiHeapifyInwardsOnGivenSize<ValueType, size_type>::smallest_of_smaller_of_num_le_and_ge_ratios_ = 1.0l;
 
 void MeasureBiHeapifyInwardsPivotProperties() {
-  for (std::size_t N = 110; N < (1u << 17); N += N / 10){
+  for (std::size_t N = 110; N < (1u << 17); N += N / 10) {
     TestBiHeapifyInwardsOnGivenSize<int> test(N);
     test.verbose_ = false;
     for (std::size_t i = 0; i < (1u << 15); i++) {
       test.PerformTest();
     }
+    //The two key quantities to look at are:
+    //smallest min(# elements <= pivot, # elements >= pivot)
+    //average of min(# elements <= pivot, # elements >= pivot)
     std::cout << test.GetDescriptionOfResult() << std::endl;
   }
 }
