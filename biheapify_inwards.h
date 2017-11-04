@@ -14,16 +14,40 @@
 #include "biheapify.h"
 
 template<class RAI, typename size_type = std::size_t>
-inline void BiHeapifyInwards(RAI first, size_type total_num_nodes) {
-  while (total_num_nodes > 10) {
-    BiHeapify(first, total_num_nodes);
-    size_type heap_size              = HeapSize(total_num_nodes);
-    size_type first_extended_in_node = total_num_nodes - heap_size;//= FLIP(num_nodes_in_heap - 1);
+inline void BiHeapifyInwards(RAI first, size_type N) {
+  while (N > 9) {
+    BiHeapify(first, N);
+    size_type heap_size              = HeapSize(N);
+    size_type first_extended_in_node = N - heap_size;//= FLIP(num_nodes_in_heap - 1);
     first                           += first_extended_in_node;
-    total_num_nodes                  = heap_size - first_extended_in_node;
+    N                                = heap_size - first_extended_in_node;
   }
-  if (total_num_nodes > 1)
-    std::sort(first, first + total_num_nodes);
+  if (N > 1)
+    std::sort(first, first + N);
+  return ;
+}
+
+template<class RAI, typename size_type = std::size_t>
+inline void BiHeapifyInwardsNicerMath(RAI first, size_type N) {
+  while (N > 9) {
+    if (N % 3 == 1) {
+      BiHeapify(first, N);
+      first = first + 1;
+      N = N - 2;
+    }
+    if (N % 3 == 2) {
+      BiHeapify(first, N);
+      first = first + 1;
+      N = N - 2;
+    }
+    BiHeapify(first, N);
+    size_type heap_size              = HeapSize(N);
+    size_type first_extended_in_node = N - heap_size;//= FLIP(num_nodes_in_heap - 1);
+    first                           += first_extended_in_node;
+    N                                = heap_size - first_extended_in_node;
+  }
+  if (N > 1)
+    std::sort(first, first + N);
   return ;
 }
 
