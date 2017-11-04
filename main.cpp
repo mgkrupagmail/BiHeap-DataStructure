@@ -31,6 +31,7 @@
 
 #include "biheapify_single_pass_success_rate.h"
 #include "biheap_sift_test_correctness.h"
+#include "biheapify_inwards_pivot_testing.h"
 
 void PrintTikzGraphs() {
   std::vector<int> vec = {0,11,1,12,13,2,3,14,15,16,17,4,5,6,7,18,19,8,9,20,10,21};
