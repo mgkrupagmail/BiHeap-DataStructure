@@ -126,7 +126,7 @@ struct TestBiHeapifyInwardsOnGivenSize {
     total_num_test_runs_++;
   }
 
-  void Analyize() {
+  void Analyze() {
     auto first = vec_.begin();
     auto left_middle_value = *(first + left_index_);
     auto right_middle_value = *(first + right_index_);
@@ -175,7 +175,7 @@ struct TestBiHeapifyInwardsOnGivenSize {
   void PerformTest() {
     FillVecWithRandomNumbers();
     RunBiHeapifyInwards();
-    Analyize();
+    Analyze();
   }
 
   std::string GetDescriptionOfResult() {
@@ -233,7 +233,7 @@ void MeasureBiHeapifyInwardsPivotProperties() {
       test.PerformTest();
     }
     //The two key quantities to look at are:
-    //smallest min(# elements <= pivot, # elements >= pivot)
+    //smallest min(# elements <= pivot, # elements >= pivot), and
     //average of min(# elements <= pivot, # elements >= pivot)
     std::cout << test.GetDescriptionOfResult() << std::endl;
   }
