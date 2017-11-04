@@ -18,7 +18,7 @@ inline void BiHeapifyInwards(RAI first, size_type N) {
   while (N > 9) {
     BiHeapify(first, N);
     size_type heap_size              = HeapSize(N);
-    size_type first_extended_in_node = N - heap_size;//= FLIP(num_nodes_in_heap - 1);
+    size_type first_extended_in_node = N - heap_size;//= FLIP(heap_size - 1);
     first                           += first_extended_in_node;
     N                                = heap_size - first_extended_in_node;
   }
@@ -42,7 +42,7 @@ inline void BiHeapifyInwardsNicerMath(RAI first, size_type N) {
     }
     BiHeapify(first, N);
     size_type heap_size              = HeapSize(N);
-    size_type first_extended_in_node = N - heap_size;//= FLIP(num_nodes_in_heap - 1);
+    size_type first_extended_in_node = N - heap_size;
     first                           += first_extended_in_node;
     N                                = heap_size - first_extended_in_node;
   }
