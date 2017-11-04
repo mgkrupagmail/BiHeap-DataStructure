@@ -9,6 +9,8 @@
 #define BIHEAPIFY_INWARDS_PIVOT_TESTING_H_
 
 #include <algorithm>
+#include <iomanip>
+#include <iostream>
 #include <numeric>
 #include <random>
 #include <string>
