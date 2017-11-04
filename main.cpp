@@ -66,6 +66,11 @@ int main() {
                                  // counts.
   bool verbose = false;
 
+  //The two key quantities to look at are:
+  //smallest min(# elements <= pivot, # elements >= pivot), and
+  //average of min(# elements <= pivot, # elements >= pivot)
+  MeasureBiHeapifyInwardsPivotProperties();
+
   //This function will go through each of the sizes:
   // start_total_num_nodes, start_total_num_nodes + increment_size,
   // start_total_num_nodes + 2 * increment_size, ...
