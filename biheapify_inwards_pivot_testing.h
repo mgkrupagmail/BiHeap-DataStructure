@@ -3,6 +3,7 @@
  *
  *  Created on: Nov 3, 2017
  *      Author: Matthew Gregory Krupa
+ *   Copyright: Matthew Gregory Krupa
  */
 
 #ifndef BIHEAPIFY_INWARDS_PIVOT_TESTING_H_
@@ -134,10 +135,10 @@ struct TestBiHeapifyInwardsOnGivenSize {
 
     size_type num_elements_less_than_or_equal    = GetNumberOfElementsLessThanOrEqualToValue(left_middle_value);
     size_type num_elements_greater_than_or_equal = GetNumberOfElementsGreaterThanOrEqualToValue(right_middle_value);
-    size_type min_num_elements_ge_and_le_pivot_  = num_elements_less_than_or_equal < num_elements_greater_than_or_equal ? num_elements_less_than_or_equal : num_elements_greater_than_or_equal;
+    size_type min_num_elements_ge_and_le_pivot   = num_elements_less_than_or_equal < num_elements_greater_than_or_equal ? num_elements_less_than_or_equal : num_elements_greater_than_or_equal;
     total_num_elements_less_than_or_equal_to_pivot_    += num_elements_less_than_or_equal;
     total_num_elements_greater_than_or_equal_to_pivot_ += num_elements_greater_than_or_equal;
-    total_min_num_elements_ge_and_le_pivot_            += min_num_elements_ge_and_le_pivot_;
+    total_min_num_elements_ge_and_le_pivot_            += min_num_elements_ge_and_le_pivot;
 
     long double num_elements_less_than_or_equal_ratio    = static_cast<long double>(num_elements_less_than_or_equal) / static_cast<long double>(N_);
     long double num_elements_greater_than_or_equal_ratio = static_cast<long double>(num_elements_greater_than_or_equal) / static_cast<long double>(N_);
@@ -203,14 +204,13 @@ struct TestBiHeapifyInwardsOnGivenSize {
     sstrm << " \t(" << (100.0l * ave_total_min_num_elements_ge_and_le_pivot_ratio) << "% of N)" << '\n';
     long double ave_num_elements_less_than_or_equal_to_pivot_ = static_cast<long double>(total_num_elements_less_than_or_equal_to_pivot_) / static_cast<long double>(total_num_test_runs_);
     long double ave_num_elements_less_than_or_equal_to_pivot_ratio = ave_num_elements_less_than_or_equal_to_pivot_ / static_cast<long double>(N_);
-    sstrm << "average  # of elements <= pivot is                          " << smallest_total_num_elements_less_than_or_equal_to_pivot_;
+    sstrm << "average  # of elements <= pivot is                          " << ave_num_elements_less_than_or_equal_to_pivot_;
     sstrm << " \t(" << (100.0l * ave_num_elements_less_than_or_equal_to_pivot_ratio) << "% of N)" << '\n';
     long double ave_num_elements_greater_than_or_equal_to_pivot_ = static_cast<long double>(total_num_elements_greater_than_or_equal_to_pivot_) / static_cast<long double>(total_num_test_runs_);
     long double ave_num_elements_greater_than_or_equal_to_pivot_ratio = ave_num_elements_greater_than_or_equal_to_pivot_ / static_cast<long double>(N_);
-    sstrm << "average  # of elements >= pivot is                          " << smallest_total_num_elements_greater_than_or_equal_to_pivot_;
+    sstrm << "average  # of elements >= pivot is                          " << ave_num_elements_greater_than_or_equal_to_pivot_;
     sstrm << " \t(" << (100.0l * ave_num_elements_greater_than_or_equal_to_pivot_ratio) << "% of N)" << '\n';
 
-    //sstrm << '\n';
     sstrm << "Over all sizes N tested so far:\n";
     sstrm << "smallest ever min(# elements <= pivot, # elements >= pivot)/N is " << (smallest_of_smaller_of_num_le_and_ge_ratios_) << '\n';
     sstrm << "smallest ever (# of elements <= pivot)/N is " << (smallest_num_elements_less_than_or_equal_ratio_) << '\n';
