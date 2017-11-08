@@ -523,4 +523,6 @@ std::string GetTikzGraph(size_type total_num_nodes,
                       scale, x_num_imaginary_middles_nodes_on_one_side);
 }
 
+#undef FLIP
+
 #endif /* BIHEAP_TIKZ_GRAPH_H_ */
