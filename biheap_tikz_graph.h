@@ -19,17 +19,24 @@
 #include "biheapify.h"
 
 #ifndef FLIP
-#define FLIP(a) (total_num_nodes - 1 - (a))
+#define FLIP(a) ((total_num_nodes - 1) - (a))
 #endif
 
 template<typename size_type = std::size_t>
-std::string GetNodeNameHc(size_type pos_hc, size_type total_num_nodes, bool with_parentheses = true) {
+std::string GetNodeNameHc(size_type pos_hc, size_type total_num_nodes, bool with_parentheses = true, bool pad_with_spaces_to_max_length = false) {
   std::stringstream strm;
   if (with_parentheses)
     strm << "(";
   strm << "s" << total_num_nodes << "n" << pos_hc;
   if (with_parentheses)
     strm << ")";
+  if (pad_with_spaces_to_max_length) {
+    size_type desired_node_str_width = std::to_string(total_num_nodes).length() + std::to_string(total_num_nodes - 1).length() + 2;
+    if (with_parentheses)
+      desired_node_str_width += 2; //Take into account the opening and closing parentheses.
+    while (static_cast<size_type>(strm.str().length()) < desired_node_str_width)
+      strm << ' ';
+  }
   return strm.str();
 }
 
@@ -112,7 +119,7 @@ long double GetYCoordinateRec(size_type pos, size_type subtree_start, size_type 
   auto new_end_y = end_y;
   auto new_subtree_start = subtree_start;
 
-  bool is_in_left_branch = IsInLeftBranch(pos, subtree_start);
+  bool is_in_left_branch = IsInLeftBranch<size_type>(pos, subtree_start);
   if (is_in_left_branch) {
     new_end_y = start_y + y_scale_down_ratio * half_distance;
     new_subtree_start = LeftChild<size_type>(subtree_start);
@@ -150,7 +157,7 @@ long double GetXCoordinate(size_type pos, size_type total_num_nodes, long double
   auto half_distance_scaled = half_distance * (1.0l - x_middle_separation_distance_ratio);
 
   size_type size_of_pure_heap_ignoring_middle = (total_num_nodes / 2);// - (total_num_nodes % 2);
-  size_type max_depth_of_pure_heap_ignoring_middle = GetDepth(size_of_pure_heap_ignoring_middle - 1);
+  size_type max_depth_of_pure_heap_ignoring_middle = GetDepth<size_type>(size_of_pure_heap_ignoring_middle - 1);
   size_type depth;
   bool is_in_pure_min_heap = pos < total_num_nodes / 2;
   if (is_in_pure_min_heap)
@@ -201,12 +208,23 @@ void GetCoordinates(size_type total_num_nodes, long double start_x, long double 
 template<typename size_type = std::size_t>
 std::string GetDefineNodeLineHc(size_type pos_hc, size_type total_num_nodes, long double x, long double y, std::string node_text = std::string()) {
   std::stringstream strm;
-  int width = 2 * std::to_string(total_num_nodes).length() + 4;
-  strm << "\\node " << std::setw(width) << GetNodeNameHc(pos_hc, total_num_nodes, true);
-  strm << "  at  (" << std::setprecision(5) << x << ", " << std::setprecision(5) << y << ") \t";
+  int node_width = std::to_string(total_num_nodes).length() + std::to_string(total_num_nodes - 1).length() + 4;
+  const int unsigned_precision = 5; //5 decimal digits should be printed. Note that std::fixed makes sure that exactly 5 decimal digits are outputted.
+  const int unsigned_coor_width = unsigned_precision + 2; //+2 since it's expected that (int)x and (int)y both have at most 2 digits.
+  int coor_width;
+  int precision = unsigned_precision;
+  strm << "\\node " << std::left << std::setw(node_width) << GetNodeNameHc<size_type>(pos_hc, total_num_nodes, true);
+  coor_width = unsigned_coor_width;
+  if (x >= 0.0l)
+    coor_width++; //To have the decimal points line up in case some x (resp. y) coordinates are positive and others are negative.
+  strm << "  at  (" << std::setw(coor_width) << std::fixed << std::setprecision(precision) << x;
+  coor_width = unsigned_coor_width;
+  if (y >= 0.0l)
+    coor_width++;
+  strm << ", "      << std::setw(coor_width) << std::fixed << std::setprecision(precision) << y << ")  ";
   strm << "{";
   if (node_text.empty())
-    strm << GetNodeTextHc(pos_hc, total_num_nodes, false);
+    strm << GetNodeTextHc<size_type>(pos_hc, total_num_nodes, false);
   else
     strm << node_text;
   strm << "};\n";
@@ -230,7 +248,7 @@ std::string GetNodeLines(size_type total_num_nodes,
   std::stringstream strm;
   for (size_type i = 0; i < total_num_nodes; i++) {
     std::string node_text = std::string();
-    if (i < node_texts.size())
+    if (i < static_cast<size_type>(node_texts.size()))
       node_text = node_texts[i];
     strm << GetDefineNodeLine<size_type>(i, total_num_nodes, x_coordinates[i], y_coordinates[i], node_text);
   }
@@ -258,10 +276,10 @@ std::string GetPathDefinitionTextHC(size_type total_num_nodes, size_type from, s
   if (is_start_of_double_arrow && total_num_nodes % 2 == 1) {
     if (y_coordinates[from] <= y_coordinates[to]) {
       amount_to_bend_start_down = 20.0l;
-      bend_strm << ",bend right=" << std::left << amount_to_bend_start_down;
+      bend_strm << "bend right=" << std::left << amount_to_bend_start_down;
     } else {
       amount_to_bend_start_up = 20.0l;
-      bend_strm << ",bend left =" << std::left << amount_to_bend_start_up;
+      bend_strm << "bend left =" << std::left << amount_to_bend_start_up;
     }
   } else if (to == LeftChild(from) && y_coordinates[from] < y_coordinates[to]) {
     if (to + 1 < total_num_nodes && y_coordinates[to] >= y_coordinates[to + 1]) {
@@ -279,7 +297,7 @@ std::string GetPathDefinitionTextHC(size_type total_num_nodes, size_type from, s
   strm << std::setw(node_width) << GetNodeNameHc<size_type>(from, total_num_nodes, true) << " edge";
 
   std::stringstream options_strm;
-  int edge_options_width = 20;
+  int edge_options_width = 28;
   if (is_start_of_double_arrow) {
     options_strm << "[<->,dashed";
     if (!bend_string.empty())
@@ -354,7 +372,7 @@ std::string GetPathDefinitionTextMC(size_type total_num_nodes, size_type from_mc
   strm << std::setw(node_width) << GetNodeNameMc<size_type>(from_mc, total_num_nodes, true) << " edge";
 
   std::stringstream options_strm;
-  int edge_options_width = 20;
+  int edge_options_width = 28;
   if (!is_solid) {
     options_strm << "[dashed";
     if (!bend_string.empty())
@@ -386,9 +404,8 @@ template<typename size_type = std::size_t>
 std::string GetMinHeapPathDefinitionTextHC(size_type total_num_nodes, size_type from_hc, bool to_left_child, long double start_x, long double end_x,
     long double start_y, long double end_y,
     const std::vector<long double> &x_coordinates, const std::vector<long double> &y_coordinates) {
-  auto heap_size = HeapSize(total_num_nodes);
+  auto heap_size = HeapSize<size_type>(total_num_nodes);
   auto pure_heap_size = (total_num_nodes / 2) + (total_num_nodes % 2);
-  //auto last_interior_node = (pure_heap_size - 1) / 2;
   size_type end_node_hc = LeftChild<size_type>(from_hc);
   if (!to_left_child)
     end_node_hc++;
@@ -403,7 +420,7 @@ template<typename size_type = std::size_t>
 std::string GetMinHeapPathDefinitionTextMC(size_type total_num_nodes, size_type from_mc, bool to_left_child, long double start_x, long double end_x,
     long double start_y, long double end_y,
     const std::vector<long double> &x_coordinates, const std::vector<long double> &y_coordinates) {
-  auto heap_size = HeapSize(total_num_nodes);
+  auto heap_size = HeapSize<size_type>(total_num_nodes);
   auto pure_heap_size = (total_num_nodes / 2) + (total_num_nodes % 2);
   size_type end_node_mc = LeftChild(from_mc);
   if (!to_left_child)
@@ -467,7 +484,13 @@ std::string GetTikzGraph(size_type total_num_nodes,
   strm << "\\begin{tikzpicture}[scale=" << scale << "]\n";
   strm << GetNodeLines<size_type>(total_num_nodes, x_coordinates, y_coordinates, node_texts);
   strm << "\\path[->,font=\\scriptsize,>=angle 90]\n";
-  strm << GetPathDefinitions<size_type>(total_num_nodes, start_x, end_x, start_y, end_y, x_coordinates, y_coordinates);
+  {
+    std::string path_defs = GetPathDefinitions<size_type>(total_num_nodes, start_x, end_x, start_y, end_y, x_coordinates, y_coordinates);
+    size_type len = path_defs.length();
+    if (len > 1 && path_defs[len - 2] == '\n' && path_defs[len - 1] == '\n')
+      path_defs.erase(path_defs.begin() + (len - 1)); //Only have one new line at the end.
+    strm << path_defs;
+  }
   strm << ";\n";
   strm << "\\end{tikzpicture}\n";
   return strm.str();
