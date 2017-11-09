@@ -21,7 +21,7 @@
 
 #include "biheapify.h"
 
-#define FLIP(a) (total_num_nodes - 1 - (a))
+#define FLIP(a) ((total_num_nodes - 1) - (a))
 
 template<class RAI, typename size_type = std::size_t>
 inline void SiftUpMaxHeapMC(RAI first, size_type total_num_nodes,
@@ -69,9 +69,9 @@ inline void SiftUpMinHeapHC(RAI first, size_type pos_hc) {
 
 template<class RAI, typename size_type = std::size_t>
 inline void SiftFromMinToMax(RAI first, size_type total_num_nodes,
-                                size_type num_nodes_in_heap,
-                                size_type first_node_in_mirror_heap,
-                                size_type pos_hc) {
+                             size_type heap_size,
+                             size_type first_node_in_mirror_heap,
+                             size_type pos_hc) {
   while (pos_hc < first_node_in_mirror_heap) {
     auto left_child  = LeftChild<size_type>(pos_hc);
     auto right_child = left_child + 1;
@@ -79,8 +79,8 @@ inline void SiftFromMinToMax(RAI first, size_type total_num_nodes,
     auto right_it = first + right_child;
     auto pos_it   = first + pos_hc;
 
-    //assert((left_child  < num_nodes_in_heap) && (left_child  < total_num_nodes) && (right_child < total_num_nodes));
-    bool is_right_child_valid = right_child < num_nodes_in_heap;
+    //assert((left_child  < heap_size) && (left_child  < total_num_nodes) && (right_child < total_num_nodes));
+    bool is_right_child_valid = right_child < heap_size;
     RAI smaller_it;
     if (is_right_child_valid && *right_it < *left_it) {
       smaller_it = right_it;
@@ -103,9 +103,9 @@ inline void SiftFromMinToMax(RAI first, size_type total_num_nodes,
  */
 template<class RAI, typename size_type = std::size_t>
 inline void SiftFromMaxToMin(RAI first, size_type total_num_nodes,
-                                size_type num_nodes_in_heap,
-                                size_type first_node_in_mirror_heap,
-                                size_type pos_mc) {
+                             size_type heap_size,
+                             size_type first_node_in_mirror_heap,
+                             size_type pos_mc) {
   auto pos_hc = FLIP(pos_mc);
   while (pos_mc < first_node_in_mirror_heap) {
     auto left_child_mc  = LeftChild<size_type>(pos_mc);
@@ -116,8 +116,8 @@ inline void SiftFromMaxToMin(RAI first, size_type total_num_nodes,
     auto left_it        = first + left_child_hc;
     auto right_it       = first + right_child_hc;
 
-    //assert((left_child_mc < num_nodes_in_heap) && (left_child_hc >= 0) && (right_child_hc >= 0));
-    bool is_right_child_valid = right_child_mc < num_nodes_in_heap;
+    //assert((left_child_mc < heap_size) && (left_child_hc >= 0) && (right_child_hc >= 0));
+    bool is_right_child_valid = right_child_mc < heap_size;
     RAI larger_it;
     if (is_right_child_valid && *right_it > *left_it) {
       larger_it = right_it;
@@ -139,27 +139,24 @@ inline void SiftFromMaxToMin(RAI first, size_type total_num_nodes,
 
 template<class RAI, typename size_type = std::size_t>
 inline void BiHeapSift(RAI first, size_type total_num_nodes, size_type pos_hc) {
-  auto num_nodes_in_heap = HeapSize(total_num_nodes);
-  auto first_node_in_mirror_heap  = total_num_nodes - num_nodes_in_heap;
+  auto heap_size                 = HeapSize<size_type>(total_num_nodes);
+  auto first_node_in_mirror_heap = total_num_nodes - heap_size;
+  size_type pos_mc               = FLIP(pos_hc);
+  auto node_value                = *(first + pos_hc);
+  bool is_node_in_min_heap = pos_hc < heap_size;
+  bool is_node_in_max_heap = pos_mc < heap_size;
 
-  if (pos_hc < num_nodes_in_heap) { //If the node is in the min heap.
-    auto parent_hc = Parent<size_type>(pos_hc);
-    if (pos_hc != 0 && *(first + parent_hc) > *(first + pos_hc)) {
-      SiftUpMinHeapHC<RAI, size_type>(first, pos_hc);
-    } else {
-      SiftFromMinToMax<RAI, size_type>(first, total_num_nodes, num_nodes_in_heap,
-                                       first_node_in_mirror_heap, pos_hc);
-    }
-    return ;
-  }
-  //Else the node is in the max heap.
-  auto pos_mc = FLIP(pos_hc);
-  auto parent_mc = Parent<size_type>(pos_mc);
-  auto parent_hc = Parent<size_type>(parent_mc);
-  if (pos_mc != 0 && *(first + parent_hc) < *(first + pos_hc))
+  if (is_node_in_min_heap && (pos_hc == 0 || *(first + Parent(pos_hc)) <= node_value))
+    SiftFromMinToMax<RAI, size_type>(first, total_num_nodes, heap_size, first_node_in_mirror_heap, pos_hc);
+  else if (is_node_in_max_heap && (pos_mc == 0 || *(first + FLIP(Parent(pos_mc))) >= node_value))
+    SiftFromMaxToMin<RAI, size_type>(first, total_num_nodes, heap_size, first_node_in_mirror_heap, pos_mc);
+  //At this point pos_hc != 0,  pos_mc != 0, and at least one of the following is true:
+  // (1) is_node_in_min_heap && *(first + Parent(pos_hc))       > node_value
+  // (2) is_node_in_max_heap && *(first + FLIP(Parent(pos_mc))) < node_value
+  else if (is_node_in_min_heap && *(first + Parent(pos_hc)) > node_value)
+    SiftUpMinHeapHC<RAI, size_type>(first, pos_hc);
+  else
     SiftUpMaxHeapMC<RAI, size_type>(first, total_num_nodes, pos_mc);
-  SiftFromMaxToMin<RAI, size_type>(first, total_num_nodes, num_nodes_in_heap,
-                                   first_node_in_mirror_heap, pos_mc);
   return ;
 }
 
