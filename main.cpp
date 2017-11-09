@@ -1,22 +1,26 @@
 //============================================================================
 // Name        : main.cpp
 // Author      : Matthew Gregory Krupa
-// Version     :
-// Copyright   : Copyright
+// Copyright   : Matthew Gregory Krupa
 // Description : For the definition of a BiHeap, see the comments at the top
 //  of biheapify.h.
 // This file contains calls to functions that time and test the various
 //  BiHeapify functions; these are:
-// (1) TimeBiHeapifies(), which times the various BiHeapify functions, and
-// (2) MeasureBiHeapifySuccessRate(), which is used to measure how many times
-//      a BiHeapify pass (i.e. one of BiHeapifyEven(),
-//      BiHeapifyOdd(), or BiHeapifySimpleSinglePass()) must be
-//      called before a BiHeap is formed.
-//    - Notice that for BiHeapify() this always require only one call to
-//      biheapify.
+// (1) MeasureBiHeapifyInwardsPivotProperties(), which measures how good
+//      of a pivot value the BiHeapifyInwards() algorithm produces.
+//     The most important quantities that are outputted by this function
+//      are the smallest value of min(# elements <= pivot, # elements >= pivot),
+//      that was encountered and the average of value of
+//      min(# elements <= pivot, # elements >= pivot).
+// (2) MeasureBiHeapifySuccessRate(), which verifies that our implementation
+//      of the BiHeapify algorithm works correctly.
+// (3) BiHeapSiftTestCorrectness(), which verifies that our implementation
+//      of the BiHeapSift() algorithm works correctly.
+// (4) TimeBiHeapifies(), which times the various BiHeapify functions, and
 //============================================================================
 
 #include <algorithm>
+#include <cassert>
 #include <chrono>
 #include <iomanip>
 #include <iostream>
@@ -27,29 +31,19 @@
 #include "biheapify.h"
 #include "biheap_sift.h"
 
-#include "biheap_tikz_graph.h"
-
 #include "biheapify_single_pass_success_rate.h"
 #include "biheap_sift_test_correctness.h"
 #include "biheapify_inwards_pivot_testing.h"
 
-void PrintTikzGraphs() {
-  std::vector<int> vec = {0,11,1,12,13,2,3,14,15,16,17,4,5,6,7,18,19,8,9,20,10,21};
-  std::cout << GetTikzGraph<int, std::size_t>(22, -6, 6, -3, 3, vec);
+#include "biheap_tikz_graph.h"
 
-  vec = {0,23,1,24,25,2,3,26,27,28,29,4,5,6,7,30,31,32,33,34,35,36,37,8,9,10,11,12,13,14,15,38,39,40,41,16,17,18,19,42,43,20,21,44,22,45};
-  std::cout << GetTikzGraph<int, std::size_t>(46, -6, 6, -3, 3, vec);
-
-  std::cout << GetTikzGraph<int, std::size_t>(11, -8, 8, -4, 4);
-  std::cout << GetTikzGraph<int, std::size_t>(46, -8, 8, -4, 4);
-  std::cout << GetTikzGraph<int, std::size_t>(70, -10, 10, -6, 6);
-  return ;
-}
+#include "biheap_ostream.h"
+#include "biheapify_time.h"
 
 int main() {
   long start_total_num_nodes = 1;
   long increment_size        = 1; //Set this to 2 to test vectors that are only
-                                 //odd or only even in size.
+                                  //odd or only even in size.
   //The two functions below will be applied to biheaps of sizes:
   // start_total_num_nodes + (muliple) * increment_size
   // that are <= end_total_num_nodes
@@ -65,6 +59,7 @@ int main() {
   bool reset_after_print = true; //Don't show a cumulative success and failure
                                  // counts.
   bool verbose = false;
+  PrintTikzGraphsExampleCalls();
 
   //The two key quantities to look at are:
   //smallest min(# elements <= pivot, # elements >= pivot), and
@@ -84,8 +79,16 @@ int main() {
   MeasureBiHeapifySuccessRate<int>(start_total_num_nodes, end_total_num_nodes,
                                    num_vecs_to_try, increment_size,
                                    print_multiple, reset_after_print, verbose);
+
   BiHeapSiftTestCorrectness<int>(start_total_num_nodes, end_total_num_nodes,
                                  num_vecs_to_try, increment_size);
-  PrintTikzGraphs();
+  //For TimeBiHeapifies() only. For each std::vector that whose biheapification
+  // is to be timed, repeat this process num_repititions_per_vec times.
+  long num_repititions_per_vec = static_cast<int>(1u << 4);
+  long long divisor = num_repititions_per_vec; //Set this to 0 to get the the
+                             //average time to biheapify each individual vector.
+  TimeBiHeapifies<int>(start_total_num_nodes, end_total_num_nodes,
+                       num_vecs_to_try, num_repititions_per_vec, increment_size,
+                       divisor);
   return 0;
 }
