@@ -39,7 +39,7 @@ bool BiHeapSiftTestCorrectness(long start_total_num_nodes,
       //Sift the changed element.
       BiHeapSift<typename std::vector<T>::iterator, size_type>(vec.begin(), total_num_nodes, pos_hc);
       //Check that we once again have a biheap.
-      bool is_biheap = IsBiheap<typename std::vector<T>::iterator, size_type>(vec.begin(), total_num_nodes);
+      bool is_biheap = IsBiHeap<typename std::vector<T>::iterator, size_type>(vec.begin(), total_num_nodes);
       if (!is_biheap) {
         std::cout << "Sift() failed to form a biheap. "
                   << "total_num_nodes = " << total_num_nodes << std::endl;
