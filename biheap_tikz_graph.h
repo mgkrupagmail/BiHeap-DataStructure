@@ -1,6 +1,11 @@
 /*
  * biheap_tikz_graph.h
  *
+ * The GetTikzGraph() function creates the LaTeX tikz
+ *  code to display a BiHeapGraph. The nodes of the graph
+ *  may either have values assigned to them or else their
+ *  text will be the coordinates of that node.
+ *
  *  Created on: Sep 26, 2017
  *      Author: Matthew Gregory Krupa
  *   Copyright: Matthew Gregory Krupa
@@ -21,6 +26,19 @@
 #ifndef FLIP
 #define FLIP(a) ((total_num_nodes - 1) - (a))
 #endif
+
+template<typename size_type = std::size_t>
+size_type GetNumNodesInLastRow(size_type total_num_nodes) {
+  if (total_num_nodes <= 1)
+    return total_num_nodes;
+  size_type num_nodes_so_far = 1;
+  size_type num_nodes_this_row = 1;
+  while (num_nodes_so_far < total_num_nodes) {
+    num_nodes_this_row *= 2;
+    num_nodes_so_far += num_nodes_this_row;
+  }
+  return num_nodes_this_row;
+}
 
 template<typename size_type = std::size_t>
 std::string GetNodeNameHc(size_type pos_hc, size_type total_num_nodes, bool with_parentheses = true, bool pad_with_spaces_to_max_length = false) {
@@ -201,6 +219,141 @@ void GetCoordinates(size_type total_num_nodes, long double start_x, long double 
     }
     x_coordinates[pos_hc] = x_coordinate;
     y_coordinates[pos_hc] = y_coordinate;
+  }
+  return ;
+}
+
+template<typename size_type = std::size_t>
+long double GetDefaultNodeXCoordinateLength(size_type total_num_nodes, long double start_x, long double end_x,
+    long double x_middle_separation_distance_ratio = 0.1l,
+    long double x_num_imaginary_middles_nodes_on_one_side = 0.8l,
+    long double num_invisible_columns_of_nodes_that_can_fit_between_any_two_actual_columns = 1.0l) {
+  auto distance = end_x - start_x;
+  auto half_distance = distance / 2;
+  auto half_distance_scaled = half_distance * (1.0l - x_middle_separation_distance_ratio);
+
+  size_type size_of_pure_heap_ignoring_middle = (total_num_nodes / 2);//NOT: total_num_nodes/2 - (total_num_nodes % 2);
+  if (size_of_pure_heap_ignoring_middle <= 1)
+    return half_distance_scaled / 2;
+  size_type max_depth_of_pure_heap_ignoring_middle = GetDepth<size_type>(size_of_pure_heap_ignoring_middle - 1);
+  //Pretend that in between each two columns there can fit exactly num_invisible_columns_of_nodes_that_can_fit_between_any_two_actual_columns invisible columns of nodes.
+  long double total_num_real_and_invisible_columns_of_nodes_per_actual_column = 1.0l + num_invisible_columns_of_nodes_that_can_fit_between_any_two_actual_columns;
+  long double total_num_real_and_invisible_columns_of_nodes_ = total_num_real_and_invisible_columns_of_nodes_per_actual_column * static_cast<long double>(max_depth_of_pure_heap_ignoring_middle) + 1.0l;
+  return half_distance_scaled / total_num_real_and_invisible_columns_of_nodes_;
+}
+
+template<typename size_type = std::size_t>
+long double GetDefaultNodeYCoordinateLength(size_type total_num_nodes, long double start_y, long double end_y,
+    long double num_invisible_nodes_that_can_fit_between_any_two_actual_nodes_in_last_column = 1.0l) {
+  auto distance = end_y - start_y;
+  auto half_distance = distance / 2;
+
+  size_type size_of_pure_heap_ignoring_middle = (total_num_nodes / 2);//NOT: total_num_nodes/2 - (total_num_nodes % 2);
+  size_type num_nodes_in_last_column_of_one_side = GetNumNodesInLastRow(size_of_pure_heap_ignoring_middle);
+  if (size_of_pure_heap_ignoring_middle <= 1)
+    return half_distance;
+  //Pretend that in between each two node there can fit exactly num_invisible_nodes_that_can_fit_between_any_two_actual_nodes_in_last_column invisible nodes.
+  long double total_num_real_and_invisible_nodes_per_actual_node_in_last_column = 1.0l + num_invisible_nodes_that_can_fit_between_any_two_actual_nodes_in_last_column;
+  long double total_num_real_and_invisible_nodes_ = num_nodes_in_last_column_of_one_side * static_cast<long double>(num_invisible_nodes_that_can_fit_between_any_two_actual_nodes_in_last_column)  + 1.0l;
+  return distance / total_num_real_and_invisible_nodes_;
+}
+
+//Assumes that the parent and child are rectangles of size node_x_length by node_y_length
+// and that that their x and y coordinates given in x_coordinates and y_coordinates
+// are the centers of these rectangles.
+//These rectangles are not allowed to be made to intersect and they must also be at least
+// min_x_distance_between_nodes and min_y_distance_between_nodes away from each other
+// in each of these directions.
+//In addition, after execution we will have that the distance between the x-coordinates
+// of the parent and child is >= min_x_child_offset_from_parent.
+//Only the coordinates of the child node are potentially changed. The coordinates of the parent node are not changed.
+template<typename size_type = std::size_t>
+void MoveChildCloseToParent(size_type total_num_nodes,
+    std::vector<long double> &x_coordinates,
+    std::vector<long double> &y_coordinates,
+    size_type parent_hc,
+    size_type child_hc,
+    long double min_x_distance_between_nodes,
+    long double min_y_distance_between_nodes,
+    long double node_x_length,
+    long double node_y_length,
+    long double min_x_child_offset_from_parent) {
+  size_type num_nodes_on_left = total_num_nodes / 2;
+  assert((parent_hc < num_nodes_on_left && child_hc < num_nodes_on_left) || (FLIP(parent_hc) < num_nodes_on_left && FLIP(child_hc) < num_nodes_on_left));
+  bool are_nodes_on_left = child_hc < num_nodes_on_left;
+  assert((are_nodes_on_left && Parent(child_hc) == parent_hc) || (!are_nodes_on_left && Parent(FLIP(child_hc)) == FLIP(parent_hc)));
+  if (are_nodes_on_left && x_coordinates[parent_hc] + node_x_length / 2 + min_x_distance_between_nodes < x_coordinates[child_hc] - node_x_length / 2)
+    x_coordinates[child_hc] = x_coordinates[parent_hc] + node_x_length + min_x_distance_between_nodes;
+  if (!are_nodes_on_left && x_coordinates[parent_hc] - node_x_length / 2 - min_x_distance_between_nodes > x_coordinates[child_hc] + node_x_length / 2)
+    x_coordinates[child_hc]  = x_coordinates[parent_hc] - node_x_length - min_x_distance_between_nodes;
+  if (y_coordinates[child_hc] == y_coordinates[parent_hc])
+    return ;
+
+  auto top_y_of_child     = y_coordinates[child_hc]  + node_y_length / 2;
+  auto bottom_y_of_child  = y_coordinates[child_hc]  - node_y_length / 2;
+  auto top_y_of_parent    = y_coordinates[parent_hc] + node_y_length / 2;
+  auto bottom_y_of_parent = y_coordinates[parent_hc] - node_y_length / 2;
+  //If moving the child furthure would cause the nodes to intersect then return.
+  if (y_coordinates[child_hc] < y_coordinates[parent_hc] && top_y_of_child + min_y_distance_between_nodes > bottom_y_of_parent) {
+    return ;
+  }
+  if (y_coordinates[child_hc] > y_coordinates[parent_hc] && bottom_y_of_child - min_y_distance_between_nodes < top_y_of_parent) {
+    return ;
+  }
+  //At this point, the distance between the extreme y-coordinates of the parent and child are >= min_y_distance_between_nodes.
+  if (are_nodes_on_left) {
+    x_coordinates[child_hc] = x_coordinates[parent_hc] + min_x_child_offset_from_parent;
+  } else {
+    x_coordinates[child_hc] = x_coordinates[parent_hc] - min_x_child_offset_from_parent;
+  }
+  return ;
+}
+
+template<typename size_type = std::size_t>
+void TightenCoordinates(size_type total_num_nodes, long double start_x, long double end_x,
+    long double start_y, long double end_y,
+    std::vector<long double> &x_coordinates,
+    std::vector<long double> &y_coordinates,
+    long double x_middle_separation_distance_ratio = 0.1l,
+    long double x_num_imaginary_middles_nodes_on_one_side = 0.8l,
+    long double y_scale_down_ratio = 1.0,
+    long double min_x_distance_between_nodes_as_ratio_of_node_x_length = 1.5,
+    long double min_y_distance_between_nodes_as_ratio_of_node_y_length = 0.5,
+    long double node_x_length = 0.0l,
+    long double node_y_length = 0.0l,
+    long double min_x_child_offset_from_parent = -1.0l) {
+  assert(start_x <= end_x && start_y <= end_y && total_num_nodes >= 1);
+  if (total_num_nodes <= 1)
+    return ;
+  if (node_x_length <= 0.0l)
+    node_x_length = GetDefaultNodeXCoordinateLength(total_num_nodes, start_x, end_x, x_middle_separation_distance_ratio, x_num_imaginary_middles_nodes_on_one_side);
+  if (node_y_length <= 0.0l)
+    node_y_length = GetDefaultNodeXCoordinateLength(total_num_nodes, start_y, end_y);
+  if (min_x_child_offset_from_parent < 0.0l)
+    min_x_child_offset_from_parent = node_x_length * (3.0l / 4.0l);
+
+  long double min_x_distance_between_nodes = min_x_distance_between_nodes_as_ratio_of_node_x_length * node_x_length;
+  long double min_y_distance_between_nodes = min_y_distance_between_nodes_as_ratio_of_node_y_length * node_y_length;
+
+  size_type last_node_to_check = total_num_nodes / 2 - 1;
+  size_type parent_of_last_node_to_check = Parent<size_type>(last_node_to_check);
+  for (size_type pos_hc = 0; pos_hc <= parent_of_last_node_to_check; pos_hc++) {
+    size_type left_child_hc  = LeftChild<size_type>(pos_hc);
+    size_type right_child_hc = RightChild<size_type>(pos_hc);
+
+    size_type child_hc = left_child_hc;
+    MoveChildCloseToParent(total_num_nodes, x_coordinates, y_coordinates, pos_hc, child_hc,
+        min_x_distance_between_nodes, min_y_distance_between_nodes, node_x_length, node_y_length, min_x_child_offset_from_parent);
+    MoveChildCloseToParent(total_num_nodes, x_coordinates, y_coordinates, FLIP(pos_hc), FLIP(child_hc),
+        min_x_distance_between_nodes, min_y_distance_between_nodes, node_x_length, node_y_length, min_x_child_offset_from_parent);
+
+    if (right_child_hc > last_node_to_check)
+      break ;
+    child_hc = right_child_hc;
+    MoveChildCloseToParent(total_num_nodes, x_coordinates, y_coordinates, pos_hc, child_hc,
+        min_x_distance_between_nodes, min_y_distance_between_nodes, node_x_length, node_y_length, min_x_child_offset_from_parent);
+    MoveChildCloseToParent(total_num_nodes, x_coordinates, y_coordinates, FLIP(pos_hc), FLIP(child_hc),
+        min_x_distance_between_nodes, min_y_distance_between_nodes, node_x_length, node_y_length, min_x_child_offset_from_parent);
   }
   return ;
 }
@@ -467,6 +620,7 @@ template<typename size_type = std::size_t>
 std::string GetTikzGraph(size_type total_num_nodes,
     long double start_x, long double end_x, long double start_y, long double end_y,
     std::vector<std::string> node_texts = std::vector<std::string>(),
+    bool should_tighten_coordinates = true,
     bool include_commented_out_FIGCO_definition = false,
     long double x_middle_separation_distance_ratio = 0.05l,
     long double y_scale_down_ratio = 1.0,
@@ -478,6 +632,10 @@ std::string GetTikzGraph(size_type total_num_nodes,
   GetCoordinates<size_type>(total_num_nodes, start_x, end_x, start_y, end_y,
           x_coordinates, y_coordinates,
           x_middle_separation_distance_ratio, x_num_imaginary_middles_nodes_on_one_side, y_scale_down_ratio);
+  if (should_tighten_coordinates)
+    TightenCoordinates(total_num_nodes, start_x, end_x, start_y, end_y,
+        x_coordinates, y_coordinates,
+        x_middle_separation_distance_ratio, x_num_imaginary_middles_nodes_on_one_side, y_scale_down_ratio);
   if (include_commented_out_FIGCO_definition) {
     strm << "%\\newcommand{\\FIGCO}[2]{#1(#2)}\n";
   }
@@ -501,11 +659,20 @@ std::string GetTikzGraph(size_type total_num_nodes,
  * Example call: GetTikzGraph(total_num_nodes, -std::log2(total_num_nodes/2), std::log2(total_num_nodes/2),
                               -total_num_nodes/2, total_num_nodes/2, vec);
  * Example call 2: std::cout << GetTikzGraph<int, std::size_t>(6, -4, 4, -4, 4, {0, 1, 2, 3, 4, 5}, true);
+ *
+ * Various  input parameters to this function determine the location of
+ *  (and the amount of space in between) nearby nodes.
+ * These include x_middle_separation_distance_ratio, y_scale_down_ratio, and x_num_imaginary_middles_nodes_on_one_side
+ *
+ * x_num_imaginary_middles_nodes_on_one_side - If this is set to 1.0l then the function pretends
+ *     that there is an column of (imaginary and invisible) nodes in the pure heap, where
+ *     these imaginary nodes would be the pure heap's last row.
  */
 template<class T, typename size_type = std::size_t>
 std::string GetTikzGraph(size_type total_num_nodes,
     long double start_x, long double end_x, long double start_y, long double end_y,
     const std::vector<T> values = std::vector<T>(),
+    bool should_tighten_coordinates = true,
     bool include_commented_out_FIGCO_definition = false,
     long double x_middle_separation_distance_ratio = 0.05l,
     long double y_scale_down_ratio = 1.0,
@@ -518,7 +685,7 @@ std::string GetTikzGraph(size_type total_num_nodes,
     node_texts[i] += std::string("$");
   }
   return GetTikzGraph<size_type>(total_num_nodes, start_x, end_x, start_y, end_y, node_texts,
-                      include_commented_out_FIGCO_definition,
+      should_tighten_coordinates, include_commented_out_FIGCO_definition,
                       x_middle_separation_distance_ratio, y_scale_down_ratio,
                       scale, x_num_imaginary_middles_nodes_on_one_side);
 }
