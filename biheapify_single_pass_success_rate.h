@@ -3,13 +3,13 @@
  *
  *  Created on: Jun 27, 2017
  *      Author: Matthew Gregory Krupa
- *   Copyright: Copyright Matthew Gregory Krupa
+ *   Copyright: Matthew Gregory Krupa
  *
  *  MeasureBiHeapifySuccessRate(), which is used to measure how many times
- *   a BiHeapify pass (i.e. one of BiHeapifyEven(),
- *   BiHeapifyOdd(), or BiHeapifySimpleSinglePass()) must be
- *   called before a BiHeap is formed.
- * - Notice that for BiHeapify() this always require only one call.
+ *   a BiHeapify() must be called before a BiHeap is formed.
+ * - Notice that for BiHeapify(), this always require only one call,
+ *   so that this experimentally verifies that our implementation of
+ *   the BiHeapify algorithm works correctly.
  */
 
 #ifndef BIHEAPIFY_SINGLE_PASS_SUCCESS_RATE_H_
@@ -146,7 +146,7 @@ void MeasureBiHeapifySuccessRate(long start_total_num_nodes,
         BiHeapify(vec.begin(), vec.size());
         total_tries++;
         try_counter[try_num]++;
-        while (!IsBiheap(vec.begin(), vec.size())) {
+        while (!IsBiHeap(vec.begin(), vec.size())) {
           fail_counter[try_num]++;
           if (try_num >= 10) {
             if (verbose)
@@ -164,7 +164,7 @@ void MeasureBiHeapifySuccessRate(long start_total_num_nodes,
           try_counter[try_num]++;
           total_tries++;
         }
-        if (!IsBiheap(vec.begin(), vec.size())) {
+        if (!IsBiHeap(vec.begin(), vec.size())) {
           if (verbose)
             std::cout << "Failed to BiHeapify() the following vector of size "
                       << vec.size() << std::endl;
