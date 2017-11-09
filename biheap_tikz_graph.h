@@ -621,11 +621,11 @@ std::string GetTikzGraph(size_type total_num_nodes,
     long double start_x, long double end_x, long double start_y, long double end_y,
     std::vector<std::string> node_texts = std::vector<std::string>(),
     bool should_tighten_coordinates = true,
-    bool include_commented_out_FIGCO_definition = false,
     long double x_middle_separation_distance_ratio = 0.05l,
     long double y_scale_down_ratio = 1.0,
     long double scale = 1.0,
-    long double x_num_imaginary_middles_nodes_on_one_side = 0.8l) {
+    long double x_num_imaginary_middles_nodes_on_one_side = 0.8l,
+    bool include_commented_out_FIGCO_definition = false) {
   std::stringstream strm;
   std::vector<long double> x_coordinates(total_num_nodes);
   std::vector<long double> y_coordinates(total_num_nodes);
@@ -673,11 +673,11 @@ std::string GetTikzGraph(size_type total_num_nodes,
     long double start_x, long double end_x, long double start_y, long double end_y,
     const std::vector<T> values = std::vector<T>(),
     bool should_tighten_coordinates = true,
-    bool include_commented_out_FIGCO_definition = false,
     long double x_middle_separation_distance_ratio = 0.05l,
     long double y_scale_down_ratio = 1.0,
     long double scale = 1.0,
-    long double x_num_imaginary_middles_nodes_on_one_side = 0.8l) {
+    long double x_num_imaginary_middles_nodes_on_one_side = 0.8l,
+    bool include_commented_out_FIGCO_definition = false) {
   std::vector<std::string> node_texts(values.size());
   for(auto i = 0u; i < values.size(); i++) {
     node_texts[i] += std::string("$");
@@ -685,9 +685,29 @@ std::string GetTikzGraph(size_type total_num_nodes,
     node_texts[i] += std::string("$");
   }
   return GetTikzGraph<size_type>(total_num_nodes, start_x, end_x, start_y, end_y, node_texts,
-      should_tighten_coordinates, include_commented_out_FIGCO_definition,
+                      should_tighten_coordinates,
                       x_middle_separation_distance_ratio, y_scale_down_ratio,
-                      scale, x_num_imaginary_middles_nodes_on_one_side);
+                      scale, x_num_imaginary_middles_nodes_on_one_side,
+                      include_commented_out_FIGCO_definition);
+}
+
+//Examples of calling GetTikzGraph()
+void PrintTikzGraphsExampleCalls() {
+  std::cout << GetTikzGraph<int, std::size_t>(45, -8.5, 8.5, -12, 12);
+
+  std::cout << "\n";
+  std::vector<int> vec = {0,11,1,12,13,2,3,14,15,16,17,4,5,6,7,18,19,8,9,20,10,21};
+  std::cout << GetTikzGraph<int, std::size_t>(22, -6, 6, -3, 3, vec);
+
+  bool tighten_coordinates = true;
+  std::cout << "\n";
+  std::cout << GetTikzGraph<std::size_t>(21, -8.5, -0.6, -5, 5, {}, tighten_coordinates, 0.05l, 1.0, 1.0, 1.5l);
+
+  std::cout << "\n";
+  vec = {0,23,1,24,25,2,3,26,27,28,29,4,5,6,7,30,31,32,33,34,35,36,37,8,9,10,11,12,13,14,15,38,39,40,41,16,17,18,19,42,43,20,21,44,22,45};
+  std::cout << GetTikzGraph<int, std::size_t>(46, -6, 6, -3, 3, vec, tighten_coordinates);
+  std::cout << std::endl;
+  return ;
 }
 
 #undef FLIP
