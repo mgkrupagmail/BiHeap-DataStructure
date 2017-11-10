@@ -1,5 +1,5 @@
 # BiHeap
-A biheap is a new independently developed data structure, with a part of its data in a min heap, a part in a max heap, and a part that is simultaneously in both. The minimum and maximum elements in a BiHeap are readily accessible. This project implements the BiHeapify() function which given a random access iterator and a length, forms a biheap. See the comment at the top of biheapify.h for the definition of a BiHeap.
+A BiHeap is a new independently developed data structure a part of whose data is lies a min heap, a part that lies in a max heap, and a part that lies simultaneously in both. An exposition on BiHeaps, including their definition, can be found in "BiHeaps and Pivot Selection.pdf".  The minimum and maximum elements in a BiHeap are readily accessible. This project implements the BiHeapify() function which given a random access iterator and a length, forms a biheap. See the comment at the top of biheapify.h for the definition of a BiHeap.
 This new data structure:
 <BR>
 1) is not excessively computationally costly to create, and<BR>
