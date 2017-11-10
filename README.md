@@ -5,7 +5,7 @@ This new data structure:
 1) is not excessively computationally costly to create, and<BR>
 2) is not an excessively complicated operation, being not much more difficult to implement than a min heap and a max heap; indeed the BiHeapify() operation is primarily a combination of the four standard sifting operations, which are sifting elements up/down in a min/max heap.
 
-These properties make the biheap definition and the biheapify operation easier to implement than double-ended heaps, its nearest counterpart, while also having good performance. The author considers the definition of a biheap to be a very natural data structure to define. It is also a definition that appears to have gone unnoticed until now.
+These properties make the BiHeap definition and the BiHeapify operation easier to implement than double-ended heaps, its nearest counterpart, while also having good performance. The author considers the definition of a biheap to be a very natural data structure to define. It is also a definition that appears to have gone unnoticed until now.
 
 The definition of a biheap is highly detailed but we can give a quick summary of it. We're given N elements indexed by 0, ..., N - 1. These elements form a BiHeap if:
 
