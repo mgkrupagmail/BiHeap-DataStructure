@@ -34,6 +34,7 @@
 #include "biheapify_single_pass_success_rate.h"
 #include "biheap_sift_test_correctness.h"
 #include "biheapify_inwards_pivot_testing.h"
+#include "biheapify_inwards_symmetrically_alternating_towards_ends_testing.h"
 
 #include "biheap_tikz_graph.h"
 
@@ -59,12 +60,15 @@ int main() {
   bool reset_after_print = true; //Don't show a cumulative success and failure
                                  // counts.
   bool verbose = false;
-  PrintTikzGraphsExampleCalls();
+  
+  //PrintTikzGraphsExampleCalls();
 
   //The two key quantities to look at are:
   //smallest min(# elements <= pivot, # elements >= pivot), and
   //average of min(# elements <= pivot, # elements >= pivot)
   MeasureBiHeapifyInwardsPivotProperties();
+  
+  MeasureBiHeapifyInwardsSymmetricallyAlternatingTowardsEndsProperties();
 
   //This function will go through each of the sizes:
   // start_total_num_nodes, start_total_num_nodes + increment_size,
