@@ -49,7 +49,7 @@ inline void BiHeapifyTowardsStartAndEndParents(RAI V, size_type N) {
 }
 
 template<class RAI, typename size_type = std::size_t>
-inline void BiHeapifyEveryLevelSymmetricallyLeavesExperiment(RAI V, size_type N) {
+inline void BiHeapifySymmetricallyAlternatingTowardsEnds(RAI V, size_type N) {
   BiHeapifyFlipsOrdered<RAI, size_type>(V, N);
   if (N < 4)
     return ;
@@ -86,7 +86,7 @@ inline void BiHeapifyEveryLevelSymmetricallyLeavesExperiment(RAI V, size_type N)
 template<class RAI, typename size_type = std::size_t>
 inline void BiHeapifyInwardsSymmetricallyAlternatingTowardsEnds(RAI V, size_type N) {
   while (N > 30) {
-    BiHeapifyEveryLevelSymmetricallyLeavesExperiment(V, N);
+    BiHeapifySymmetricallyAlternatingTowardsEnds(V, N);
     size_type heap_size     = HeapSize(N);
     size_type first_in_node = N - heap_size;
     V                      += first_in_node;
