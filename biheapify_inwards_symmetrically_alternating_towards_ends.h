@@ -2,7 +2,7 @@
  * biheapify_inwards_symmetrically_alternating_towards_ends.h
  *
  * The function BiHeapifyInwardsSymmetricallyAlternatingTowardsEnds()
- *  appears to always emplace the medians in the middle of the list
+ *  extremely frequently emplaces the medians in the middle of the list
  *  and arranges the elements so that all elements before (resp. after)
  *  the middle element are less than or equal to (resp. greater than
  *  or equal to) the median value(s).
