@@ -342,7 +342,7 @@ inline void BiHeapifyFlipsOrdered(RAI V, size_type N, LambdaType lambda) {
   size_type first_node_in_biheap_hc = FLIP(last_node_in_biheap_hc);
   while (first_node_in_biheap_hc > 0) {
     --first_node_in_biheap_hc;
-    if (*(V + first_node_in_biheap_hc) > *(V + (last_node_in_biheap_hc + 1)))
+    if (*(V + lambda(N, first_node_in_biheap_hc)) > *(V + lambda(N, last_node_in_biheap_hc + 1)))
       std::iter_swap(V + lambda(N, first_node_in_biheap_hc), V + lambda(N, last_node_in_biheap_hc + 1));
     BiHeapifyFlipsOrderedSiftFromMinToMax<RAI, size_type, LambdaType>(V, N, heap_size,
         first_node_in_mirror_heap,
