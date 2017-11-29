@@ -2,6 +2,9 @@ biheap_common.h
 biheapify_even.h
 biheapify_odd.h
 biheapify_time.h
+biheapify_inwards_symmetrically_alternating_towards_ends.h
+biheapify_inwards_symmetrically_alternating_towards_ends_testing.h
+
 
 # Prerequisites
 *.d
