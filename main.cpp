@@ -34,6 +34,7 @@
 #include "biheapify_single_pass_success_rate.h"
 #include "biheap_sift_test_correctness.h"
 #include "biheapify_inwards_pivot_testing.h"
+#include "biheapify_inwards_and_outwards_testing.h"
 
 #include "biheap_tikz_graph.h"
 
@@ -62,6 +63,8 @@ int main() {
   
   //PrintTikzGraphsExampleCalls();
 
+  MeasureBiHeapifyInwardsAndOutwardsProperties();
+  
   //The two key quantities to look at are:
   //smallest min(# elements <= pivot, # elements >= pivot), and
   //average of min(# elements <= pivot, # elements >= pivot)
