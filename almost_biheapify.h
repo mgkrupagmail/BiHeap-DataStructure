@@ -35,285 +35,49 @@
 #define ALMOST_BIHEAPIFY_H_
 
 #include "biheapify.h"
+#include "biheapify_lambda.h"
 
 #include <algorithm>
 
 #define FLIP(a) ((N - 1) - (a))
 
-template<typename size_type = std::size_t>
-inline size_type IsInNode(size_type pos_hc, size_type pos_mc, size_type heap_size) {
+template<typename SizeType = std::size_t>
+inline SizeType IsInNode(SizeType pos_hc, SizeType pos_mc, SizeType heap_size) {
   return (pos_hc < heap_size) && (pos_mc < heap_size);
 }
 
-template<typename size_type = std::size_t>
-inline size_type IsInNodeHC(size_type N, size_type pos_hc, size_type heap_size) {
+template<typename SizeType = std::size_t>
+inline SizeType IsInNodeHC(SizeType N, SizeType pos_hc, SizeType heap_size) {
   return IsInNode(pos_hc, FLIP(pos_hc), heap_size);
 }
 
-template<typename size_type = std::size_t>
-inline size_type IsInNodeMC(size_type N, size_type pos_mc, size_type heap_size) {
+template<typename SizeType = std::size_t>
+inline SizeType IsInNodeMC(SizeType N, SizeType pos_mc, SizeType heap_size) {
   return IsInNode(FLIP(pos_mc), pos_mc, heap_size);
 }
 
 /*
- * ================== START: Definition of AlmostBiheapify ====================
+ * ================== START: Definition of lambda version of IsAlmostBiHeap ====================
  */
 
-template<class RAI, typename size_type = std::size_t>
-bool IsAlmostBiheapCheckAlmostTripleConditionAtInNode(RAI V, size_type N, size_type in_node_hc) {
-  size_type min_heap_parent_hc = Parent<size_type>(in_node_hc);
-  size_type max_heap_parent_hc = FLIP(Parent<size_type>(FLIP(in_node_hc)));
-  return *(V + min_heap_parent_hc) <= *(V + max_heap_parent_hc);
-}
-
-template<class RAI, typename size_type = std::size_t>
-bool IsAlmostBiheapCheckAlmostQuadrupleCondition(RAI V, size_type N) {
-  //assert(N % 3 == 2);
-  size_type pure_min_heap_double_arrow_node_hc = (N - 2) / 3;
-  size_type parent_of_pure_min_heap_double_arrow_node_hc = Parent<size_type>(pure_min_heap_double_arrow_node_hc);
-  return *(V + parent_of_pure_min_heap_double_arrow_node_hc) <= *(V + FLIP(parent_of_pure_min_heap_double_arrow_node_hc));
-}
-
-template<class RAI, typename size_type = std::size_t>
-void AlmostBiheapifyEnsureAlmostQuadrupleCondition(RAI V, size_type N) {
-  //assert(N % 3 == 2);
-  size_type pure_min_heap_double_arrow_node_hc = (N - 2) / 3;
-  size_type parent_of_pure_min_heap_double_arrow_node_hc = Parent<size_type>(pure_min_heap_double_arrow_node_hc);
-  if (*(V + parent_of_pure_min_heap_double_arrow_node_hc) > *(V + FLIP(parent_of_pure_min_heap_double_arrow_node_hc)))
-    std::iter_swap(V + parent_of_pure_min_heap_double_arrow_node_hc, V + FLIP(parent_of_pure_min_heap_double_arrow_node_hc));
-  return ;
-}
-
-/* Checks whether or not the V total_um_nodes given given the iterator
- *  V define an almost BiHeap.
- */
-template<class RAI, typename size_type = std::size_t>
-bool IsAlmostBiHeap(RAI V, size_type N) {
-  if (N <= 3) {
-    if(N <= 2)
-      return true;
-    else if (N == 3)
-      return *V <= *(V + 2);
-  }
-  bool is_N_mod_3_equal_to_2 = N % 3 == 2;
-  if (is_N_mod_3_equal_to_2 && !IsAlmostBiheapCheckAlmostQuadrupleCondition(V, N)) {
-    return false;
-  }
-  size_type heap_size = HeapSize<size_type>(N);
-  size_type first_in_node_hc = N - heap_size;
-  {
-    size_type one_past_last_node = heap_size - is_N_mod_3_equal_to_2;
-    for (size_type in_hc = first_in_node_hc + is_N_mod_3_equal_to_2; in_hc < one_past_last_node; in_hc++) {
-      if (!IsAlmostBiheapCheckAlmostTripleConditionAtInNode(V, N, in_hc))
-        return false;
-    }
-  }
-
-  //Check the min heap condition.
-  {
-    size_type i = 0;
-    for (size_type right_child; (right_child = RightChild<size_type>(i))
-                                                    < first_in_node_hc; i++) {
-      auto parent_value = *(V + i);
-      //Check that the parent and left child satisfy the min heap condition.
-      if (parent_value > *(V + (right_child - 1)))
-        return false;
-
-      //Check that the parent and right child satisfy the min heap condition.
-      if (parent_value > *(V + right_child)) {
-        if (!(is_N_mod_3_equal_to_2 && right_child == (N - 2) / 3))
-          return false;
-      }
-    }
-    //If the min heap's last non-In element is an only child then check that it and
-    // its parent satisfy the min heap condition (i.e. the biheap condition).
-    {
-      size_type left_child;
-      if ((left_child = LeftChild<size_type>(i)) < first_in_node_hc
-          && *(V + i) > *(V + left_child))
-        return false;
-    }
-  }
-  //Check the max heap condition.
-  {
-    size_type i = 0;
-    for (size_type right_child; (right_child = RightChild<size_type>(i))
-                                                    < first_in_node_hc; i++) {
-      auto parent_value = *(V + FLIP(i));
-      size_type mirror_left_child_hc = FLIP(right_child - 1);
-      //Check that the parent and left child satisfy the max heap condition.
-      if (parent_value < *(V + mirror_left_child_hc))
-        return false;
-
-      //Check that the parent and right child satisfy the max heap condition.
-      if (parent_value < *(V + (mirror_left_child_hc - 1))) {
-        if (!(is_N_mod_3_equal_to_2 && right_child == (N - 2) / 3))
-          return false;
-      }
-    }
-    //If the max heap's last non-In element is an only child then check that it and
-    // its parent satisfy the max heap condition (i.e. the biheap condition).
-    {
-      size_type left_child;
-      if ((left_child = LeftChild<size_type>(i)) < first_in_node_hc
-          && *(V + FLIP(i)) < *(V + FLIP(left_child)))
-        return false;
-    }
-  }
-  return true;
-}
-
-template<class RAI, typename size_type = std::size_t>
-inline void AlmostBiHeapifySiftFromMinToMax(RAI V, size_type N,
-                                      size_type heap_size,
-                                      size_type first_in_node,
-                                      size_type pos_hc,
-                                      size_type last_node_in_biheap_hc) {
-  bool is_total_num_nodes_mod_3_equal_to_2 = N % 3 == 2;
-  while (pos_hc < first_in_node) {
-    auto left_child_hc  = LeftChild<size_type>(pos_hc);
-    auto right_child_hc = left_child_hc + 1;
-    bool is_right_child_valid = right_child_hc <= last_node_in_biheap_hc &&
-                                right_child_hc < heap_size;
-    if (IsInNodeHC(N, left_child_hc, heap_size)) {
-      size_type left_child_mc = Parent<size_type>(FLIP(left_child_hc));
-      if (is_total_num_nodes_mod_3_equal_to_2 && left_child_mc == (N - 2) / 3)
-        left_child_mc = Parent<size_type>(left_child_mc);
-      left_child_hc = FLIP(left_child_mc);
-    }
-    if (IsInNodeHC(N, right_child_hc, heap_size)) {
-      size_type right_child_mc = Parent<size_type>(FLIP(right_child_hc));
-      if (is_total_num_nodes_mod_3_equal_to_2 && right_child_mc == (N - 2) / 3)
-        right_child_mc = Parent<size_type>(right_child_mc);
-      right_child_hc = FLIP(right_child_mc);
-    }
-    auto left_it   = V + left_child_hc;
-    auto right_it  = V + right_child_hc;
-    auto pos_it    = V + pos_hc;
-    RAI smaller_it;
-
-    is_right_child_valid = is_right_child_valid && right_child_hc <= last_node_in_biheap_hc;
-    bool is_left_child_valid = left_child_hc <= last_node_in_biheap_hc;
-    if (!is_left_child_valid && !is_right_child_valid)
-      return ;
-    if (!is_left_child_valid || (is_right_child_valid && *right_it < *left_it)) {
-      smaller_it = right_it;
-      pos_hc     = right_child_hc;
-    } else {
-      smaller_it = left_it;
-      pos_hc     = left_child_hc;
-    }
-    if (*pos_it > *smaller_it)
-      std::iter_swap(pos_it, smaller_it);
-    else
-      return ;
-  }
-  SiftUpMaxHeapMC<RAI, size_type>(V, N, FLIP(pos_hc),
-                                  FLIP(last_node_in_biheap_hc));
-  return ;
-}
-
-template<class RAI, typename size_type = std::size_t>
-inline void AlmostBiHeapifySiftFromMaxToMin(RAI V, size_type N,
-                                      size_type heap_size,
-                                      size_type first_in_node,
-                                      size_type pos_mc,
-                                      size_type first_node_in_biheap_hc) {
-  auto pos_hc = FLIP(pos_mc);
-  bool is_total_num_nodes_mod_3_equal_to_2 = N % 3 == 2;
-  while (pos_mc < first_in_node) {
-    auto left_child_mc  = LeftChild<size_type>(pos_mc);
-    auto right_child_mc = left_child_mc + 1;
-    auto left_child_hc  = FLIP(left_child_mc);
-    auto right_child_hc = left_child_hc - 1;
-    bool is_right_child_valid = right_child_mc < heap_size;
-    if (IsInNode(left_child_hc, left_child_mc, heap_size)) {
-      left_child_hc = Parent<size_type>(FLIP(left_child_mc));
-      if (is_total_num_nodes_mod_3_equal_to_2 && left_child_hc == (N - 2) / 3)
-        left_child_hc = Parent<size_type>(left_child_hc);
-      left_child_mc = FLIP(left_child_hc);
-    }
-    if (IsInNode(right_child_hc, right_child_mc, heap_size)) {
-      right_child_hc = Parent<size_type>(FLIP(right_child_mc));
-      if (is_total_num_nodes_mod_3_equal_to_2 && right_child_hc == (N - 2) / 3)
-        right_child_hc = Parent<size_type>(right_child_hc);
-      right_child_mc = FLIP(right_child_hc);
-    }
-    auto pos_it    = V + pos_hc;
-    auto left_it   = V + left_child_hc;
-    auto right_it  = V + right_child_hc;
-    RAI larger_it;
-
-    is_right_child_valid = is_right_child_valid && right_child_hc >= first_node_in_biheap_hc;
-    bool is_left_child_valid = left_child_hc >= first_node_in_biheap_hc;
-    if (!is_left_child_valid && !is_right_child_valid)
-      return ;
-    if (!is_left_child_valid || (is_right_child_valid && *right_it > *left_it)) {
-      larger_it = right_it;
-      pos_hc    = right_child_hc;
-      pos_mc    = right_child_mc;
-    } else {
-      larger_it = left_it;
-      pos_hc    = left_child_hc;
-      pos_mc    = left_child_mc;
-    }
-    if (*pos_it < *larger_it)
-      std::iter_swap(pos_it, larger_it);
-    else
-      return ;
-  }
-  SiftUpMinHeapHC<RAI, size_type>(V, pos_hc, first_node_in_biheap_hc);
-  return ;
-}
-
-template<class RAI, typename size_type = std::size_t>
-inline void AlmostBiHeapify(RAI V, size_type N) {
-  if(N < 3)
-    return ;
-  size_type heap_size               = HeapSize<size_type>(N);
-  size_type first_in_node           = N - heap_size;
-  size_type last_node_in_biheap_hc  = IndexOfLastMinHeapNodeGivenHeapSize<size_type>(heap_size);
-  size_type first_node_in_biheap_hc = FLIP(last_node_in_biheap_hc);
-  while (first_node_in_biheap_hc > 0) {
-    AlmostBiHeapifySiftFromMinToMax<RAI, size_type>(V, N,
-        heap_size, first_in_node,
-        --first_node_in_biheap_hc, last_node_in_biheap_hc);
-    AlmostBiHeapifySiftFromMaxToMin<RAI, size_type>(V, N,
-        heap_size, first_in_node,
-        FLIP(++last_node_in_biheap_hc), first_node_in_biheap_hc);
-  }
-  return ;
-}
-
-/*
- * ================== END: Definition of AlmostBiheapify ====================
- */
-
-/*
- * ================== START: Definition of lambda version of AlmostBiheapify ====================
- */
-
-
-template<class RAI, typename size_type = std::size_t, typename LambdaType>
-bool IsAlmostBiheapCheckAlmostTripleConditionAtInNode(RAI V, size_type N, size_type in_node_hc, LambdaType lambda) {
-  size_type min_heap_parent_hc = Parent<size_type>(in_node_hc);
-  size_type max_heap_parent_hc = FLIP(Parent<size_type>(FLIP(in_node_hc)));
+template<class RAI, typename SizeType = std::size_t, typename LambdaType>
+bool IsAlmostBiheapCheckAlmostTripleConditionAtInNode(RAI V, SizeType N, SizeType in_node_hc, LambdaType lambda) {
+  SizeType min_heap_parent_hc = Parent<SizeType>(in_node_hc);
+  SizeType max_heap_parent_hc = FLIP(Parent<SizeType>(FLIP(in_node_hc)));
   return *(V + lambda(N, min_heap_parent_hc)) <= *(V + lambda(N, max_heap_parent_hc));
 }
 
-template<class RAI, typename size_type = std::size_t, typename LambdaType>
-bool IsAlmostBiheapCheckAlmostQuadrupleCondition(RAI V, size_type N, LambdaType lambda) {
-  //assert(N % 3 == 2);
-  size_type pure_min_heap_double_arrow_node_hc = (N - 2) / 3;
-  size_type parent_of_pure_min_heap_double_arrow_node_hc = Parent<size_type>(pure_min_heap_double_arrow_node_hc);
+template<class RAI, typename SizeType = std::size_t, typename LambdaType>
+bool IsAlmostBiheapCheckAlmostQuadrupleCondition(RAI V, SizeType N, LambdaType lambda) {
+  SizeType pure_min_heap_double_arrow_node_hc = (N - 2) / 3;
+  SizeType parent_of_pure_min_heap_double_arrow_node_hc = Parent<SizeType>(pure_min_heap_double_arrow_node_hc);
   return *(V + lambda(N, parent_of_pure_min_heap_double_arrow_node_hc)) <= *(V + lambda(N, FLIP(parent_of_pure_min_heap_double_arrow_node_hc)));
 }
 
-template<class RAI, typename size_type = std::size_t, typename LambdaType>
-void AlmostBiheapifyEnsureAlmostQuadrupleCondition(RAI V, size_type N, LambdaType lambda) {
-  //assert(N % 3 == 2);
-  size_type pure_min_heap_double_arrow_node_hc = (N - 2) / 3;
-  size_type parent_of_pure_min_heap_double_arrow_node_hc = Parent<size_type>(pure_min_heap_double_arrow_node_hc);
+template<class RAI, typename SizeType = std::size_t, typename LambdaType>
+void AlmostBiheapifyEnsureAlmostQuadrupleCondition(RAI V, SizeType N, LambdaType lambda) {
+  SizeType pure_min_heap_double_arrow_node_hc = (N - 2) / 3;
+  SizeType parent_of_pure_min_heap_double_arrow_node_hc = Parent<SizeType>(pure_min_heap_double_arrow_node_hc);
   if (*(V + lambda(N, parent_of_pure_min_heap_double_arrow_node_hc)) > *(V + lambda(N, FLIP(parent_of_pure_min_heap_double_arrow_node_hc))))
     std::iter_swap(V + lambda(N, parent_of_pure_min_heap_double_arrow_node_hc), V + lambda(N, FLIP(parent_of_pure_min_heap_double_arrow_node_hc)));
   return ;
@@ -322,8 +86,8 @@ void AlmostBiheapifyEnsureAlmostQuadrupleCondition(RAI V, size_type N, LambdaTyp
 /* Checks whether or not the V total_um_nodes given given the iterator
  *  V define an almost BiHeap.
  */
-template<class RAI, typename size_type = std::size_t, typename LambdaType>
-bool IsAlmostBiHeap(RAI V, size_type N, LambdaType lambda) {
+template<class RAI, typename SizeType = std::size_t, typename LambdaType>
+bool IsAlmostBiHeap(RAI V, SizeType N, LambdaType lambda) {
   if (N <= 3) {
     if(N <= 2)
       return true;
@@ -333,11 +97,11 @@ bool IsAlmostBiHeap(RAI V, size_type N, LambdaType lambda) {
   bool is_N_mod_3_equal_to_2 = N % 3 == 2;
   if (is_N_mod_3_equal_to_2 && !IsAlmostBiheapCheckAlmostQuadrupleCondition(V, N, lambda))
     return false;
-  size_type heap_size = HeapSize<size_type>(N);
-  size_type first_in_node_hc = N - heap_size;
+  SizeType heap_size = HeapSize<SizeType>(N);
+  SizeType first_in_node_hc = N - heap_size;
   {
-    size_type one_past_last_node = heap_size - is_N_mod_3_equal_to_2;
-    for (size_type in_hc = first_in_node_hc + is_N_mod_3_equal_to_2; in_hc < one_past_last_node; in_hc++) {
+    SizeType one_past_last_node = heap_size - is_N_mod_3_equal_to_2;
+    for (SizeType in_hc = first_in_node_hc + is_N_mod_3_equal_to_2; in_hc < one_past_last_node; in_hc++) {
       if (!IsAlmostBiheapCheckAlmostTripleConditionAtInNode(V, N, in_hc, lambda))
         return false;
     }
@@ -345,8 +109,8 @@ bool IsAlmostBiHeap(RAI V, size_type N, LambdaType lambda) {
 
   //Check the min heap condition.
   {
-    size_type i = 0;
-    for (size_type right_child; (right_child = RightChild<size_type>(i))
+    SizeType i = 0;
+    for (SizeType right_child; (right_child = RightChild<SizeType>(i))
                                                     < first_in_node_hc; i++) {
       auto parent_value = *(V + lambda(N, i));
       //Check that the parent and left child satisfy the min heap condition.
@@ -362,19 +126,19 @@ bool IsAlmostBiHeap(RAI V, size_type N, LambdaType lambda) {
     //If the min heap's last non-In element is an only child then check that it and
     // its parent satisfy the min heap condition (i.e. the biheap condition).
     {
-      size_type left_child;
-      if ((left_child = LeftChild<size_type>(i)) < first_in_node_hc
+      SizeType left_child;
+      if ((left_child = LeftChild<SizeType>(i)) < first_in_node_hc
           && *(V + lambda(N, i)) > *(V + lambda(N, left_child)))
         return false;
     }
   }
   //Check the max heap condition.
   {
-    size_type i = 0;
-    for (size_type right_child; (right_child = RightChild<size_type>(i))
+    SizeType i = 0;
+    for (SizeType right_child; (right_child = RightChild<SizeType>(i))
                                                     < first_in_node_hc; i++) {
       auto parent_value = *(V + lambda(N, FLIP(i)));
-      size_type mirror_left_child_hc = FLIP(right_child - 1);
+      SizeType mirror_left_child_hc = FLIP(right_child - 1);
       //Check that the parent and left child satisfy the max heap condition.
       if (parent_value < *(V + lambda(N, mirror_left_child_hc)))
         return false;
@@ -388,8 +152,8 @@ bool IsAlmostBiHeap(RAI V, size_type N, LambdaType lambda) {
     //If the max heap's last non-In element is an only child then check that it and
     // its parent satisfy the max heap condition (i.e. the biheap condition).
     {
-      size_type left_child;
-      if ((left_child = LeftChild<size_type>(i)) < first_in_node_hc
+      SizeType left_child;
+      if ((left_child = LeftChild<SizeType>(i)) < first_in_node_hc
           && *(V + lambda(N, FLIP(i))) < *(V + lambda(N, FLIP(left_child))))
         return false;
     }
@@ -397,43 +161,159 @@ bool IsAlmostBiHeap(RAI V, size_type N, LambdaType lambda) {
   return true;
 }
 
-template<class RAI, typename size_type = std::size_t, typename LambdaType>
-inline void AlmostBiHeapifySiftFromMinToMax(RAI V, size_type N,
-                                      size_type heap_size,
-                                      size_type first_node_in_mirror_heap,
-                                      size_type pos_hc,
-                                      size_type largest_node_in_biheap_hc,
+
+template<class RAI, typename SizeType = std::size_t>
+bool IsAlmostBiHeap(RAI V, SizeType N) {
+  auto trivial_lambda = [](SizeType local_N, SizeType i) -> SizeType { return i; };
+  return IsAlmostBiHeap<RAI, SizeType, decltype(trivial_lambda)>(V, N, trivial_lambda);
+}
+
+
+/*
+ * ================== END: Definition of lambda version of IsAlmostBiHeap ====================
+ */
+
+/*
+ * ================== START: Definition of lambda version of IsAlmostBiHeap with some permitted In nodes ====================
+ */
+
+template<class RAI, typename SizeType = std::size_t, typename LambdaType>
+bool IsAlmostBiHeap(RAI V, SizeType N, SizeType fuse_first_hc,
+                    SizeType fuse_last_hc, LambdaType lambda) {
+  if(N < 2)
+    return true;
+  if (fuse_first_hc > fuse_last_hc) //If all nodes are permitted then it should be a BiHeap.
+    return IsBiHeap<RAI, SizeType, LambdaType>(V, N, lambda);
+  if(N == 2 || (fuse_last_hc - fuse_first_hc <= 0))
+    return true;
+  if (!IsAlmostBiHeap<RAI, SizeType, LambdaType>(V, N, lambda))
+    return false ;
+  if (N % 3 == 2) { //Then make sure that the double arrow satisfies the necessary conditions.
+    SizeType pmin_double_arrow_node_hc = (N - 2) / 3;
+    SizeType pmax_double_arrow_node_hc = (2 * N - 1) / 3;
+    SizeType minH_parent_of_pmin_double_arrow_node_hc = Parent<SizeType>(pmin_double_arrow_node_hc);
+    SizeType maxH_parent_of_pmax_double_arrow_node_hc = FLIP(minH_parent_of_pmin_double_arrow_node_hc);
+    RAI pmin_double_arrow_node_it = V + lambda(N, pmin_double_arrow_node_hc);
+    RAI pmax_double_arrow_node_it = V + lambda(N, pmax_double_arrow_node_hc);
+    RAI minH_parent_of_pmin_double_arrow_node_it = V + lambda(N, minH_parent_of_pmin_double_arrow_node_hc);
+    RAI maxH_parent_of_pmax_double_arrow_node_it = V + lambda(N, maxH_parent_of_pmax_double_arrow_node_hc);
+    bool is_pmin_double_arrow_node_forbidden =
+        fuse_first_hc <= pmin_double_arrow_node_hc
+        && pmin_double_arrow_node_hc <= fuse_last_hc;
+    bool is_pmax_double_arrow_node_forbidden =
+        fuse_first_hc <= pmax_double_arrow_node_hc
+        && pmax_double_arrow_node_hc <= fuse_last_hc;
+    if (!is_pmin_double_arrow_node_forbidden && *pmin_double_arrow_node_it < *minH_parent_of_pmin_double_arrow_node_it)
+      return false;
+    if (!is_pmax_double_arrow_node_forbidden && *pmax_double_arrow_node_it > *maxH_parent_of_pmax_double_arrow_node_it)
+      return false;
+    if (!is_pmin_double_arrow_node_forbidden && !is_pmax_double_arrow_node_forbidden
+        && *pmin_double_arrow_node_it > *pmax_double_arrow_node_it)
+      return false;
+    else if (is_pmin_double_arrow_node_forbidden && !is_pmax_double_arrow_node_forbidden
+        && *minH_parent_of_pmin_double_arrow_node_it > *pmax_double_arrow_node_it)
+      return false;
+    else if (!is_pmin_double_arrow_node_forbidden && is_pmax_double_arrow_node_forbidden
+        && *pmin_double_arrow_node_it > *maxH_parent_of_pmax_double_arrow_node_it)
+      return false;
+  }
+  SizeType heap_size              = HeapSize(N);
+  SizeType first_in_node          = N - heap_size;
+  SizeType first_in_node_to_check = first_in_node + (N % 3 == 2); //Avoid the double arrow if it exists.
+  SizeType last_in_node_to_check  = FLIP(first_in_node_to_check);
+  for (SizeType pos_hc = first_in_node_to_check; pos_hc < fuse_first_hc; pos_hc++) {
+    SizeType minh_parent_of_pos_hc = Parent<SizeType>(pos_hc);
+    SizeType maxh_parent_of_pos_hc = FLIP(Parent<SizeType>(FLIP(pos_hc)));
+    auto pos_value = *(V + lambda(N, pos_hc));
+    if (pos_value < *(V + lambda(N, minh_parent_of_pos_hc)) ||
+        pos_value > *(V + lambda(N, maxh_parent_of_pos_hc))) {
+      return false;
+    }
+  }
+  for (SizeType pos_hc = fuse_last_hc + 1; pos_hc <= last_in_node_to_check; pos_hc++) {
+    SizeType minh_parent_of_pos_hc = Parent<SizeType>(pos_hc);
+    SizeType maxh_parent_of_pos_hc = FLIP(Parent<SizeType>(FLIP(pos_hc)));
+    auto pos_value = *(V + lambda(N, pos_hc));
+    if (pos_value < *(V + lambda(N, minh_parent_of_pos_hc)) ||
+        pos_value > *(V + lambda(N, maxh_parent_of_pos_hc))) {
+      return false;
+    }
+  }
+  return true;
+}
+
+template<class RAI, typename SizeType = std::size_t, typename LambdaType>
+bool IsAlmostBiHeap(RAI V, SizeType N, SizeType num_permitted_in_nodes, LambdaType lambda) {
+  if(N < 2 || (N == 2 && num_permitted_in_nodes <= 1))
+    return true;
+  if (num_permitted_in_nodes <= 0)
+    return IsAlmostBiHeap<RAI, SizeType, LambdaType>(V, N, lambda);
+  SizeType heap_size     = HeapSize<SizeType>(N);
+  SizeType first_in_node = N - heap_size;
+  SizeType num_in_nodes  = heap_size - first_in_node;
+  if (num_permitted_in_nodes >= num_in_nodes)
+    return IsBiHeap<RAI, SizeType, LambdaType>(V, N, lambda);
+  if (N == 2 && num_permitted_in_nodes <= 1)
+    return true;//Then it's trivially an almost BiHeap.
+  //If there is an num_permitted_in_nodes is odd, then
+  // allow there to be one more permitted pure min heap
+  // In node than there are permitted pure max heap In nodes.
+  SizeType fuse_first_hc = first_in_node + (num_permitted_in_nodes + 1) / 2;
+  SizeType fuse_last_hc = FLIP(first_in_node + (num_permitted_in_nodes / 2));
+  return IsAlmostBiHeap<RAI, SizeType, LambdaType>(V, N, fuse_first_hc,
+                                                   fuse_last_hc, lambda);
+}
+
+template<class RAI, typename SizeType = std::size_t>
+bool IsAlmostBiHeap(RAI V, SizeType N,  SizeType num_permitted_in_nodes) {
+  auto trivial_lambda = [](SizeType N, SizeType i) -> SizeType { return i; };
+  return IsAlmostBiHeap<RAI, SizeType, decltype(trivial_lambda)>(V, N,
+                                       num_permitted_in_nodes, trivial_lambda);
+}
+
+template<class RAI, typename SizeType = std::size_t>
+bool IsAlmostBiHeap(RAI V, SizeType N, SizeType fuse_first_hc, SizeType fuse_last_hc) {
+  auto trivial_lambda = [](SizeType N, SizeType i) -> SizeType { return i; };
+  return IsAlmostBiHeap<RAI, SizeType, decltype(trivial_lambda)>(V, N,
+                                  fuse_first_hc, fuse_last_hc, trivial_lambda);
+}
+
+/*
+ * ================== END: Definition of lambda version of IsAlmostBiHeap with some permitted In nodes ====================
+ */
+
+/*
+ * ================== START: Definition of lambda version of AlmostBiheapify with some permitted In nodes, N mod 3 != 2 case =============
+ */
+
+template<class RAI, typename SizeType = std::size_t, typename LambdaType>
+inline void AlmostBiHeapifySiftFromMinToMaxIgnoreDoubledHeadedArrow(RAI V, SizeType N,
+                                      SizeType heap_size,
+                                      SizeType first_in_node,
+                                      SizeType pos_hc,
+                                      SizeType last_node_in_biheap_hc,
+                                      SizeType fuse_first_hc,
+                                      SizeType fuse_last_hc,
                                       LambdaType lambda) {
-  bool is_total_num_nodes_mod_3_equal_to_2 = N % 3 == 2;
-  while (pos_hc < first_node_in_mirror_heap) {
-    auto left_child_hc  = LeftChild<size_type>(pos_hc);
+  while (pos_hc < first_in_node) {
+    auto left_child_hc  = LeftChild<SizeType>(pos_hc);
     auto right_child_hc = left_child_hc + 1;
-    bool is_right_child_valid = right_child_hc <= largest_node_in_biheap_hc &&
+    bool is_right_child_valid = right_child_hc <= last_node_in_biheap_hc &&
                                 right_child_hc < heap_size;
-    bool is_left_child_valid = left_child_hc <= largest_node_in_biheap_hc &&
+    bool is_left_child_valid = left_child_hc <= last_node_in_biheap_hc &&
                                left_child_hc < heap_size;
-    if (IsInNodeHC(N, left_child_hc, heap_size)) {
-      size_type left_child_mc = Parent<size_type>(FLIP(left_child_hc));
-      if (is_total_num_nodes_mod_3_equal_to_2 && left_child_mc == (N - 2) / 3)
-        left_child_mc = Parent<size_type>(left_child_mc);
-      left_child_hc = FLIP(left_child_mc);
-    }
-    if (IsInNodeHC(N, right_child_hc, heap_size)) {
-      size_type right_child_mc = Parent<size_type>(FLIP(right_child_hc));
-      if (is_total_num_nodes_mod_3_equal_to_2 && right_child_mc == (N - 2) / 3)
-        right_child_mc = Parent<size_type>(right_child_mc);
-      right_child_hc = FLIP(right_child_mc);
-    }
-
-    auto left_it   = V + lambda(N, left_child_hc);
-    auto right_it  = V + lambda(N, right_child_hc);
-    auto pos_it    = V + lambda(N, pos_hc);
-    RAI smaller_it;
-
-    is_right_child_valid = is_right_child_valid && right_child_hc <= largest_node_in_biheap_hc;
-    is_left_child_valid  = is_left_child_valid && left_child_hc <= largest_node_in_biheap_hc;
+    if (fuse_first_hc <= left_child_hc && left_child_hc <= fuse_last_hc)
+      left_child_hc = FLIP(Parent<SizeType>(FLIP(left_child_hc)));
+    if (fuse_first_hc <= right_child_hc && right_child_hc <= fuse_last_hc)
+      right_child_hc = FLIP(Parent<SizeType>(FLIP(right_child_hc)));
+    is_right_child_valid = is_right_child_valid && right_child_hc <= last_node_in_biheap_hc;
+    is_left_child_valid  = is_left_child_valid && left_child_hc <= last_node_in_biheap_hc;
     if (!is_left_child_valid && !is_right_child_valid)
       return ;
+    auto left_it  = V + lambda(N, left_child_hc);
+    auto right_it = V + lambda(N, right_child_hc);
+    auto pos_it   = V + lambda(N, pos_hc);
+    RAI smaller_it;
     if (!is_left_child_valid || (is_right_child_valid && *right_it < *left_it)) {
       smaller_it = right_it;
       pos_hc     = right_child_hc;
@@ -446,47 +326,43 @@ inline void AlmostBiHeapifySiftFromMinToMax(RAI V, size_type N,
     else
       return ;
   }
-  SiftUpMaxHeapMC<RAI, size_type, LambdaType>(V, N, FLIP(pos_hc),
-                                  FLIP(largest_node_in_biheap_hc), lambda);
+  SiftUpMaxHeapMC<RAI, SizeType, LambdaType>(V, N, FLIP(pos_hc),
+                                  FLIP(last_node_in_biheap_hc), lambda);
   return ;
 }
 
-template<class RAI, typename size_type = std::size_t, typename LambdaType>
-inline void AlmostBiHeapifySiftFromMaxToMin(RAI V, size_type N,
-                                      size_type heap_size,
-                                      size_type first_node_in_mirror_heap,
-                                      size_type pos_mc,
-                                      size_type smallest_node_in_biheap_hc,
+template<class RAI, typename SizeType = std::size_t, typename LambdaType>
+inline void AlmostBiHeapifySiftFromMaxToMinIgnoreDoubledHeadedArrow(RAI V, SizeType N,
+                                      SizeType heap_size,
+                                      SizeType first_in_node,
+                                      SizeType pos_mc,
+                                      SizeType first_node_in_biheap_hc,
+                                      SizeType fuse_first_hc,
+                                      SizeType fuse_last_hc,
                                       LambdaType lambda) {
   auto pos_hc = FLIP(pos_mc);
-  bool is_total_num_nodes_mod_3_equal_to_2 = N % 3 == 2;
-  while (pos_mc < first_node_in_mirror_heap) {
-    auto left_child_mc  = LeftChild<size_type>(pos_mc);
+  while (pos_mc < first_in_node) {
+    auto left_child_mc  = LeftChild<SizeType>(pos_mc);
     auto right_child_mc = left_child_mc + 1;
     auto left_child_hc  = FLIP(left_child_mc);
     auto right_child_hc = left_child_hc - 1;
-    bool is_right_child_valid = right_child_mc < heap_size && right_child_hc >= smallest_node_in_biheap_hc;
-    if (IsInNode(left_child_hc, left_child_mc, heap_size)) {
-      left_child_hc = Parent<size_type>(FLIP(left_child_mc));
-      if (is_total_num_nodes_mod_3_equal_to_2 && left_child_hc == (N - 2) / 3)
-        left_child_hc = Parent<size_type>(left_child_hc);
+    bool is_right_child_valid = right_child_mc < heap_size && right_child_hc >= first_node_in_biheap_hc;
+    if (fuse_first_hc <= left_child_hc && left_child_hc <= fuse_last_hc) {
+      left_child_hc = Parent<SizeType>(left_child_hc);
       left_child_mc = FLIP(left_child_hc);
     }
-    if (IsInNode(right_child_hc, right_child_mc, heap_size)) {
-      right_child_hc = Parent<size_type>(FLIP(right_child_mc));
-      if (is_total_num_nodes_mod_3_equal_to_2 && right_child_hc == (N - 2) / 3)
-        right_child_hc = Parent<size_type>(right_child_hc);
+    if (fuse_first_hc <= right_child_hc && right_child_hc <= fuse_last_hc) {
+      right_child_hc = Parent<SizeType>(right_child_hc);
       right_child_mc = FLIP(right_child_hc);
     }
-    auto pos_it    = V + lambda(N, pos_hc);
-    auto left_it   = V + lambda(N, left_child_hc);
-    auto right_it  = V + lambda(N, right_child_hc);
-    RAI larger_it;
-
-    is_right_child_valid = is_right_child_valid && right_child_hc >= smallest_node_in_biheap_hc;
-    bool is_left_child_valid = left_child_hc >= smallest_node_in_biheap_hc;
+    is_right_child_valid = is_right_child_valid && right_child_hc >= first_node_in_biheap_hc;
+    bool is_left_child_valid = left_child_hc >= first_node_in_biheap_hc;
     if (!is_left_child_valid && !is_right_child_valid)
       return ;
+    auto pos_it   = V + lambda(N, pos_hc);
+    auto left_it  = V + lambda(N, left_child_hc);
+    auto right_it = V + lambda(N, right_child_hc);
+    RAI larger_it;
     if (!is_left_child_valid || (is_right_child_valid && *right_it > *left_it)) {
       larger_it = right_it;
       pos_hc    = right_child_hc;
@@ -501,31 +377,346 @@ inline void AlmostBiHeapifySiftFromMaxToMin(RAI V, size_type N,
     else
       return ;
   }
-  SiftUpMinHeapHC<RAI, size_type, LambdaType>(V, N, pos_hc, smallest_node_in_biheap_hc, lambda);
+  SiftUpMinHeapHC<RAI, SizeType, LambdaType>(V, N, pos_hc, first_node_in_biheap_hc, lambda);
   return ;
 }
 
-template<class RAI, typename size_type = std::size_t, typename LambdaType>
-inline void AlmostBiHeapify(RAI V, size_type N, LambdaType lambda) {
-  if(N < 3)
+//Assumes that N % 3 != 2 or that N % 3 == 2 but neither
+// endpoint of the double headed arrow is in the interval
+// [fuse_first_hc, fuse_last_hc].
+//If fuse_last_hc < fuse_first_hc then it calls BiHeapify.
+//If fuse_first_hc is not an In node then it is set to
+//  2 * HeapSize(N) - N, the first min heap In node.
+//If fust_last_hc is not an In node then it is set to
+//  HeapSize(N) - 1, the last In node.
+template<class RAI, typename SizeType = std::size_t, typename LambdaType>
+inline void AlmostBiHeapifyIgnoreDoubledHeadedArrow(RAI V, SizeType N,
+    SizeType fuse_first_hc, SizeType fuse_last_hc, LambdaType lambda) {
+  if (N < 2)
     return ;
-  size_type heap_size          = HeapSize<size_type>(N);
-  size_type first_node_in_mirror_heap  = N - heap_size;
-  size_type largest_node_in_biheap_hc  = IndexOfLastMinHeapNodeGivenHeapSize<size_type>(heap_size);
-  size_type smallest_node_in_biheap_hc = FLIP(largest_node_in_biheap_hc);
-  while (smallest_node_in_biheap_hc > 0) {
-    AlmostBiHeapifySiftFromMinToMax<RAI, size_type, LambdaType>(V, N,
-        heap_size, first_node_in_mirror_heap,
-        --smallest_node_in_biheap_hc, largest_node_in_biheap_hc, lambda);
-    AlmostBiHeapifySiftFromMaxToMin<RAI, size_type, LambdaType>(V, N,
-        heap_size, first_node_in_mirror_heap,
-        FLIP(++largest_node_in_biheap_hc), smallest_node_in_biheap_hc, lambda);
+  if (fuse_last_hc < fuse_first_hc) { //Then all nodes are permitted.
+    BiHeapify<RAI, SizeType, LambdaType>(V, N, lambda);
+    return ;
+  }
+  SizeType heap_size     = HeapSize<SizeType>(N);
+  SizeType first_in_node = N - heap_size;
+  if (fuse_first_hc < first_in_node)
+    fuse_first_hc = first_in_node;
+  if (fuse_last_hc >= heap_size)
+    fuse_last_hc = heap_size - 1;
+  SizeType last_node_in_biheap_hc  = (heap_size - 1) - (N % 3 == 2);
+  SizeType first_node_in_biheap_hc = FLIP(last_node_in_biheap_hc);
+  while (first_node_in_biheap_hc > 0) {
+    AlmostBiHeapifySiftFromMinToMaxIgnoreDoubledHeadedArrow<RAI, SizeType, LambdaType>(V, N,
+        heap_size, first_in_node, --first_node_in_biheap_hc,
+        last_node_in_biheap_hc, fuse_first_hc, fuse_last_hc, lambda);
+    AlmostBiHeapifySiftFromMaxToMinIgnoreDoubledHeadedArrow<RAI, SizeType, LambdaType>(V, N,
+        heap_size, first_in_node, FLIP(++last_node_in_biheap_hc),
+        first_node_in_biheap_hc, fuse_first_hc, fuse_last_hc, lambda);
+  }
+}
+
+/*
+ * ================== END: Definition of lambda version of AlmostBiheapify with some permitted In nodes, N mod 3 != 2 case ===============
+ */
+
+/*
+ * ================== START: Definition of lambda version of AlmostBiheapify with some permitted In nodes, N mod 3 == 2 case =============
+ */
+
+template<class RAI, typename SizeType = std::size_t, typename LambdaType>
+inline void AlmostBiHeapifySiftFromMinToMaxWithDoubleHeadedArrow(RAI V,
+                                          SizeType N,
+                                          SizeType heap_size,
+                                          SizeType first_in_node,
+                                          SizeType pos_hc,
+                                          SizeType last_node_in_biheap_hc,
+                                          SizeType fuse_first_hc,
+                                          SizeType fuse_last_hc,
+                                          SizeType pmin_double_arrow_end_hc,
+                                          SizeType pmax_double_arrow_end_hc,
+                                          SizeType maxh_parent_of_pmax_double_arrow_end_hc,
+                                          LambdaType lambda) {
+  if (fuse_first_hc <= pos_hc && pos_hc <= fuse_last_hc) //This can happen with a double arrow.
+    return ;
+  while (pos_hc < first_in_node) {
+    auto left_child_hc  = LeftChild<SizeType>(pos_hc);
+    auto right_child_hc = left_child_hc + 1;
+    bool is_right_child_valid = right_child_hc <= last_node_in_biheap_hc &&
+                                right_child_hc < heap_size;
+    bool is_left_child_valid = left_child_hc <= last_node_in_biheap_hc &&
+                               left_child_hc < heap_size;
+    if (fuse_first_hc <= left_child_hc && left_child_hc <= fuse_last_hc) {
+      left_child_hc = FLIP(Parent<SizeType>(FLIP(left_child_hc)));
+      //Note: The following is satisfied if and only if the following holds:
+      // FLIP(fuse_first_hc) >= left_child_mc && left_child_mc >= FLIP(fuse_last_hc)
+      if (fuse_first_hc <= left_child_hc && left_child_hc <= fuse_last_hc)
+        left_child_hc = maxh_parent_of_pmax_double_arrow_end_hc;
+    }
+    if (fuse_first_hc <= right_child_hc && right_child_hc <= fuse_last_hc) {
+      right_child_hc = FLIP(Parent<SizeType>(FLIP(right_child_hc)));
+      if (fuse_first_hc <= right_child_hc && right_child_hc <= fuse_last_hc)
+        right_child_hc = maxh_parent_of_pmax_double_arrow_end_hc;
+    }
+
+    is_right_child_valid = is_right_child_valid && right_child_hc <= last_node_in_biheap_hc;
+    is_left_child_valid  = is_left_child_valid  && left_child_hc  <= last_node_in_biheap_hc;
+    if (!is_left_child_valid && !is_right_child_valid)
+      return ;
+    auto left_it  = V + lambda(N, left_child_hc);
+    auto right_it = V + lambda(N, right_child_hc);
+    auto pos_it   = V + lambda(N, pos_hc);
+    RAI smaller_it;
+    if (!is_left_child_valid || (is_right_child_valid && *right_it < *left_it)) {
+      smaller_it = right_it;
+      pos_hc     = right_child_hc;
+    } else { //Here, the left child is valid.
+      smaller_it = left_it;
+      pos_hc     = left_child_hc;
+    }
+    if (*pos_it > *smaller_it)
+      std::iter_swap(pos_it, smaller_it);
+    else
+      return ;
+  }
+  //At this point, it's not possible to be be simultaneously
+  //  forbidden, in the pure max heap, and incident to the double arrow.
+  if (pos_hc == pmin_double_arrow_end_hc) {
+    //If the other end of the double arrow is forbidden.
+    if (fuse_first_hc <= pmax_double_arrow_end_hc && pmax_double_arrow_end_hc <= fuse_last_hc) {
+      auto max_heap_parent_of_other_end_it = V + lambda(N, maxh_parent_of_pmax_double_arrow_end_hc);
+      auto pos_it                          = V + lambda(N, pos_hc);
+      //Perform one iteration of sifting up the min heap while skipping the
+      // forbidden node.
+      if (maxh_parent_of_pmax_double_arrow_end_hc <= last_node_in_biheap_hc &&
+          *max_heap_parent_of_other_end_it < *pos_it)
+        std::iter_swap(pos_it, max_heap_parent_of_other_end_it);
+      else
+        return ;
+      pos_hc = maxh_parent_of_pmax_double_arrow_end_hc;
+    }
+  }
+  SiftUpMaxHeapMC<RAI, SizeType, LambdaType>(V, N, FLIP(pos_hc),
+                                      FLIP(last_node_in_biheap_hc), lambda);
+  return ;
+}
+
+template<class RAI, typename SizeType = std::size_t, typename LambdaType>
+inline void AlmostBiHeapifySiftFromMaxToMinWithDoubleHeadedArrow(RAI V,
+                                      SizeType N,
+                                      SizeType heap_size,
+                                      SizeType first_in_node,
+                                      SizeType pos_mc,
+                                      SizeType first_node_in_biheap_hc,
+                                      SizeType fuse_first_hc,
+                                      SizeType fuse_last_hc,
+                                      SizeType pmin_double_arrow_end_hc,
+                                      SizeType minh_parent_of_pmin_double_arrow_end_hc,
+                                      LambdaType lambda) {
+  auto pos_hc = FLIP(pos_mc);
+  if (fuse_first_hc <= pos_hc && pos_hc <= fuse_last_hc)
+    return ;
+  while (pos_mc < first_in_node) {
+    auto left_child_mc  = LeftChild<SizeType>(pos_mc);
+    auto right_child_mc = left_child_mc + 1;
+    auto left_child_hc  = FLIP(left_child_mc);
+    auto right_child_hc = left_child_hc - 1;
+    bool is_right_child_valid = right_child_mc < heap_size && right_child_hc >= first_node_in_biheap_hc;
+    if (fuse_first_hc <= left_child_hc && left_child_hc <= fuse_last_hc) {
+      left_child_hc = Parent<SizeType>(left_child_hc);
+      if (fuse_first_hc <= left_child_hc && left_child_hc <= fuse_last_hc)
+        left_child_hc = minh_parent_of_pmin_double_arrow_end_hc;
+      left_child_mc = FLIP(left_child_hc);
+    }
+    if (fuse_first_hc <= right_child_hc && right_child_hc <= fuse_last_hc) {
+      right_child_hc = Parent<SizeType>(right_child_hc);
+      if (fuse_first_hc <= right_child_hc && right_child_hc <= fuse_last_hc)
+        right_child_hc = minh_parent_of_pmin_double_arrow_end_hc;
+      right_child_mc = FLIP(right_child_hc);
+    }
+    is_right_child_valid = is_right_child_valid && right_child_hc >= first_node_in_biheap_hc;
+    bool is_left_child_valid = left_child_hc >= first_node_in_biheap_hc;
+    if (!is_left_child_valid && !is_right_child_valid)
+      return ;
+    auto pos_it   = V + lambda(N, pos_hc);
+    auto left_it  = V + lambda(N, left_child_hc);
+    auto right_it = V + lambda(N, right_child_hc);
+    RAI larger_it;
+    if (!is_left_child_valid || (is_right_child_valid && *right_it > *left_it)) {
+      larger_it = right_it;
+      pos_hc    = right_child_hc;
+      pos_mc    = right_child_mc;
+    } else { //Here, the left child is valid.
+      larger_it = left_it;
+      pos_hc    = left_child_hc;
+      pos_mc    = left_child_mc;
+    }
+    if (*pos_it < *larger_it)
+      std::iter_swap(pos_it, larger_it);
+    else
+      return ;
+  }
+  //At this point, it's not possible to be be simultaneously
+  //  forbidden, in the pure min heap, and incident to the double arrow.
+  if (pos_mc == pmin_double_arrow_end_hc) { //if and only if pos_hc = pmax_double_arrow_end_hc
+    //If the other end of the double arrow is forbidden.
+    if (fuse_first_hc <= pmin_double_arrow_end_hc && pmin_double_arrow_end_hc <= fuse_last_hc) {
+      auto min_heap_parent_of_other_end_it = V + lambda(N, minh_parent_of_pmin_double_arrow_end_hc);
+      auto pos_it                          = V + lambda(N, pos_hc);
+      //Perform one iteration of sifting up the min heap while skipping the
+      // forbidden node.
+      if (minh_parent_of_pmin_double_arrow_end_hc >= first_node_in_biheap_hc &&
+          *min_heap_parent_of_other_end_it > *pos_it)
+        std::iter_swap(pos_it, min_heap_parent_of_other_end_it);
+      else
+        return ;
+      pos_hc = minh_parent_of_pmin_double_arrow_end_hc;
+    }
+  }
+  SiftUpMinHeapHC<RAI, SizeType, LambdaType>(V, N, pos_hc, first_node_in_biheap_hc, lambda);
+  return ;
+}
+
+//Assumes that N % 3 == 2.
+// If fuse_last_hc < fuse_first_hc then it calls BiHeapify.
+// If fuse_first_hc is not an In node then it is set to
+//   2 * HeapSize(N) - N, the first min heap In node.
+// If fust_last_hc is not an In node then it is set to
+//   HeapSize(N) - 1, the last In node.
+template<class RAI, typename SizeType = std::size_t, typename LambdaType>
+inline void AlmostBiHeapifyWithDoubleHeadedArrow(RAI V, SizeType N,
+    SizeType fuse_first_hc, SizeType fuse_last_hc, LambdaType lambda) {
+  if(N <= 2) {
+    if (N == 2 && fuse_last_hc < fuse_first_hc) {
+      RAI V_0 = V + lambda(N, 0);
+      RAI V_1 = V + lambda(N, 1);
+      if (*V_0 > *V_1)
+        std::iter_swap(V_0, V_1);
+    }
+    return ;
+  }
+  SizeType heap_size     = HeapSize<SizeType>(N);
+  SizeType first_in_node = N - heap_size;
+  if (fuse_first_hc > first_in_node && fuse_last_hc < heap_size - 1) {
+    //If we don't have to worry about skipping over either one of the end
+    // nodes of the double headed arrow, then we may as well use the more
+    // efficient AlmostBiHeapify algorithm.
+    AlmostBiHeapifyIgnoreDoubledHeadedArrow<RAI, SizeType, LambdaType>(V, N,
+                                          fuse_first_hc, fuse_last_hc, lambda);
+    return ;
+  }
+  if (fuse_last_hc < fuse_first_hc) { //Then all nodes are permitted.
+    BiHeapify<RAI, SizeType, LambdaType>(V, N, lambda);
+    return ;
+  }
+  if (fuse_first_hc < first_in_node)
+    fuse_first_hc = first_in_node;
+  if (fuse_last_hc >= heap_size)
+    fuse_last_hc = heap_size - 1; //The last In node.
+  SizeType last_node_in_biheap_hc  = heap_size - 2;
+  SizeType first_node_in_biheap_hc = FLIP(last_node_in_biheap_hc);
+  //To increase efficiency, precompute the following values and pass them to the two calls
+  // in the while loop. Any half descent optimizer will avoid actually allocating
+  // additional space on the stack and copying these values into local variables since
+  // these functions are both inlined and templates.
+  SizeType pmin_double_arrow_end_hc                = (N - 2) / 3;
+  SizeType pmax_double_arrow_end_hc                = 2 * pmin_double_arrow_end_hc + 1;
+  SizeType minh_parent_of_pmin_double_arrow_end_hc = Parent<SizeType>(pmin_double_arrow_end_hc);
+  SizeType maxh_parent_of_pmax_double_arrow_end_hc = FLIP(minh_parent_of_pmin_double_arrow_end_hc);
+  while (first_node_in_biheap_hc > 0) {
+    AlmostBiHeapifySiftFromMinToMaxWithDoubleHeadedArrow<RAI, SizeType, LambdaType>(V, N,
+        heap_size, first_in_node, --first_node_in_biheap_hc,
+        last_node_in_biheap_hc, fuse_first_hc, fuse_last_hc,
+        pmin_double_arrow_end_hc, pmax_double_arrow_end_hc,
+        maxh_parent_of_pmax_double_arrow_end_hc, lambda);
+    AlmostBiHeapifySiftFromMaxToMinWithDoubleHeadedArrow<RAI, SizeType, LambdaType>(V, N,
+        heap_size, first_in_node, FLIP(++last_node_in_biheap_hc),
+        first_node_in_biheap_hc, fuse_first_hc, fuse_last_hc,
+        pmin_double_arrow_end_hc,
+        minh_parent_of_pmin_double_arrow_end_hc, lambda);
   }
   return ;
 }
 
 /*
- * ================== END: Definition of lambda version of AlmostBiheapify ====================
+ * ================== END: Definition of lambda version of AlmostBiheapify with some permitted In nodes, N mod 3 == 2 case ===============
+ */
+
+/*
+ * ================== START: Definition of lambda version of AlmostBiheapify with some permitted In nodes and specializations ============
+ */
+
+template<class RAI, typename SizeType = std::size_t, typename LambdaType>
+inline void AlmostBiHeapify(RAI V, SizeType N,
+    SizeType fuse_first_hc,
+    SizeType fuse_last_hc, LambdaType lambda) {
+  if (N % 3 != 2)
+    AlmostBiHeapifyIgnoreDoubledHeadedArrow<RAI, SizeType, LambdaType>(V, N, fuse_first_hc, fuse_last_hc, lambda);
+  else
+    AlmostBiHeapifyWithDoubleHeadedArrow<RAI, SizeType, LambdaType>(V, N, fuse_first_hc, fuse_last_hc, lambda);
+  return ;
+}
+
+template<class RAI, typename SizeType = std::size_t, typename LambdaType>
+inline void AlmostBiHeapify(RAI V, SizeType N,
+    SizeType num_permitted_in_nodes, LambdaType lambda) {
+  if (N < 2)
+    return ;
+  SizeType heap_size     = HeapSize<SizeType>(N);
+  SizeType first_in_node = N - heap_size;
+  SizeType num_in_nodes  = heap_size - first_in_node;
+  if (num_permitted_in_nodes > num_in_nodes)
+    num_permitted_in_nodes = num_in_nodes;
+  if (N == 2 && num_permitted_in_nodes <= 1)
+    return ;//Then there's nothing to do.
+  if (num_permitted_in_nodes == num_in_nodes) {
+    BiHeapify<RAI, SizeType, LambdaType>(V, N, lambda);
+    return ;
+  }
+  //If num_permitted_in_nodes is odd, then allow
+  // for there to be one more permitted pure min heap
+  // In node than there are permitted pure max heap In nodes.
+  SizeType fuse_first_hc = first_in_node + (num_permitted_in_nodes + 1) / 2;
+  SizeType fuse_last_hc  = FLIP(first_in_node + (num_permitted_in_nodes / 2));
+  AlmostBiHeapify<RAI, SizeType, LambdaType>(V, N, fuse_first_hc,
+                                             fuse_last_hc, lambda);
+  return ;
+}
+
+template<class RAI, typename SizeType = std::size_t>
+inline void AlmostBiHeapify(RAI V, SizeType N,
+    SizeType num_permitted_in_nodes) {
+  auto trivial_lambda = [](SizeType local_N, SizeType i) -> SizeType { return i; };
+  AlmostBiHeapify<RAI, SizeType, decltype(trivial_lambda)>(V, N,
+                                       num_permitted_in_nodes, trivial_lambda);
+  return ;
+}
+
+template<class RAI, typename SizeType = std::size_t>
+inline void AlmostBiHeapify(RAI V, SizeType N,
+    SizeType fuse_first_hc,
+    SizeType fuse_last_hc) {
+  auto trivial_lambda = [](SizeType local_N, SizeType i) -> SizeType { return i; };
+  AlmostBiHeapify<RAI, SizeType, decltype(trivial_lambda)>(V, N, fuse_first_hc,
+                                                     fuse_last_hc, trivial_lambda);
+  return ;
+}
+
+template<class RAI, typename SizeType = std::size_t, typename LambdaType>
+inline void AlmostBiHeapify(RAI V, SizeType N, LambdaType lambda) {
+  AlmostBiHeapify<RAI, SizeType, LambdaType>(V, N, 0, N, lambda);
+  return ;
+}
+
+template<class RAI, typename SizeType = std::size_t>
+inline void AlmostBiHeapify(RAI V, SizeType N) {
+  auto trivial_lambda = [](SizeType local_N, SizeType i) -> SizeType { return i; };
+  AlmostBiHeapify<RAI, SizeType, decltype(trivial_lambda)>(V, N, trivial_lambda);
+  return ;
+}
+
+/*
+ * ================== END: Definition of lambda version of AlmostBiheapify with some permitted In nodes and specializations ==========
  */
 
 #undef FLIP
