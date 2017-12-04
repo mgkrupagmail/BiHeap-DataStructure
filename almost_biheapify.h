@@ -39,7 +39,7 @@
 
 #include <algorithm>
 
-#define FLIP(a) ((N - 1) - (a))
+//#define FLIP(a) ((N - 1) - (a))
 
 template<typename SizeType = std::size_t>
 inline SizeType IsInNode(SizeType pos_hc, SizeType pos_mc, SizeType heap_size) {
@@ -912,6 +912,9 @@ inline void AlmostBiHeapifyJumpMiddle(RAI V, SizeType distance, SizeType num_nod
 /*
  * ================== START: Definition of AlmostBiHeapifySift ====================
  */
+
+#include "biheap_sift.h"
+
 template<class RAI, typename SizeType = std::size_t, class LambdaType>
 inline void AlmostBiHeapifySiftWithDoubleHeadedArrow(RAI V, SizeType N, SizeType pos_hc,
                           SizeType F_first_hc, SizeType F_last_hc, LambdaType lambda) {
@@ -993,9 +996,6 @@ inline void AlmostBiHeapifySiftWithDoubleHeadedArrow(RAI V, SizeType N, SizeType
   return ;
 }
 
-
-#include "biheap_sift.h"
-
 template<class RAI, typename SizeType = std::size_t, class LambdaType>
 inline void AlmostBiHeapifySiftIgnoreDoubledHeadedArrow(RAI V, SizeType N, SizeType pos_hc,
                           SizeType F_first_hc, SizeType F_last_hc, LambdaType lambda) {
@@ -1069,6 +1069,6 @@ inline void AlmostBiHeapifySift(RAI V, SizeType N, SizeType pos_hc,
  * ================== END: Definition of AlmostBiHeapifySift ====================
  */
 
-#undef FLIP
+//#undef FLIP
 
 #endif /* ALMOST_BIHEAPIFY_H_ */
