@@ -29,17 +29,19 @@
 #include <vector>
 
 #include "biheapify.h"
+#include "biheapify_lambda.h"
 #include "biheap_sift.h"
+#include "almost_biheapify.h"
+
+#include "biheap_tikz_graph.h"
+#include "biheap_ostream.h"
 
 #include "biheapify_single_pass_success_rate.h"
 #include "biheap_sift_test_correctness.h"
 #include "biheapify_inwards_pivot_testing.h"
 #include "biheapify_inwards_and_outwards_testing.h"
-
-#include "biheap_tikz_graph.h"
-
-#include "biheap_ostream.h"
-#include "biheapify_time.h"
+#include "biqueue_with_verification.h"
+#include "biqueue_demonstration.h"
 
 int main() {
   long start_total_num_nodes = 1;
@@ -61,7 +63,15 @@ int main() {
                                  // counts.
   bool verbose = false;
   
-  //PrintTikzGraphsExampleCalls();
+  //This randomly adds and removes random values to and from a double
+  // ended BiHeap queue and verifies that the result of each operation is correct.
+  BiQueueVerificationTests(true, 30000);
+
+  //This randomly adds and removes random values to and from a double
+  // ended BiHeap queue. For each insertion and deletion, it outputs
+  // an ASCII image of the BiHeap and a short an explanation of what it's doing.
+  //It sole purpose is to help explain how a BiQueue works.
+  DEBQDemonstration(true);
 
   MeasureBiHeapifyInwardsAndOutwardsProperties();
   
@@ -86,13 +96,7 @@ int main() {
 
   BiHeapSiftTestCorrectness<int>(start_total_num_nodes, end_total_num_nodes,
                                  num_vecs_to_try, increment_size);
-  //For TimeBiHeapifies() only. For each std::vector that whose biheapification
-  // is to be timed, repeat this process num_repititions_per_vec times.
-  long num_repititions_per_vec = static_cast<int>(1u << 4);
-  long long divisor = num_repititions_per_vec; //Set this to 0 to get the the
-                             //average time to biheapify each individual vector.
-  TimeBiHeapifies<int>(start_total_num_nodes, end_total_num_nodes,
-                       num_vecs_to_try, num_repititions_per_vec, increment_size,
-                       divisor);
+  
+  //PrintTikzGraphsExampleCalls();
   return 0;
 }
