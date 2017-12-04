@@ -13,8 +13,8 @@ These properties make the BiHeap definition and the BiHeapify operation easier t
 
 The definition of a BiHeap is highly detailed but we can give a quick summary of it. We're given N elements indexed by 0, ..., N - 1. These elements form a BiHeap if:
 
- 1) the elements [0, ..., num_nodes_in_heap) form a min heap with the element at 0 being the min, and<BR>
- 2) the elements [total_num_nodes - num_nodes_in_heap, ..., N) form a max heap with the element at N - 1 being the max,
+ 1) the elements [0, ..., HeapSize(N)) form a min heap with the element at 0 being the min, and<BR>
+ 2) the elements [N - HeapSize(N), ..., N) form a max heap with the element at N - 1 being the max,
  
 where num_nodes_in_heap is defined in "BiHeaps and Pivot Selection.pdf".
 
