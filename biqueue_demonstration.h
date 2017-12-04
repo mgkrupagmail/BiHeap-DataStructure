@@ -120,13 +120,8 @@ public:
     SizeType three_times_half_N = 3 * half_N;
     if (half_N % 2 == 1)
       return three_times_half_N + 1;
-    else {
-assert(((three_times_half_N % 3) != 2) || ((three_times_half_N + 2) % 3 != 2));
-      if ((three_times_half_N % 3) != 2)
-        return three_times_half_N;
-      else
-        return three_times_half_N + 2;
-    }
+    else
+      return three_times_half_N;
   }
 
   //To see that insert() has amortized O(log(N_)) complexity, note
