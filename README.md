@@ -16,7 +16,7 @@ The definition of a BiHeap is highly detailed but we can give a quick summary of
  1) the elements [0, ..., HeapSize(N)) form a min heap with the element at 0 being the min, and<BR>
  2) the elements [N - HeapSize(N), ..., N) form a max heap with the element at N - 1 being the max,
  
-where num_nodes_in_heap is defined in "BiHeaps and Pivot Selection.pdf".
+where HeapSize(N) is defined in "BiHeaps and Pivot Selection.pdf".
 
 The quantity HeapSize(N) is a fundamentally important quantity associated with the biheap on total_num_nodes nodes. The formulas that define this quantity stems from the intuitive and natural graph-theoretic definition of a BiHeap given in detail in "BiHeaps and Pivot Selection.pdf".
 
