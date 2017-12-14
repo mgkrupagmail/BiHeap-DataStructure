@@ -14,6 +14,25 @@
  *  Given a collection of elements, this double ended priority
  *   queue can be formed using O(N) swaps.
  *
+ *  This implementation of a BiQueue differs from the one in
+ *   biqueue.h in how it stores the values of the BiQueue in
+ *   memory. In this file's implementation, the value of a node
+ *   with min heap coordinate i is stored in the vector index i.
+ *  Thus in this file's implementation, if the fused BiHeap is
+ *   not a BiHeap, then
+ *   vec_[F_first_hc_], ..., vec_[F_last_hc_]
+ *   are "empty" and "unused" in the sense that they do not
+ *   hold the value of any element in the BiQueue with the
+ *   values being stored in
+ *   vec_[0], ..., vec_[F_first_hc_ - 1], vec_[F_last_hc_ + 1],
+ *    ..., vec_[N_ - 1]
+ *  In contrast, in the implementation of a BiQueue given in
+ *   biqueue.h, the num_elements_ elements of the BiQueue are
+ *   stored in vec_[0], ..., vec_[num_elements_ - 1]
+ *   independent of F_first_hc_ and F_last_hc_ and without
+ *   any "empty" or "unused" locations in between vec_[0]
+ *   and vec_[num_elements_ - 1].
+ *
  *  Created on: Dec 2, 2017
  *      Author: Matthew Gregory Krupa
  *   Copyright: Matthew Gregory Krupa
