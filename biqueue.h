@@ -12,6 +12,55 @@
  *  Given a collection of elements, this double ended priority
  *   queue can be formed using O(N) swaps.
  *
+ *  Example of using a BiQueue object:
+
+void BiQueueExample() {
+  //Define the object.
+  BiQueue<int> biq;
+  std::vector<int> vector = { 1, 2, 3, 4, 5, 6 };
+  BiQueue<int> biq2(vector.begin(), vector.end());
+
+  //Insert an element into the object
+  std::cout << "biq.insert(0) \t\t";
+  biq.insert(0)
+  if (!biq.empty())
+    std::cout << "Min: " << biq.min() << " \tmax: " << biq.max() << std::endl;
+
+  std::cout << "biq.insert(2) \t\t";
+  biq.insert(2)
+  if (!biq.empty())
+    std::cout << "Min: " << biq.min() << " \tmax: " << biq.max() << std::endl;
+
+  std::cout << "biq.insert(1) \t\t";
+  biq.insert(1)
+  if (!biq.empty())
+    std::cout << "Min: " << biq.min() << " \tmax: " << biq.max() << std::endl;
+
+  std::cout << "biq.insert(3) \t\t";
+  biq.insert(3)
+  if (!biq.empty())
+    std::cout << "Min: " << biq.min() << " \tmax: " << biq.max() << std::endl;
+
+  std::cout << "biq.popmax() \t\t";
+  biq.popmax()
+  if (!biq.empty())
+    std::cout << "Min: " << biq.min() << " \tmax: " << biq.max() << std::endl;
+
+  std::cout << "biq.popmin() \t\t";
+  biq.popmin()
+  if (!biq.empty())
+    std::cout << "Min: " << biq.min() << " \tmax: " << biq.max() << std::endl;
+
+  bool should_pop_max = true;
+  std::cout << "biq.PopMinOrMax(should_pop_max) \t\t";
+  //if should_pop_max == true then pop the max, otherwise pop the min.
+  biq.PopMinOrMax(should_pop_max);
+  if (!biq.empty())
+    std::cout << "Min: " << biq.min() << " \tmax: " << biq.max() << std::endl;
+  return 0;
+}
+
+ *
  *  Created on: Dec 2, 2017
  *      Author: Matthew Gregory Krupa
  *   Copyright: Matthew Gregory Krupa
@@ -31,7 +80,6 @@
 
 template<class ValueType, typename SizeType = std::size_t>
 class BiQueue {
-
 public:
   std::vector<ValueType> vec_;
   SizeType num_elements_; //The number of elements currently in the almost BiHeap.
@@ -119,12 +167,22 @@ public:
     reserve(new_N);
     for (SizeType i = 0 ; start != one_past_end && i < num_elements_; i++, start++)
       vec_[i] = *start;
-    for (SizeType i = num_elements_; i < vec_.size(); i++)
-      vec_[i] = static_cast<ValueType>(0); //Fill with 0 each value that doesn't store the value of a node in the fused BiHeap.
+    //Unnecessary code, useful for checking correctness.
+    //for (SizeType i = num_elements_; i < vec_.size(); i++)
+    //  vec_[i] = static_cast<ValueType>(0); //Fill with 0 each value that doesn't store the value of a node in the fused BiHeap.
     F_first_hc_ = (num_elements_ + 1) / 2;
     F_last_hc_  = (N_ - 1) - (num_elements_ / 2);
     call_fused_biheapify();
     return ;
+  }
+
+  //Copy constructor
+  BiQueue(const BiQueue<ValueType> &biq) {
+    vec_ = biq.vec_;
+    num_elements_ = biq.num_elements_;
+    N_ = biq.N_;
+    F_first_hc_ = biq.F_first_hc_;
+    F_last_hc_ = biq.F_last_hc_;
   }
 
   //Assumes that vec_.size() is sufficiently large to store
@@ -214,11 +272,13 @@ public:
     F_first_hc_ = (num_elements_ + 1) / 2;
     F_last_hc_  = (new_N - 1) - (num_elements_ / 2);
     auto index_lambda = get_index_lambda();
+    /* //Unnecessary code, useful for checking correctness.
     //Fill the nodes that are not to be touched with 0's.
     for (SizeType i_hc = F_first_hc_; i_hc <= F_last_hc_; i_hc++) {
       SizeType vec_index_of_node_i = index_lambda(N_, i_hc);
       vec_[vec_index_of_node_i] = static_cast<ValueType>(0);
     }
+    */
     call_fused_biheapify();
     return ;
   }
