@@ -5,7 +5,7 @@
  *   the Quickselect algorithm. However, unlike the Quickselect algorithm,
  *   BiHeapSelect() is O(N) (this is something that I'm still mathematically proving).
  *  Empirical testing by the functions in biheap_select_measure_complexity.h show that
- *   BiHeapSelect() emplaces the element in the desired position using at most 13.5 * N
+ *   BiHeapSelect() emplaces the element in the desired position using at most 14 * N
  *   swap operations.
  *
  *  Created on: May 2, 2019
