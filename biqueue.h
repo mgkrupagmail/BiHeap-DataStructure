@@ -41,6 +41,11 @@ void BiQueueExample() {
   if (!biq.empty())
     std::cout << "Min: " << biq.min() << " \tmax: " << biq.max() << std::endl;
 
+  std::cout << "biq.insert(-1) \t\t";
+  biq.insert(-1)
+  if (!biq.empty())
+    std::cout << "Min: " << biq.min() << " \tmax: " << biq.max() << std::endl;
+
   std::cout << "biq.popmax() \t\t";
   biq.popmax()
   if (!biq.empty())
