@@ -62,7 +62,7 @@ void BiQueueExample() {
   biq.PopMinOrMax(should_pop_max);
   if (!biq.empty())
     std::cout << "Min: " << biq.min() << " \tmax: " << biq.max() << std::endl;
-  return 0;
+  return ;
 }
 
  *
