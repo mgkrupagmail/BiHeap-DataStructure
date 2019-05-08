@@ -1,7 +1,7 @@
 /*
  * almost_biheapify.h
  *
- * The AlmostBiHeapify() function performs the same operation as
+ * The FusedBiHeapify() function performs the same operation as
  *  BiHeapify() except that it "skips over" all In nodes (which
  *  are those nodes that belong to both the min heap and the max heap).
  * The basic idea is this:
@@ -12,11 +12,11 @@
  *  into a single edge and remove the In node from the graph.
  * Having done this to every In node, we now have a new graph; call it
  *  the almost BiHeap graph.
- * The AlmostBiHeapify() operation rearranges the values in this
+ * The FusedBiHeapify() operation rearranges the values in this
  *  almost BiHeap graph so that if two node, say with min heap coordinates
  *  i and j where i < j, are incident to the same edge then the value
  *  of node i is <= the value of node j.
- * Note that at the end of the AlmostBiHeapify() operation, the values
+ * Note that at the end of the FusedBiHeapify() operation, the values
  *  of the BiHeap's In nodes are unchanged.
  * To make an almost BiHeap into a BiHeap, we can call the BiHeapify()
  *  operation, the effect of which is equivalent to performing
@@ -61,7 +61,7 @@ inline SizeType IsInNodeMC(SizeType N, SizeType pos_mc, SizeType heap_size) {
  */
 
 template<class RAI, typename SizeType = std::size_t, typename LambdaType>
-inline void AlmostBiHeapifySiftFromMinToMaxIgnoreDoubledHeadedArrow(RAI V,
+inline void FusedBiHeapifySiftFromMinToMaxIgnoreDoubledHeadedArrow(RAI V,
                                       SizeType N, SizeType N_minus1,
                                       SizeType heap_size,
                                       SizeType first_in_node,
@@ -125,7 +125,7 @@ inline void AlmostBiHeapifySiftFromMinToMaxIgnoreDoubledHeadedArrow(RAI V,
 }
 
 template<class RAI, typename SizeType = std::size_t, typename LambdaType>
-inline void AlmostBiHeapifySiftFromMaxToMinIgnoreDoubledHeadedArrow(RAI V,
+inline void FusedBiHeapifySiftFromMaxToMinIgnoreDoubledHeadedArrow(RAI V,
                                       SizeType N, SizeType N_minus1,
                                       SizeType heap_size,
                                       SizeType first_in_node,
@@ -201,7 +201,7 @@ inline void AlmostBiHeapifySiftFromMaxToMinIgnoreDoubledHeadedArrow(RAI V,
 //If fust_last_hc is not an In node then it is set to
 //  HeapSize(N) - 1, the last In node.
 template<class RAI, typename SizeType = std::size_t, typename LambdaType>
-inline void AlmostBiHeapifyIgnoreDoubledHeadedArrow(RAI V, SizeType N,
+inline void FusedBiHeapifyIgnoreDoubledHeadedArrow(RAI V, SizeType N,
     SizeType F_first_hc, SizeType F_last_hc, LambdaType lambda) {
   if (N < 2)
     return ;
@@ -219,10 +219,10 @@ inline void AlmostBiHeapifyIgnoreDoubledHeadedArrow(RAI V, SizeType N,
   SizeType N_minus1                = N - 1;
   SizeType first_node_in_biheap_hc = N_minus1 - last_node_in_biheap_hc;
   while (first_node_in_biheap_hc > 0) {
-    AlmostBiHeapifySiftFromMinToMaxIgnoreDoubledHeadedArrow<RAI, SizeType, LambdaType>(V, N, N_minus1,
+    FusedBiHeapifySiftFromMinToMaxIgnoreDoubledHeadedArrow<RAI, SizeType, LambdaType>(V, N, N_minus1,
         heap_size, first_in_node, --first_node_in_biheap_hc,
         last_node_in_biheap_hc, F_first_hc, F_last_hc, lambda);
-    AlmostBiHeapifySiftFromMaxToMinIgnoreDoubledHeadedArrow<RAI, SizeType, LambdaType>(V, N, N_minus1,
+    FusedBiHeapifySiftFromMaxToMinIgnoreDoubledHeadedArrow<RAI, SizeType, LambdaType>(V, N, N_minus1,
         heap_size, first_in_node, N_minus1 - (++last_node_in_biheap_hc),
         first_node_in_biheap_hc, F_first_hc, F_last_hc, lambda);
   }
@@ -237,7 +237,7 @@ inline void AlmostBiHeapifyIgnoreDoubledHeadedArrow(RAI V, SizeType N,
  */
 
 template<class RAI, typename SizeType = std::size_t, typename LambdaType>
-inline void AlmostBiHeapifySiftFromMinToMaxWithDoubleHeadedArrow(RAI V,
+inline void FusedBiHeapifySiftFromMinToMaxWithDoubleHeadedArrow(RAI V,
                                           SizeType N, SizeType N_minus1,
                                           SizeType heap_size,
                                           SizeType first_in_node,
@@ -332,7 +332,7 @@ inline void AlmostBiHeapifySiftFromMinToMaxWithDoubleHeadedArrow(RAI V,
 }
 
 template<class RAI, typename SizeType = std::size_t, typename LambdaType>
-inline void AlmostBiHeapifySiftFromMaxToMinWithDoubleHeadedArrow(RAI V,
+inline void FusedBiHeapifySiftFromMaxToMinWithDoubleHeadedArrow(RAI V,
                                       SizeType N, SizeType N_minus1,
                                       SizeType heap_size,
                                       SizeType first_in_node,
@@ -431,7 +431,7 @@ inline void AlmostBiHeapifySiftFromMaxToMinWithDoubleHeadedArrow(RAI V,
 // If fust_last_hc is not an In node then it is set to
 //   HeapSize(N) - 1, the last In node.
 template<class RAI, typename SizeType = std::size_t, typename LambdaType>
-inline void AlmostBiHeapifyWithDoubleHeadedArrow(RAI V, SizeType N,
+inline void FusedBiHeapifyWithDoubleHeadedArrow(RAI V, SizeType N,
     SizeType F_first_hc, SizeType F_last_hc, LambdaType lambda) {
   if(N <= 2) {
     if (N == 2 && F_last_hc < F_first_hc) {
@@ -448,8 +448,8 @@ inline void AlmostBiHeapifyWithDoubleHeadedArrow(RAI V, SizeType N,
   if (F_first_hc > first_in_node && F_last_hc < heap_size - 1) {
     //If we don't have to worry about skipping over either one of the end
     // nodes of the double headed arrow, then we may as well use the more
-    // efficient AlmostBiHeapify algorithm.
-    AlmostBiHeapifyIgnoreDoubledHeadedArrow<RAI, SizeType, LambdaType>(V, N,
+    // efficient FusedBiHeapify algorithm.
+    FusedBiHeapifyIgnoreDoubledHeadedArrow<RAI, SizeType, LambdaType>(V, N,
                                           F_first_hc, F_last_hc, lambda);
     return ;
   }
@@ -472,12 +472,12 @@ inline void AlmostBiHeapifyWithDoubleHeadedArrow(RAI V, SizeType N,
   SizeType minh_parent_of_pmin_double_arrow_end_hc = ParentNotRoot<SizeType>(pmin_double_arrow_end_hc);
   SizeType maxh_parent_of_pmax_double_arrow_end_hc = N_minus1 - minh_parent_of_pmin_double_arrow_end_hc;
   while (first_node_in_biheap_hc > 0) {
-    AlmostBiHeapifySiftFromMinToMaxWithDoubleHeadedArrow<RAI, SizeType, LambdaType>(V, N, N_minus1,
+    FusedBiHeapifySiftFromMinToMaxWithDoubleHeadedArrow<RAI, SizeType, LambdaType>(V, N, N_minus1,
         heap_size, first_in_node, --first_node_in_biheap_hc,
         last_node_in_biheap_hc, F_first_hc, F_last_hc,
         pmin_double_arrow_end_hc, pmax_double_arrow_end_hc,
         maxh_parent_of_pmax_double_arrow_end_hc, lambda);
-    AlmostBiHeapifySiftFromMaxToMinWithDoubleHeadedArrow<RAI, SizeType, LambdaType>(V, N, N_minus1,
+    FusedBiHeapifySiftFromMaxToMinWithDoubleHeadedArrow<RAI, SizeType, LambdaType>(V, N, N_minus1,
         heap_size, first_in_node, N_minus1 - (++last_node_in_biheap_hc),
         first_node_in_biheap_hc, F_first_hc, F_last_hc,
         pmin_double_arrow_end_hc,
@@ -495,17 +495,17 @@ inline void AlmostBiHeapifyWithDoubleHeadedArrow(RAI V, SizeType N,
  */
 
 template<class RAI, typename SizeType = std::size_t, typename LambdaType>
-inline void AlmostBiHeapify(RAI V, SizeType N, SizeType F_first_hc,
+inline void FusedBiHeapify(RAI V, SizeType N, SizeType F_first_hc,
                             SizeType F_last_hc, LambdaType lambda) {
   if (N % 3 != 2)
-    AlmostBiHeapifyIgnoreDoubledHeadedArrow<RAI, SizeType, LambdaType>(V, N, F_first_hc, F_last_hc, lambda);
+    FusedBiHeapifyIgnoreDoubledHeadedArrow<RAI, SizeType, LambdaType>(V, N, F_first_hc, F_last_hc, lambda);
   else
-    AlmostBiHeapifyWithDoubleHeadedArrow<RAI, SizeType, LambdaType>(V, N, F_first_hc, F_last_hc, lambda);
+    FusedBiHeapifyWithDoubleHeadedArrow<RAI, SizeType, LambdaType>(V, N, F_first_hc, F_last_hc, lambda);
   return ;
 }
 
 template<class RAI, typename SizeType = std::size_t, typename LambdaType>
-inline void AlmostBiHeapify(RAI V, SizeType N,
+inline void FusedBiHeapify(RAI V, SizeType N,
                             SizeType num_permitted_in_nodes, LambdaType lambda) {
   if (N < 2)
     return ;
@@ -525,47 +525,47 @@ inline void AlmostBiHeapify(RAI V, SizeType N,
   // In node than there are permitted pure max heap In nodes.
   SizeType F_first_hc = first_in_node + (num_permitted_in_nodes + 1) / 2;
   SizeType F_last_hc  = (N - 1) - (first_in_node + (num_permitted_in_nodes / 2));
-  AlmostBiHeapify<RAI, SizeType, LambdaType>(V, N, F_first_hc,
+  FusedBiHeapify<RAI, SizeType, LambdaType>(V, N, F_first_hc,
                                              F_last_hc, lambda);
   return ;
 }
 
 //Specialize to the non-lambda case.
 template<class RAI, typename SizeType = std::size_t>
-inline void AlmostBiHeapify(RAI V, SizeType N, SizeType num_permitted_in_nodes) {
+inline void FusedBiHeapify(RAI V, SizeType N, SizeType num_permitted_in_nodes) {
   auto trivial_lambda = [](SizeType local_N, SizeType i) -> SizeType {
     return i;
   };
-  AlmostBiHeapify<RAI, SizeType, decltype(trivial_lambda)>(V, N,
+  FusedBiHeapify<RAI, SizeType, decltype(trivial_lambda)>(V, N,
                                        num_permitted_in_nodes, trivial_lambda);
   return ;
 }
 
 //Specialize to the non-lambda case.
 template<class RAI, typename SizeType = std::size_t>
-inline void AlmostBiHeapify(RAI V, SizeType N,
+inline void FusedBiHeapify(RAI V, SizeType N,
                             SizeType F_first_hc, SizeType F_last_hc) {
   auto trivial_lambda = [](SizeType local_N, SizeType i) -> SizeType {
     return i;
   };
-  AlmostBiHeapify<RAI, SizeType, decltype(trivial_lambda)>(V, N, F_first_hc,
+  FusedBiHeapify<RAI, SizeType, decltype(trivial_lambda)>(V, N, F_first_hc,
                                                  F_last_hc, trivial_lambda);
   return ;
 }
 
 template<class RAI, typename SizeType = std::size_t, typename LambdaType>
-inline void AlmostBiHeapify(RAI V, SizeType N, LambdaType lambda) {
-  AlmostBiHeapify<RAI, SizeType, LambdaType>(V, N, 0, N, lambda);
+inline void FusedBiHeapify(RAI V, SizeType N, LambdaType lambda) {
+  FusedBiHeapify<RAI, SizeType, LambdaType>(V, N, 0, N, lambda);
   return ;
 }
 
 //Specialize to the non-lambda case.
 template<class RAI, typename SizeType = std::size_t>
-inline void AlmostBiHeapify(RAI V, SizeType N) {
+inline void FusedBiHeapify(RAI V, SizeType N) {
   auto trivial_lambda = [](SizeType local_N, SizeType i) -> SizeType {
     return i;
   };
-  AlmostBiHeapify<RAI, SizeType, decltype(trivial_lambda)>(V, N, trivial_lambda);
+  FusedBiHeapify<RAI, SizeType, decltype(trivial_lambda)>(V, N, trivial_lambda);
   return ;
 }
 
@@ -575,7 +575,7 @@ inline void AlmostBiHeapify(RAI V, SizeType N) {
 
 
 /*
- * ================== START: Definition of lambda version of IsAlmostBiHeap ====================
+ * ================== START: Definition of lambda version of IsFusedBiHeap ====================
  */
 
 //Assumes that N > 2.
@@ -611,7 +611,7 @@ void AlmostBiheapifyEnsureAlmostQuadrupleCondition(RAI V, SizeType N, LambdaType
  *  V define an almost BiHeap.
  */
 template<class RAI, typename SizeType = std::size_t, typename LambdaType>
-bool IsAlmostBiHeap(RAI V, SizeType N, LambdaType lambda) {
+bool IsFusedBiHeap(RAI V, SizeType N, LambdaType lambda) {
   if (N <= 3) {
     if(N <= 2)
       return true;
@@ -686,23 +686,23 @@ bool IsAlmostBiHeap(RAI V, SizeType N, LambdaType lambda) {
 
 //Specialize to the non-lambda case.
 template<class RAI, typename SizeType = std::size_t>
-bool IsAlmostBiHeap(RAI V, SizeType N) {
+bool IsFusedBiHeap(RAI V, SizeType N) {
   auto trivial_lambda = [](SizeType local_N, SizeType i) -> SizeType {
     return i;
   };
-  return IsAlmostBiHeap<RAI, SizeType, decltype(trivial_lambda)>(V, N, trivial_lambda);
+  return IsFusedBiHeap<RAI, SizeType, decltype(trivial_lambda)>(V, N, trivial_lambda);
 }
 
 /*
- * ================== END: Definition of lambda version of IsAlmostBiHeap ====================
+ * ================== END: Definition of lambda version of IsFusedBiHeap ====================
  */
 
 /*
- * ================== START: Definition of lambda version of IsAlmostBiHeap with some permitted In nodes ====================
+ * ================== START: Definition of lambda version of IsFusedBiHeap with some permitted In nodes ====================
  */
 
 template<class RAI, typename SizeType = std::size_t, typename LambdaType>
-bool IsAlmostBiHeap(RAI V, SizeType N, SizeType F_first_hc,
+bool IsFusedBiHeap(RAI V, SizeType N, SizeType F_first_hc,
                     SizeType F_last_hc, LambdaType lambda) {
   if(N < 2)
     return true;
@@ -710,7 +710,7 @@ bool IsAlmostBiHeap(RAI V, SizeType N, SizeType F_first_hc,
     return IsBiHeap<RAI, SizeType, LambdaType>(V, N, lambda);
   if(N == 2 || (F_last_hc - F_first_hc <= 0))
     return true;
-  if (!IsAlmostBiHeap<RAI, SizeType, LambdaType>(V, N, lambda))
+  if (!IsFusedBiHeap<RAI, SizeType, LambdaType>(V, N, lambda))
     return false ;
   SizeType N_minus1 = N - 1;
   if (N % 3 == 2) { //Then make sure that the double arrow satisfies the necessary conditions.
@@ -768,11 +768,11 @@ bool IsAlmostBiHeap(RAI V, SizeType N, SizeType F_first_hc,
 }
 
 template<class RAI, typename SizeType = std::size_t, typename LambdaType>
-bool IsAlmostBiHeap(RAI V, SizeType N, SizeType num_permitted_in_nodes, LambdaType lambda) {
+bool IsFusedBiHeap(RAI V, SizeType N, SizeType num_permitted_in_nodes, LambdaType lambda) {
   if(N < 2 || (N == 2 && num_permitted_in_nodes <= 1))
     return true;
   if (num_permitted_in_nodes <= 0)
-    return IsAlmostBiHeap<RAI, SizeType, LambdaType>(V, N, lambda);
+    return IsFusedBiHeap<RAI, SizeType, LambdaType>(V, N, lambda);
   SizeType heap_size     = HeapSize<SizeType>(N);
   SizeType first_in_node = N - heap_size;
   SizeType num_in_nodes  = heap_size - first_in_node;
@@ -785,35 +785,35 @@ bool IsAlmostBiHeap(RAI V, SizeType N, SizeType num_permitted_in_nodes, LambdaTy
   // In node than there are permitted pure max heap In nodes.
   SizeType F_first_hc = first_in_node + (num_permitted_in_nodes + 1) / 2;
   SizeType F_last_hc = (N - 1) - (first_in_node + (num_permitted_in_nodes / 2));
-  return IsAlmostBiHeap<RAI, SizeType, LambdaType>(V, N, F_first_hc,
+  return IsFusedBiHeap<RAI, SizeType, LambdaType>(V, N, F_first_hc,
                                                    F_last_hc, lambda);
 }
 
 template<class RAI, typename SizeType = std::size_t>
-bool IsAlmostBiHeap(RAI V, SizeType N,  SizeType num_permitted_in_nodes) {
+bool IsFusedBiHeap(RAI V, SizeType N,  SizeType num_permitted_in_nodes) {
   auto trivial_lambda = [](SizeType N, SizeType i) -> SizeType {
     return i;
   };
-  return IsAlmostBiHeap<RAI, SizeType, decltype(trivial_lambda)>(V, N,
+  return IsFusedBiHeap<RAI, SizeType, decltype(trivial_lambda)>(V, N,
                                        num_permitted_in_nodes, trivial_lambda);
 }
 
 template<class RAI, typename SizeType = std::size_t>
-bool IsAlmostBiHeap(RAI V, SizeType N, SizeType F_first_hc, SizeType F_last_hc) {
+bool IsFusedBiHeap(RAI V, SizeType N, SizeType F_first_hc, SizeType F_last_hc) {
   auto trivial_lambda = [](SizeType N, SizeType i) -> SizeType {
     return i;
   };
-  return IsAlmostBiHeap<RAI, SizeType, decltype(trivial_lambda)>(V, N,
+  return IsFusedBiHeap<RAI, SizeType, decltype(trivial_lambda)>(V, N,
                                                 F_first_hc, F_last_hc, trivial_lambda);
 }
 
 /*
- * ================== END: Definition of lambda version of IsAlmostBiHeap with some permitted In nodes ====================
+ * ================== END: Definition of lambda version of IsFusedBiHeap with some permitted In nodes ====================
  */
 
 
 /*
- * ================== START: Definition of AlmostBiHeapifyJumpMiddle ====================
+ * ================== START: Definition of FusedBiHeapifyJumpMiddle ====================
  */
 
 
@@ -832,11 +832,11 @@ bool IsAlmostBiHeap(RAI V, SizeType N, SizeType F_first_hc, SizeType F_last_hc) 
  * Assumes that num_nodes_to_biheapify <= distance.
  */
 template<class RAI, typename SizeType = std::size_t>
-inline void AlmostBiHeapifyJumpMiddle(RAI V, SizeType distance, SizeType num_nodes_to_biheapify) {
+inline void FusedBiHeapifyJumpMiddle(RAI V, SizeType distance, SizeType num_nodes_to_biheapify) {
   if (num_nodes_to_biheapify < 2)
     return ;
   if (distance == num_nodes_to_biheapify) { //Then there are no middle nodes to jump.
-    AlmostBiHeapify<RAI, SizeType>(V, distance);
+    FusedBiHeapify<RAI, SizeType>(V, distance);
     return ;
   }
   SizeType half_of_num_nodes = num_nodes_to_biheapify / 2;
@@ -853,7 +853,7 @@ inline void AlmostBiHeapifyJumpMiddle(RAI V, SizeType distance, SizeType num_nod
       else //i == half_of_num_nodes
         return half_of_distance;
     };
-    AlmostBiHeapify<RAI, SizeType>(V, num_nodes_to_biheapify, index_lambda);
+    FusedBiHeapify<RAI, SizeType>(V, num_nodes_to_biheapify, index_lambda);
   } else {
     auto index_lambda = [half_of_num_nodes, distance_minus_num_nodes]
                    (SizeType local_N, SizeType i) -> SizeType {
@@ -862,17 +862,17 @@ inline void AlmostBiHeapifyJumpMiddle(RAI V, SizeType distance, SizeType num_nod
       else
         return distance_minus_num_nodes + i; // = (distance - 1) - [(local_N - 1) - i]
     };
-    AlmostBiHeapify<RAI, SizeType>(V, num_nodes_to_biheapify, index_lambda);
+    FusedBiHeapify<RAI, SizeType>(V, num_nodes_to_biheapify, index_lambda);
   }
   return ;
 }
 
 template<class RAI, typename SizeType = std::size_t, typename LambdaType>
-inline void AlmostBiHeapifyJumpMiddle(RAI V, SizeType distance, SizeType num_nodes_to_biheapify, LambdaType lambda) {
+inline void FusedBiHeapifyJumpMiddle(RAI V, SizeType distance, SizeType num_nodes_to_biheapify, LambdaType lambda) {
   if (num_nodes_to_biheapify < 2)
     return ;
   if (distance == num_nodes_to_biheapify) { //Then there are no middle nodes to jump.
-    AlmostBiHeapify<RAI, SizeType, LambdaType>(V, distance, lambda);
+    FusedBiHeapify<RAI, SizeType, LambdaType>(V, distance, lambda);
     return ;
   }
   SizeType half_of_num_nodes = num_nodes_to_biheapify / 2;
@@ -890,7 +890,7 @@ inline void AlmostBiHeapifyJumpMiddle(RAI V, SizeType distance, SizeType num_nod
       else //i == half_of_num_nodes
         return lambda_of_half_of_distance;
     };
-    AlmostBiHeapify<RAI, SizeType, decltype(index_lambda)>(V, num_nodes_to_biheapify, index_lambda);
+    FusedBiHeapify<RAI, SizeType, decltype(index_lambda)>(V, num_nodes_to_biheapify, index_lambda);
   } else {
     auto index_lambda =
         [half_of_num_nodes, distance_minus_num_nodes, num_nodes_to_biheapify, lambda]
@@ -900,23 +900,23 @@ inline void AlmostBiHeapifyJumpMiddle(RAI V, SizeType distance, SizeType num_nod
       else
         return lambda(num_nodes_to_biheapify, distance_minus_num_nodes + i); // = (distance - 1) - [(local_N - 1) - i]
     };
-    AlmostBiHeapify<RAI, SizeType, decltype(index_lambda)>(V, num_nodes_to_biheapify, index_lambda);
+    FusedBiHeapify<RAI, SizeType, decltype(index_lambda)>(V, num_nodes_to_biheapify, index_lambda);
   }
   return ;
 }
 
 /*
- * ================== END: Definition of AlmostBiHeapifyJumpMiddle ====================
+ * ================== END: Definition of FusedBiHeapifyJumpMiddle ====================
  */
 
 /*
- * ================== START: Definition of AlmostBiHeapifySift ====================
+ * ================== START: Definition of FusedBiHeapifySift ====================
  */
 
 #include "biheap_sift.h"
 
 template<class RAI, typename SizeType = std::size_t, class LambdaType>
-inline void AlmostBiHeapifySiftWithDoubleHeadedArrow(RAI V, SizeType N, SizeType pos_hc,
+inline void FusedBiHeapifySiftWithDoubleHeadedArrow(RAI V, SizeType N, SizeType pos_hc,
                           SizeType F_first_hc, SizeType F_last_hc, LambdaType lambda) {
   SizeType N_minus1       = N - 1;
   SizeType heap_size      = HeapSize<SizeType>(N);
@@ -975,7 +975,7 @@ inline void AlmostBiHeapifySiftWithDoubleHeadedArrow(RAI V, SizeType N, SizeType
   if (!is_node_in_max_heap) { //Then it's in the pure min heap and not in the max heap.
     if (pos_hc == 0 ||
         !(pos_value < *(V + lambda(N, ParentNotRoot<SizeType>(pos_hc))))) {
-      AlmostBiHeapifySiftFromMinToMaxWithDoubleHeadedArrow<RAI, SizeType, LambdaType>(V, N, N_minus1,
+      FusedBiHeapifySiftFromMinToMaxWithDoubleHeadedArrow<RAI, SizeType, LambdaType>(V, N, N_minus1,
                                     heap_size, first_in_node, pos_hc, N_minus1, F_first_hc, F_last_hc,
                                     pmin_double_arrow_end_hc, pmax_double_arrow_end_hc,
                                     maxh_parent_of_pmax_double_arrow_end_hc, lambda);
@@ -985,7 +985,7 @@ inline void AlmostBiHeapifySiftWithDoubleHeadedArrow(RAI V, SizeType N, SizeType
   } else { //Then it's in the pure max heap and not in the min heap.
     if (pos_mc == 0 ||
         !(*(V + lambda(N, N_minus1 - ParentNotRoot<SizeType>(pos_mc))) < pos_value)) {
-      AlmostBiHeapifySiftFromMaxToMinWithDoubleHeadedArrow<RAI, SizeType, LambdaType>(V, N, N_minus1,
+      FusedBiHeapifySiftFromMaxToMinWithDoubleHeadedArrow<RAI, SizeType, LambdaType>(V, N, N_minus1,
                                     heap_size, first_in_node, pos_mc, 0, F_first_hc, F_last_hc,
                                     pmin_double_arrow_end_hc, minh_parent_of_pmin_double_arrow_end_hc,
                                     lambda);
@@ -997,7 +997,7 @@ inline void AlmostBiHeapifySiftWithDoubleHeadedArrow(RAI V, SizeType N, SizeType
 }
 
 template<class RAI, typename SizeType = std::size_t, class LambdaType>
-inline void AlmostBiHeapifySiftIgnoreDoubledHeadedArrow(RAI V, SizeType N, SizeType pos_hc,
+inline void FusedBiHeapifySiftIgnoreDoubledHeadedArrow(RAI V, SizeType N, SizeType pos_hc,
                           SizeType F_first_hc, SizeType F_last_hc, LambdaType lambda) {
   SizeType N_minus1       = N - 1;
   SizeType heap_size      = HeapSize<SizeType>(N);
@@ -1026,7 +1026,7 @@ inline void AlmostBiHeapifySiftIgnoreDoubledHeadedArrow(RAI V, SizeType N, SizeT
   if (!is_node_in_max_heap) { //Then it's in the pure min heap and not in the max heap.
     if (pos_hc == 0 ||
         !(pos_value < *(V + lambda(N, ParentNotRoot<SizeType>(pos_hc))))) {
-      AlmostBiHeapifySiftFromMinToMaxIgnoreDoubledHeadedArrow<RAI, SizeType, LambdaType>(V, N, N_minus1,
+      FusedBiHeapifySiftFromMinToMaxIgnoreDoubledHeadedArrow<RAI, SizeType, LambdaType>(V, N, N_minus1,
                                     heap_size, first_in_node, pos_hc, N_minus1, F_first_hc, F_last_hc,
                                     lambda);
     } else {
@@ -1035,7 +1035,7 @@ inline void AlmostBiHeapifySiftIgnoreDoubledHeadedArrow(RAI V, SizeType N, SizeT
   } else { //Then it's in the pure max heap and not in the min heap.
     if (pos_mc == 0 ||
         !(*(V + lambda(N, N_minus1 - ParentNotRoot<SizeType>(pos_mc))) < pos_value)) {
-      AlmostBiHeapifySiftFromMaxToMinIgnoreDoubledHeadedArrow<RAI, SizeType, LambdaType>(V, N, N_minus1,
+      FusedBiHeapifySiftFromMaxToMinIgnoreDoubledHeadedArrow<RAI, SizeType, LambdaType>(V, N, N_minus1,
                                     heap_size, first_in_node, pos_mc, 0, F_first_hc, F_last_hc,
                                     lambda);
     } else {
@@ -1047,26 +1047,26 @@ inline void AlmostBiHeapifySiftIgnoreDoubledHeadedArrow(RAI V, SizeType N, SizeT
 
 
 template<class RAI, typename SizeType = std::size_t, class LambdaType>
-inline void AlmostBiHeapifySift(RAI V, SizeType N, SizeType pos_hc,
+inline void FusedBiHeapifySift(RAI V, SizeType N, SizeType pos_hc,
                           SizeType F_first_hc, SizeType F_last_hc, LambdaType lambda) {
   if (N % 3 != 2) {
-    AlmostBiHeapifySiftIgnoreDoubledHeadedArrow<RAI, SizeType, LambdaType>(V, N, pos_hc, F_first_hc, F_last_hc, lambda);
+    FusedBiHeapifySiftIgnoreDoubledHeadedArrow<RAI, SizeType, LambdaType>(V, N, pos_hc, F_first_hc, F_last_hc, lambda);
   } else {
-    AlmostBiHeapifySiftWithDoubleHeadedArrow<RAI, SizeType, LambdaType>(V, N, pos_hc, F_first_hc, F_last_hc, lambda);
+    FusedBiHeapifySiftWithDoubleHeadedArrow<RAI, SizeType, LambdaType>(V, N, pos_hc, F_first_hc, F_last_hc, lambda);
   }
 }
 
 template<class RAI, typename SizeType = std::size_t>
-inline void AlmostBiHeapifySift(RAI V, SizeType N, SizeType pos_hc,
+inline void FusedBiHeapifySift(RAI V, SizeType N, SizeType pos_hc,
                                 SizeType F_first_hc, SizeType F_last_hc) {
   auto trivial_lambda = [](SizeType N, SizeType i) -> SizeType {
     return i;
   };
-  AlmostBiHeapifySift<RAI, SizeType, decltype(trivial_lambda)>(V, N, pos_hc,
+  FusedBiHeapifySift<RAI, SizeType, decltype(trivial_lambda)>(V, N, pos_hc,
                                               F_first_hc, F_last_hc, trivial_lambda);
 }
 /*
- * ================== END: Definition of AlmostBiHeapifySift ====================
+ * ================== END: Definition of FusedBiHeapifySift ====================
  */
 
 //#undef FLIP
