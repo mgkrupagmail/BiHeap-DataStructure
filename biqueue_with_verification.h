@@ -124,14 +124,14 @@ public:
 
   inline void call_almost_biheapify(SizeType new_N) {
     auto lambda = get_index_lambda(new_N);
-    AlmostBiHeapify<typename std::vector<ValueType>::iterator, SizeType, decltype(lambda)>(vec_.begin(),
+    FusedBiHeapify<typename std::vector<ValueType>::iterator, SizeType, decltype(lambda)>(vec_.begin(),
                                                                 new_N, F_first_hc_, F_last_hc_, lambda);
     return ;
   }
 
   inline void call_almost_biheapify_sift(SizeType pos_hc) {
     auto lambda = get_index_lambda();
-    AlmostBiHeapifySift<typename std::vector<ValueType>::iterator, SizeType, decltype(lambda)>(vec_.begin(),
+    FusedBiHeapifySift<typename std::vector<ValueType>::iterator, SizeType, decltype(lambda)>(vec_.begin(),
                                                                N_, pos_hc, F_first_hc_, F_last_hc_, lambda);
     return ;
   }
@@ -193,12 +193,12 @@ public:
 
   //To see that insert() has amortized O(log(N_)) complexity, note
   // that after this structure is first created, if one were to
-  // continue calling insert(), then it would AlmostBiHeapifySift()
+  // continue calling insert(), then it would FusedBiHeapifySift()
   // (an O(log N) operation) approximately (i.e. plus or minus 2) N_ / 3
-  // times before it would have to call AlmostBiHeapify(), where since
-  // AlmostBiHeapify() is an O(N) operation, there is some constant C
-  // such that AlmostBiHeapify() performs no more than C * N_ operations.
-  //If each call to AlmostBiHeapifySift() performs at most D log N
+  // times before it would have to call FusedBiHeapify(), where since
+  // FusedBiHeapify() is an O(N) operation, there is some constant C
+  // such that FusedBiHeapify() performs no more than C * N_ operations.
+  //If each call to FusedBiHeapifySift() performs at most D log N
   // operations, then at most D*((N_ / 3) + 2)*log(N_) + C N_ operations
   // will have been performed. Dividing by N_, shows that the amortized
   // complexity is O(log(N_)).
