@@ -18,7 +18,7 @@
 #include <sstream>
 #include <vector>
 
-#include "biheapify_inwards.h"
+#include "../biheapify_inwards.h"
 
 template<class ValueType, typename size_type = std::size_t>
 struct TestBiHeapifyInwardsOnGivenSize {
