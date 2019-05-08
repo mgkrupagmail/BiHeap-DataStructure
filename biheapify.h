@@ -4,6 +4,24 @@
  *  Created on: Jun 12, 2017
  *      Author: Matthew Gregory Krupa
  *   Copyright: Matthew Gregory Krupa
+ * 
+ * A BiHeap is a doubled ended heap, having both a min and a max.
+ * Note that for the implementation of a double ended priority
+ *  queue with both a min and a max and amortized O(log N) inserts 
+ *  and pops see the class BiQueue in the file biqueue.h
+ * 
+ * The most important function in this file is BiHeapify(V, N), which
+ * takes as input an integer N > 0 and a Random Access Iterator (RAI)
+ * V to N elements: V + 0, ..., V + (N-1) and makes these elements
+ * into a BiHeap in O(N) time (empirical testing shows that this is
+ * accomplished with at most 7*N/3 = 2.3333333*N swaps). 
+ * The minimum will be at V + 0 and the maximum will be at V + (N-1).
+ * Furthermore, if N >= 3 then the second smallest element will be
+ *  either element V + 1 or V + 2 and the second largest element
+ *  will be either element V + (N-3) or V + (N-2).
+ *
+ * The theory of BiHeaps (as defined below) is detailed in the file
+ *  "BiHeaps and Pivot Selection.pdf"
  */
 /* BIHEAP DEFINITION (QUICK):
 We're given N elements indexed by 0, ..., N - 1.
