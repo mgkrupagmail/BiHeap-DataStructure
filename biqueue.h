@@ -1,12 +1,11 @@
 /*
  * biqueue.h
  *
- *
  *  Created on: Dec 2, 2017
  *      Author: Matthew Gregory Krupa
  *   Copyright: Matthew Gregory Krupa
  *
- *  A BiQueue is a Double Ended Priority Queue based around 
+ *  A BiQueue is a Double Ended Priority Queue based around
  *   the idea of the BiHeap and almost BiHeap data structures.
  *
  *  It uses almost BiHeaps to implement a double ended priority
@@ -15,75 +14,65 @@
  *  Given a collection of elements, this double ended priority
  *   queue can be formed using O(N) swaps.
  *
- *  Example of using a BiQueue object:
-
+  *  Example of using a BiQueue object:
 void BiQueueExample() {
   //Define the object.
   BiQueue<int> biq;
   std::vector<int> vector = { 1, 2, 3, 4, 5, 6 };
   BiQueue<int> biq2(vector.begin(), vector.end());
-
   //Insert an element into the object
-  std::cout << "biq.insert(0) \t\t";
+  std::cout << "biq.insert(0) \t\t\t";
   biq.insert(0);
   if (!biq.empty())
-    std::cout << "Min: " << biq.min() << " \tmax: " << biq.max() 
-              << " \tbiq.size() = " << biq.size() 
+    std::cout << "Min: " << biq.min() << " \tmax: " << biq.max()
+              << " \tbiq.size() = " << biq.size()
               << " \tInternal biheap size = N = " << biq.biheap_size() << std::endl;
-
-  std::cout << "biq.insert(2) \t\t";
+  std::cout << "biq.insert(2) \t\t\t";
   biq.insert(2);
   if (!biq.empty())
-    std::cout << "Min: " << biq.min() << " \tmax: " << biq.max() 
-              << " \tbiq.size() = " << biq.size() 
+    std::cout << "Min: " << biq.min() << " \tmax: " << biq.max()
+              << " \tbiq.size() = " << biq.size()
               << " \tInternal biheap size = N = " << biq.biheap_size() << std::endl;
-
-  std::cout << "biq.insert(1) \t\t";
+  std::cout << "biq.insert(1) \t\t\t";
   biq.insert(1);
   if (!biq.empty())
-    std::cout << "Min: " << biq.min() << " \tmax: " << biq.max() 
-              << " \tbiq.size() = " << biq.size() 
+    std::cout << "Min: " << biq.min() << " \tmax: " << biq.max()
+              << " \tbiq.size() = " << biq.size()
               << " \tInternal biheap size = N = " << biq.biheap_size() << std::endl;
-
-  std::cout << "biq.insert(3) \t\t";
+  std::cout << "biq.insert(3) \t\t\t";
   biq.insert(3);
   if (!biq.empty())
-    std::cout << "Min: " << biq.min() << " \tmax: " << biq.max() 
-              << " \tbiq.size() = " << biq.size() 
+    std::cout << "Min: " << biq.min() << " \tmax: " << biq.max()
+              << " \tbiq.size() = " << biq.size()
               << " \tInternal biheap size = N = " << biq.biheap_size() << std::endl;
-
-  std::cout << "biq.insert(-1) \t\t";
+  std::cout << "biq.insert(-1) \t\t\t";
   biq.insert(-1);
   if (!biq.empty())
-    std::cout << "Min: " << biq.min() << " \tmax: " << biq.max() 
-              << " \tbiq.size() = " << biq.size() 
+    std::cout << "Min: " << biq.min() << " \tmax: " << biq.max()
+              << " \tbiq.size() = " << biq.size()
               << " \tInternal biheap size = N = " << biq.biheap_size() << std::endl;
-
-  std::cout << "biq.popmax() \t\t";
+  std::cout << "biq.popmax() \t\t\t";
   biq.popmax();
   if (!biq.empty())
-    std::cout << "Min: " << biq.min() << " \tmax: " << biq.max() 
-              << " \tbiq.size() = " << biq.size() 
+    std::cout << "Min: " << biq.min() << " \tmax: " << biq.max()
+              << " \tbiq.size() = " << biq.size()
               << " \tInternal biheap size = N = " << biq.biheap_size() << std::endl;
-
-  std::cout << "biq.popmin() \t\t";
+  std::cout << "biq.popmin() \t\t\t";
   biq.popmin();
   if (!biq.empty())
-    std::cout << "Min: " << biq.min() << " \tmax: " << biq.max() 
-              << " \tbiq.size() = " << biq.size() 
+    std::cout << "Min: " << biq.min() << " \tmax: " << biq.max()
+              << " \tbiq.size() = " << biq.size()
               << " \tInternal biheap size = N = " << biq.biheap_size() << std::endl;
-
   bool should_pop_max = true;
-  std::cout << "biq.PopMinOrMax(should_pop_max) \t\t";
+  std::cout << "biq.PopMinOrMax(should_pop_max)\t";
   //if should_pop_max == true then pop the max, otherwise pop the min.
   biq.PopMinOrMax(should_pop_max);
   if (!biq.empty())
-    std::cout << "Min: " << biq.min() << " \tmax: " << biq.max() 
-              << " \tbiq.size() = " << biq.size() 
+    std::cout << "Min: " << biq.min() << " \tmax: " << biq.max()
+              << " \tbiq.size() = " << biq.size()
               << " \tInternal biheap size = N = " << biq.biheap_size() << std::endl;
   return ;
 }
-
  */
 
 #ifndef BIQUEUE_H_
@@ -95,7 +84,6 @@ void BiQueueExample() {
 #include <vector>
 
 #include "biheapify.h"
-#include "biheapify_lambda.h"
 #include "almost_biheapify.h"
 #include "biheap_sift.h"
 
@@ -238,14 +226,14 @@ public:
 
   inline void call_fused_biheapify(SizeType new_N) {
     auto lambda = get_index_lambda(new_N);
-    FusedBiHeapify<typename std::vector<ValueType>::iterator, SizeType, decltype(lambda)>(vec_.begin(),
+    AlmostBiHeapify<typename std::vector<ValueType>::iterator, SizeType, decltype(lambda)>(vec_.begin(),
                                                                 new_N, F_first_hc_, F_last_hc_, lambda);
     return ;
   }
 
   inline void call_fused_biheapify_sift(SizeType pos_hc) {
     auto lambda = get_index_lambda();
-    FusedBiHeapifySift<typename std::vector<ValueType>::iterator, SizeType, decltype(lambda)>(vec_.begin(),
+    AlmostBiHeapifySift<typename std::vector<ValueType>::iterator, SizeType, decltype(lambda)>(vec_.begin(),
                                                                N_, pos_hc, F_first_hc_, F_last_hc_, lambda);
     return ;
   }
@@ -257,7 +245,7 @@ public:
 
   inline void call_biheapify(SizeType new_N) {
     auto lambda = get_index_lambda(new_N);
-    FusedBiHeapify<typename std::vector<ValueType>::iterator, SizeType, decltype(lambda)>(vec_.begin(), new_N, new_N, 0, lambda);
+    AlmostBiHeapify<typename std::vector<ValueType>::iterator, SizeType, decltype(lambda)>(vec_.begin(), new_N, new_N, 0, lambda);
     //Or equivalently:
     //BiHeapify<typename std::vector<ValueType>::iterator, SizeType, decltype(lambda)>(vec_.begin(), new_N, lambda);
     return ;
