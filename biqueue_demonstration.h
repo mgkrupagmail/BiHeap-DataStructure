@@ -122,7 +122,7 @@ public:
     for (SizeType i = F_first_hc_; i <= F_last_hc_; i++)
       vec[i] = 0;
     //Form an almost BiHeap.
-    AlmostBiHeapify<typename std::vector<ValueType>::iterator, SizeType>(vec.begin(), N_, F_first_hc_, F_last_hc_);
+    FusedBiHeapify<typename std::vector<ValueType>::iterator, SizeType>(vec.begin(), N_, F_first_hc_, F_last_hc_);
     vec_ = std::move(vec);
     return ;
   }
@@ -145,12 +145,12 @@ public:
 
   //To see that insert() has amortized O(log(N_)) complexity, note
   // that after this structure is first created, if one were to
-  // continue calling insert(), then it would AlmostBiHeapifySift()
+  // continue calling insert(), then it would FusedBiHeapifySift()
   // (an O(log N) operation) approximately (i.e. plus or minus 2) N_ / 3
-  // times before it would have to call AlmostBiHeapify(), where since
-  // AlmostBiHeapify() is an O(N) operation, there is some constant C
-  // such that AlmostBiHeapify() performs no more than C * N_ operations.
-  //If each call to AlmostBiHeapifySift() performs at most D log N
+  // times before it would have to call FusedBiHeapify(), where since
+  // FusedBiHeapify() is an O(N) operation, there is some constant C
+  // such that FusedBiHeapify() performs no more than C * N_ operations.
+  //If each call to FusedBiHeapifySift() performs at most D log N
   // operations, then at most D*((N_ / 3) + 2)*log(N_) + C N_ operations
   // will have been performed. Dividing by N_, shows that the amortized
   // complexity is O(log(N_)).
@@ -186,7 +186,7 @@ public:
       assert(N_ == 2 || N_ % 3 != 2);
       if (verbose_) {
         std::cout << "\n******************ENLARGED BIHEAP******************** The New Almost BiHeap is:\n";
-        PrintAlmostBiHeap();
+        PrintFusedBiHeap();
         PrintVariableInformation();
       }
     }
@@ -202,11 +202,11 @@ public:
     if (verbose_) {
       std::cout << "Placed the value " << value << " at node " << placement_index
                 << ", which has just been inserted into the this data structure.\n";
-      PrintAlmostBiHeap();
-      std::cout << "We still need to sift this element into its correct location using AlmostBiHeapifySift()." << std::endl;
+      PrintFusedBiHeap();
+      std::cout << "We still need to sift this element into its correct location using FusedBiHeapifySift()." << std::endl;
     }
     num_elements_++;
-    AlmostBiHeapifySift<typename std::vector<ValueType>::iterator, SizeType>(vec_.begin(), N_, placement_index, F_first_hc_, F_last_hc_);
+    FusedBiHeapifySift<typename std::vector<ValueType>::iterator, SizeType>(vec_.begin(), N_, placement_index, F_first_hc_, F_last_hc_);
     return ;
   }
 
@@ -254,7 +254,7 @@ public:
       if (verbose_) {
         std::cout << "\n******************SHRUNK ALMOST BIHEAP********************"
                   << " The New Almost BiHeap is:\n";
-        PrintAlmostBiHeap();
+        PrintFusedBiHeap();
         PrintVariableInformation();
       }
     } else {
@@ -270,7 +270,7 @@ public:
     if (verbose_) {
       std::cout << "Swapping values with min heap coordinates "
                 << swap_index << " and " << pop_index
-                << " and then applying AlmostBiHeapifySift() to sift nodes "
+                << " and then applying FusedBiHeapifySift() to sift nodes "
                 << pop_index << ".\n"
                 << "The node that has been removed from the Almost BiHeap is now indicated by a 0."
                 << std::endl;
@@ -279,7 +279,7 @@ public:
     //Indicate that this node is no longer in the almost BiHeap by setting it to 0.
     vec_[swap_index] = static_cast<ValueType>(0);
     //Sift the element into place.
-    AlmostBiHeapifySift<typename std::vector<ValueType>::iterator, SizeType>(vec_.begin(), N_, pop_index, F_first_hc_, F_last_hc_);
+    FusedBiHeapifySift<typename std::vector<ValueType>::iterator, SizeType>(vec_.begin(), N_, pop_index, F_first_hc_, F_last_hc_);
     return ;
   }
 
@@ -309,7 +309,7 @@ public:
     return num_elements_;
   }
 
-  void PrintAlmostBiHeap() {
+  void PrintFusedBiHeap() {
     PrintBiHeap(vec_.begin(), N_, false);
   }
 
@@ -355,7 +355,7 @@ void DEBQDemonstration(bool verbose = true, int num_random_iterations = 64) {
     PrintBiHeap(vec.begin(), vec.size(), false);
     std::cout << "-------------------------------------------------------------------------------------" << std::endl;
     std::cout << "After construction of DEBQ object:" << '\n';
-    biq.PrintAlmostBiHeap();
+    biq.PrintFusedBiHeap();
     std::cout << "\n\n_____________________________________________________________________________________\n\n\n";
   }
   for (int i = 0; i < num_random_iterations; i++) {
@@ -370,7 +370,7 @@ void DEBQDemonstration(bool verbose = true, int num_random_iterations = 64) {
       biq.insert(value);
       if (verbose) {
         std::cout << "After call to insert(" << value << "):\n";
-        biq.PrintAlmostBiHeap();
+        biq.PrintFusedBiHeap();
         std::cout << "Values after call: ";
         biq.PrintVariableInformation();
         std::cout << "->->->->->->->->->->->->->->->->->->->->->->->->->->->->->->->->->->->->->->->->->->->" << std::endl;
@@ -386,7 +386,7 @@ void DEBQDemonstration(bool verbose = true, int num_random_iterations = 64) {
       biq.PopMin();
       if (verbose) {
         std::cout << "After call to PopMin(): \n";
-        biq.PrintAlmostBiHeap();
+        biq.PrintFusedBiHeap();
         std::cout << "Values after call: ";
         biq.PrintVariableInformation();
         std::cout << "______________________________________________________________________________________"<< std::endl;
@@ -402,7 +402,7 @@ void DEBQDemonstration(bool verbose = true, int num_random_iterations = 64) {
       biq.PopMax();
       if (verbose) {
         std::cout << "After call to PopMax(): \n";
-        biq.PrintAlmostBiHeap();
+        biq.PrintFusedBiHeap();
         std::cout << "Values after call: ";
         biq.PrintVariableInformation();
         std::cout << "^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^" << std::endl;
