@@ -176,7 +176,8 @@ public:
     reserve(new_N);
     for (SizeType i = 0 ; start != one_past_end && i < num_elements_; i++, start++)
       vec_[i] = *start;
-    //Unnecessary code, useful for checking correctness.
+    //Unnecessary code, useful for checking correctness and
+    // development of these algorithms but limits ValueType to numeric objects.
     //for (SizeType i = num_elements_; i < vec_.size(); i++)
     //  vec_[i] = static_cast<ValueType>(0); //Fill with 0 each value that doesn't store the value of a node in the fused BiHeap.
     F_first_hc_ = (num_elements_ + 1) / 2;
@@ -280,8 +281,8 @@ public:
     N_          = new_N;
     F_first_hc_ = (num_elements_ + 1) / 2;
     F_last_hc_  = (new_N - 1) - (num_elements_ / 2);
-    /* //Unnecessary code, useful for checking correctness
-       // but limits ValueType to numeric objects.
+    /* //Unnecessary code, useful for checking correctness and
+       // development but limits ValueType to numeric objects.
     auto index_lambda = get_index_lambda();
     //Fill the nodes that are not to be touched with 0's.
     for (SizeType i_hc = F_first_hc_; i_hc <= F_last_hc_; i_hc++) {
