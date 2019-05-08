@@ -226,14 +226,14 @@ public:
 
   inline void call_fused_biheapify(SizeType new_N) {
     auto lambda = get_index_lambda(new_N);
-    AlmostBiHeapify<typename std::vector<ValueType>::iterator, SizeType, decltype(lambda)>(vec_.begin(),
+    FusedBiHeapify<typename std::vector<ValueType>::iterator, SizeType, decltype(lambda)>(vec_.begin(),
                                                                 new_N, F_first_hc_, F_last_hc_, lambda);
     return ;
   }
 
   inline void call_fused_biheapify_sift(SizeType pos_hc) {
     auto lambda = get_index_lambda();
-    AlmostBiHeapifySift<typename std::vector<ValueType>::iterator, SizeType, decltype(lambda)>(vec_.begin(),
+    FusedBiHeapifySift<typename std::vector<ValueType>::iterator, SizeType, decltype(lambda)>(vec_.begin(),
                                                                N_, pos_hc, F_first_hc_, F_last_hc_, lambda);
     return ;
   }
@@ -245,7 +245,7 @@ public:
 
   inline void call_biheapify(SizeType new_N) {
     auto lambda = get_index_lambda(new_N);
-    AlmostBiHeapify<typename std::vector<ValueType>::iterator, SizeType, decltype(lambda)>(vec_.begin(), new_N, new_N, 0, lambda);
+    FusedBiHeapify<typename std::vector<ValueType>::iterator, SizeType, decltype(lambda)>(vec_.begin(), new_N, new_N, 0, lambda);
     //Or equivalently:
     //BiHeapify<typename std::vector<ValueType>::iterator, SizeType, decltype(lambda)>(vec_.begin(), new_N, lambda);
     return ;
