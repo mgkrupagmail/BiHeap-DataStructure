@@ -3,7 +3,7 @@ A BiHeap is a new independently developed data structure a part of whose data is
 
 For the implementation of a double ended priority queue with both a min and a max and amortized O(log N) inserts and pops see the class BiQueue in the file biqueue.h
 
-In biheap_select.h we define BiHeapSelect(), which does the same thing as the Quickselect algorithm. However, unlike the Quickselect algorithm, BiHeapSelect() is O(N) (this is something that I'm still in the middle of proving mathematically). Empirical testing by the functions in biheap_select_measure_complexity.h show that BiHeapSelect() emplaces the element in the desired position using at most 15 * N swap operations.
+In biheap_select.h we define BiHeapSelect(), which does the same thing as the QuickSelect algorithm. However, unlike the Quickselect algorithm, BiHeapSelect() is O(N) (this is something that I'm still in the middle of proving mathematically). Empirical testing by the functions in biheap_select_measure_complexity.h show that BiHeapSelect() emplaces the element in the desired position using at most 15 * N swap operations.
 
 This project, among other things, implements the BiHeapify() function which given a random access iterator and a length, forms a BiHeap. 
 This new data structure:
