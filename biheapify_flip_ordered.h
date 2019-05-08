@@ -1,6 +1,14 @@
 /*
  * biheapify_flip_ordered.h
- *
+ * 
+ * This file implements BiHeapifyFlipOrdered() which forms a
+ *  flip-ordered BiHeap, that is, a BiHeap with the additional
+ *  property that for all i = 0, ..., CEIL(N/2), 
+ *  *(V + i) <= *(V + Flip(i)).
+ * Note that a call to BiHeapifyFlipOrdered() is slightly more 
+ *  expensive a call to BiHeapify().
+ * Note that RAI = Random Access Iterator
+ * 
  *  Created on: Nov 21, 2017
  *      Author: Matthew Gregory Krupa
  *   Copyright: Matthew Gregory Krupa
