@@ -1,10 +1,13 @@
 /*
  * biqueue.h
  *
- *  Created on: Dec 5, 2017
  *
- *  A BiQueue is a Double Ended Queue based around the idea of
- *   the BiHeap and almost BiHeap data structures.
+ *  Created on: Dec 2, 2017
+ *      Author: Matthew Gregory Krupa
+ *   Copyright: Matthew Gregory Krupa
+ *
+ *  A BiQueue is a Double Ended Priority Queue based around 
+ *   the idea of the BiHeap and almost BiHeap data structures.
  *
  *  It uses almost BiHeaps to implement a double ended priority
  *   queue. It has amortized O(log N) insertions and
@@ -22,49 +25,49 @@ void BiQueueExample() {
 
   //Insert an element into the object
   std::cout << "biq.insert(0) \t\t";
-  biq.insert(0)
+  biq.insert(0);
   if (!biq.empty())
     std::cout << "Min: " << biq.min() << " \tmax: " << biq.max() 
               << " \tbiq.size() = " << biq.size() 
               << " \tInternal biheap size = N = " << biq.biheap_size() << std::endl;
 
   std::cout << "biq.insert(2) \t\t";
-  biq.insert(2)
+  biq.insert(2);
   if (!biq.empty())
     std::cout << "Min: " << biq.min() << " \tmax: " << biq.max() 
               << " \tbiq.size() = " << biq.size() 
               << " \tInternal biheap size = N = " << biq.biheap_size() << std::endl;
 
   std::cout << "biq.insert(1) \t\t";
-  biq.insert(1)
+  biq.insert(1);
   if (!biq.empty())
     std::cout << "Min: " << biq.min() << " \tmax: " << biq.max() 
               << " \tbiq.size() = " << biq.size() 
               << " \tInternal biheap size = N = " << biq.biheap_size() << std::endl;
 
   std::cout << "biq.insert(3) \t\t";
-  biq.insert(3)
+  biq.insert(3);
   if (!biq.empty())
     std::cout << "Min: " << biq.min() << " \tmax: " << biq.max() 
               << " \tbiq.size() = " << biq.size() 
               << " \tInternal biheap size = N = " << biq.biheap_size() << std::endl;
 
   std::cout << "biq.insert(-1) \t\t";
-  biq.insert(-1)
+  biq.insert(-1);
   if (!biq.empty())
     std::cout << "Min: " << biq.min() << " \tmax: " << biq.max() 
               << " \tbiq.size() = " << biq.size() 
               << " \tInternal biheap size = N = " << biq.biheap_size() << std::endl;
 
   std::cout << "biq.popmax() \t\t";
-  biq.popmax()
+  biq.popmax();
   if (!biq.empty())
     std::cout << "Min: " << biq.min() << " \tmax: " << biq.max() 
               << " \tbiq.size() = " << biq.size() 
               << " \tInternal biheap size = N = " << biq.biheap_size() << std::endl;
 
   std::cout << "biq.popmin() \t\t";
-  biq.popmin()
+  biq.popmin();
   if (!biq.empty())
     std::cout << "Min: " << biq.min() << " \tmax: " << biq.max() 
               << " \tbiq.size() = " << biq.size() 
@@ -81,10 +84,6 @@ void BiQueueExample() {
   return ;
 }
 
- *
- *  Created on: Dec 2, 2017
- *      Author: Matthew Gregory Krupa
- *   Copyright: Matthew Gregory Krupa
  */
 
 #ifndef BIQUEUE_H_
