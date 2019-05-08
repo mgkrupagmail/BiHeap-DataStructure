@@ -280,8 +280,9 @@ public:
     N_          = new_N;
     F_first_hc_ = (num_elements_ + 1) / 2;
     F_last_hc_  = (new_N - 1) - (num_elements_ / 2);
+    /* //Unnecessary code, useful for checking correctness
+       // but limits ValueType to numeric objects.
     auto index_lambda = get_index_lambda();
-    /* //Unnecessary code, useful for checking correctness.
     //Fill the nodes that are not to be touched with 0's.
     for (SizeType i_hc = F_first_hc_; i_hc <= F_last_hc_; i_hc++) {
       SizeType vec_index_of_node_i = index_lambda(N_, i_hc);
