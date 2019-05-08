@@ -1,5 +1,7 @@
 /*
  * biqueue_with_verification.h
+ * 
+ * Verifies that the biqueue works correctly.
  *
  *  Created on: Dec 3, 2017
  *      Author: Matthew Gregory Krupa
@@ -27,9 +29,9 @@ class BiQueueWithVerification {
 
 public:
   std::vector<ValueType> vec_;
-  SizeType num_elements_; //The number of elements currently in the almost BiHeap.
-  SizeType N_;            //The size of the BiHeap that induced this almost BiHeap.
-                          //This is the maximum number of elements that the almost BiHeap
+  SizeType num_elements_; //The number of elements currently in the Fused BiHeap.
+  SizeType N_;            //The size of the BiHeap that induced this Fused BiHeap.
+                          //This is the maximum number of elements that the Fused BiHeap
                           // can hold before it needs to be resized to allow for
                           // the insertion of another element.
                           //N should always be even and non-zero.
@@ -56,7 +58,7 @@ public:
   //     (c) if F_last_hc_ == F_first_hc_ then either
   //         (i) num_elements_ == 1, in which case N_ == 1 or N_ == 2
   //             and the graph is a BiHeap (if N_ == 1) or else an
-  //             almost BiHeap (if N_ == 2) with F_last_hc_ = 1, or else
+  //             Fused BiHeap (if N_ == 2) with F_last_hc_ = 1, or else
   //         (i) num_elements_ > 2, in which case the graph is a
   //             fused BiHeap graph fused at node F_first_hc_.
   // (9) N_ >= 2 where if num_elements_ <= 1 then N_ == 2.
@@ -113,23 +115,23 @@ public:
       vec_[i] = static_cast<ValueType>(0); //Fill with 0 each value that doesn't store the value of a node in the fused BiHeap.
     F_first_hc_ = (num_elements_ + 1) / 2;
     F_last_hc_  = (N_ - 1) - (num_elements_ / 2);
-    call_almost_biheapify();
+    call_fused_biheapify();
     return ;
   }
 
-  inline void call_almost_biheapify() {
-    call_almost_biheapify(N_);
+  inline void call_fused_biheapify() {
+    call_fused_biheapify(N_);
     return ;
   }
 
-  inline void call_almost_biheapify(SizeType new_N) {
+  inline void call_fused_biheapify(SizeType new_N) {
     auto lambda = get_index_lambda(new_N);
     FusedBiHeapify<typename std::vector<ValueType>::iterator, SizeType, decltype(lambda)>(vec_.begin(),
                                                                 new_N, F_first_hc_, F_last_hc_, lambda);
     return ;
   }
 
-  inline void call_almost_biheapify_sift(SizeType pos_hc) {
+  inline void call_fused_biheapify_sift(SizeType pos_hc) {
     auto lambda = get_index_lambda();
     FusedBiHeapifySift<typename std::vector<ValueType>::iterator, SizeType, decltype(lambda)>(vec_.begin(),
                                                                N_, pos_hc, F_first_hc_, F_last_hc_, lambda);
@@ -165,7 +167,7 @@ public:
       SizeType vec_index_of_node_i = index_lambda(N_, i_hc);
       vec_[vec_index_of_node_i] = static_cast<ValueType>(0);
     }
-    call_almost_biheapify();
+    call_fused_biheapify();
     return ;
   }
 
@@ -244,25 +246,25 @@ public:
       vec_[placement_index] = value;
     }
     num_elements_++;
-    call_almost_biheapify_sift(placement_node_hc);
+    call_fused_biheapify_sift(placement_node_hc);
     return ;
   }
 
   //Assumes that vec_.size() is sufficiently large to store
-  // the new almost BiHeap.
-  inline void almost_biheapify() {
+  // the new Fused BiHeap.
+  inline void fused_biheapify() {
     N_ = parent_heap_size(num_elements_);
     if (num_elements_ <= 0)
       return ;
     F_first_hc_ = (num_elements_ + 1) / 2;        //Note that if num_elements == 1 then F_first_hc_ == 1, as desired.
     F_last_hc_  = (N_ - 1) - (num_elements_ / 2); //Note that if num_elements == 1 then F_last_hc_  == 1, as desired.
     if (num_elements_ > 1)
-      call_almost_biheapify();
+      call_fused_biheapify();
     return ;
   }
 
   //Assumes that vec_.size() is sufficiently large to store
-  // the new almost BiHeap.
+  // the new Fused BiHeap.
   inline void biheapify() {
     if (num_elements_ > 1) {
       call_biheapify();
@@ -356,10 +358,10 @@ public:
     assert(pop_index == index_lambda(N_, pop_node_hc));
     swap_index = index_lambda(N_, swap_node_hc);
     std::iter_swap(vec_.begin() + pop_index, vec_.begin() + swap_index);
-    //Indicate that this node is no longer in the almost BiHeap by setting it to 0.
+    //Indicate that this node is no longer in the Fused BiHeap by setting it to 0.
     vec_[swap_index] = static_cast<ValueType>(0);
     //Sift the element into place.
-    call_almost_biheapify_sift(pop_node_hc);
+    call_fused_biheapify_sift(pop_node_hc);
     return ;
   }
 
