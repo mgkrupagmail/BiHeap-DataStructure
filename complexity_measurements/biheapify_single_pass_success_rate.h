@@ -22,9 +22,9 @@
 #include <random>
 #include <vector>
 
-#include "biheapify.h"
-#include "random_helpers.h"
-#include "biheap_ostream.h"
+#include "../biheapify.h"
+#include "../random_helpers.h"
+#include "../biheap_ostream.h"
 
 template<class T, typename size_type = std::size_t>
 std::string GetDesciption(std::vector<T> fail_counter,
