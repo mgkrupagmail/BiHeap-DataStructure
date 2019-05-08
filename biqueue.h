@@ -80,6 +80,7 @@ void BiQueueExample() {
 #include <vector>
 
 #include "biheapify.h"
+#include "biheapify_lambda.h"
 #include "almost_biheapify.h"
 #include "biheap_sift.h"
 
