@@ -25,11 +25,11 @@ The quantity HeapSize(N) is a fundamentally important quantity associated with t
 
 Besides making the minimum and maximum elements readily available in O(N) time, the author has noticed that, as expected, the BiHeapify() functions tends to take randomly distributed elements (following a uniform distribution) and reorders them so that many of the larger elements are near the max and many of the smaller elements are near the min and the value in middle of the data to be close to the median. In fact, we define a function called BiHeapifyInwards() that produces a better-than-random pivot to help to speed up certain sorting algorithms such as quicksort.
 
-About the name: Various types of data structures called double ended heaps (also known as double ended queues) have already been discovered, but it is not clear that a BiHeap can be made into a double ended heap (although this is possible with almost BiHeaps) since it is not clear at the moment whether or not O(log N) pop and push operations exist for biheaps. In this sense, the BiHeap data structure defined here may not be a specific type of double ended heap; it is nevertheless called a BiHeap due to it, by definition, simultaneously being both a min heap and a max heap.<BR>
+About the name: Various types of data structures called double ended heaps (also known as double ended queues) have already been discovered, but it is not clear that a BiHeap can be made into a double ended heap (although this is possible with Fused BiHeaps) since it is not clear at the moment whether or not O(log N) pop and push operations exist for biheaps (as they do for Fused BiHeaps). In this sense, the BiHeap data structure defined here may not be a specific type of double ended heap; it is nevertheless called a BiHeap due to it, by definition, simultaneously being both a min heap and a max heap.<BR>
 
 There are still many questions to be asked and answered about biheaps, including:
  1) Do there exist O(log N) push and pop operations for BiHeaps?
  2) How do BiHeaps relate to the median of a set?
- 3) How to prove that BiHeapSelect is O(N)?
+ 3) How to prove that BiHeapSelect() is O(N)?
 
 Copyright Matthew Gregory Krupa
