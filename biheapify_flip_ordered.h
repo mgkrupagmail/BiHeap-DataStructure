@@ -6,7 +6,7 @@
  *  property that for all i = 0, ..., CEIL(N/2), 
  *  *(V + i) <= *(V + Flip(i)).
  * Note that a call to BiHeapifyFlipOrdered() is slightly more 
- *  expensive a call to BiHeapify().
+ *  expensive than a call to BiHeapify().
  * Note that RAI = Random Access Iterator
  * 
  *  Created on: Nov 21, 2017
