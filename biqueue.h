@@ -6,9 +6,9 @@
  *   Copyright: Matthew Gregory Krupa
  *
  *  A BiQueue is a Double Ended Priority Queue based around
- *   the idea of the BiHeap and almost BiHeap data structures.
+ *   the idea of the BiHeap and Fused BiHeap data structures.
  *
- *  It uses almost BiHeaps to implement a double ended priority
+ *  It uses Fused BiHeaps to implement a double ended priority
  *   queue. It has amortized O(log N) insertions and
  *   amortized O(log N) deletions.
  *  Given a collection of elements, this double ended priority
@@ -91,9 +91,9 @@ template<class ValueType, typename SizeType = std::size_t>
 class BiQueue {
 public:
   std::vector<ValueType> vec_;
-  SizeType num_elements_; //The number of elements currently in the almost BiHeap.
-  SizeType N_;            //The size of the BiHeap that induced this almost BiHeap.
-                          //This is the maximum number of elements that the almost BiHeap
+  SizeType num_elements_; //The number of elements currently in the Fused BiHeap.
+  SizeType N_;            //The size of the BiHeap that induced this Fused BiHeap.
+                          //This is the maximum number of elements that the Fused BiHeap
                           // can hold before it needs to be resized to allow for
                           // the insertion of another element.
                           //N should always be even and non-zero.
@@ -120,7 +120,7 @@ public:
   //     (c) if F_last_hc_ == F_first_hc_ then either
   //         (i) num_elements_ == 1, in which case N_ == 1 or N_ == 2
   //             and the graph is a BiHeap (if N_ == 1) or else an
-  //             almost BiHeap (if N_ == 2) with F_last_hc_ = 1, or else
+  //             Fused BiHeap (if N_ == 2) with F_last_hc_ = 1, or else
   //         (i) num_elements_ > 2, in which case the graph is a
   //             fused BiHeap graph fused at node F_first_hc_.
   // (9) N_ >= 2 where if num_elements_ <= 1 then N_ == 2.
@@ -456,7 +456,7 @@ public:
   }
 
   //Expands the size of the container to be at least new_expanded_vec_size.
-  //Does not call BiHeapify or almost BiHeapify.
+  //Does not call BiHeapify or Fused BiHeapify.
   inline void reserve(SizeType new_expanded_vec_size) {
     if (capacity() < new_expanded_vec_size)
       vec_.resize(new_expanded_vec_size);
