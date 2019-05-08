@@ -14,7 +14,11 @@
  *  Given a collection of elements, this double ended priority
  *   queue can be formed using O(N) swaps.
  *
-  *  Example of using a BiQueue object:
+ * Internally, BiQueue stores all objects in a std::vector<ValueType>
+ *  object and when it needs more capacity will call std::vector's
+ *  resize() method.
+ *
+ *  Example of using a BiQueue object:
 void BiQueueExample() {
   //Define the object.
   BiQueue<int> biq;
