@@ -1,6 +1,10 @@
 /*
  * biheapify_lambda.h
  *
+ * This is a generalization of biheapify.h where BiHeapify()
+ *  uses a lambda to access objects.
+ * Note that RAI = Random Access Iterator
+ *
  *  Created on: Nov 14, 2017
  *      Author: Matthew Gregory Krupa
  *   Copyright: Matthew Gregory Krupa
