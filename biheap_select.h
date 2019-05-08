@@ -2,7 +2,7 @@
  * biheap_select.h
  *
  *  The main function in this file is BiHeapSelect(), which does the same thing as
- *   the Quickselect algorithm. However, unlike the Quickselect algorithm,
+ *   the Quickselect algorithm. However, unlike the QuickSelect algorithm,
  *   BiHeapSelect() is O(N) (this is something that I'm still mathematically proving).
  *  Empirical testing by the functions in biheap_select_measure_complexity.h show that
  *   BiHeapSelect() emplaces the element in the desired position using at most 15 * N
