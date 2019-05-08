@@ -11,14 +11,14 @@
  *  two edges. For every In node, "fuse" these two edges
  *  into a single edge and remove the In node from the graph.
  * Having done this to every In node, we now have a new graph; call it
- *  the almost BiHeap graph.
+ *  the Fused BiHeap graph.
  * The FusedBiHeapify() operation rearranges the values in this
- *  almost BiHeap graph so that if two node, say with min heap coordinates
+ *  Fused BiHeap graph so that if two node, say with min heap coordinates
  *  i and j where i < j, are incident to the same edge then the value
  *  of node i is <= the value of node j.
  * Note that at the end of the FusedBiHeapify() operation, the values
  *  of the BiHeap's In nodes are unchanged.
- * To make an almost BiHeap into a BiHeap, we can call the BiHeapify()
+ * To make an Fused BiHeap into a BiHeap, we can call the BiHeapify()
  *  operation, the effect of which is equivalent to performing
  *  NOTHING BUT a sequence of sift up operations (with no sift downs).
  * This allows one to better track what happens to the values of the
@@ -608,7 +608,7 @@ void AlmostBiheapifyEnsureAlmostQuadrupleCondition(RAI V, SizeType N, LambdaType
 }
 
 /* Checks whether or not the V total_um_nodes given given the iterator
- *  V define an almost BiHeap.
+ *  V define an Fused BiHeap.
  */
 template<class RAI, typename SizeType = std::size_t, typename LambdaType>
 bool IsFusedBiHeap(RAI V, SizeType N, LambdaType lambda) {
@@ -779,7 +779,7 @@ bool IsFusedBiHeap(RAI V, SizeType N, SizeType num_permitted_in_nodes, LambdaTyp
   if (num_permitted_in_nodes >= num_in_nodes)
     return IsBiHeap<RAI, SizeType, LambdaType>(V, N, lambda);
   if (N == 2 && num_permitted_in_nodes <= 1)
-    return true;//Then it's trivially an almost BiHeap.
+    return true;//Then it's trivially an Fused BiHeap.
   //If there is an num_permitted_in_nodes is odd, then
   // allow there to be one more permitted pure min heap
   // In node than there are permitted pure max heap In nodes.
