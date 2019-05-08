@@ -1,6 +1,8 @@
 /*
  * random_helpers.h
- *
+ * 
+ * Helper functions for filling containers with random values.
+ * 
  *  Created on: May 5, 2017
  *      Author: Matthew Gregory Krupa
  */
