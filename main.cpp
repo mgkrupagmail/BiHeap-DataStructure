@@ -37,15 +37,15 @@
 #include "biheap_tikz_graph.h"
 #include "biheap_ostream.h"
 
-#include "biheapify_single_pass_success_rate.h"
-#include "biheap_sift_test_correctness.h"
-#include "biheapify_inwards_pivot_testing.h"
-#include "biqueue_with_verification.h"
+#include "complexity_measurements/biheapify_single_pass_success_rate.h"
+#include "verifications/biheap_sift_test_correctness.h"
+#include "verifications/biheapify_inwards_pivot_testing.h"
+#include "verifications/biqueue_with_verification.h"
 #include "biqueue_demonstration.h"
 
 #include "biheap_select.h"
-#include "biheap_select_test_correctness.h"
-#include "biheap_select_measure_complexity.h"
+#include "verifications/biheap_select_test_correctness.h"
+#include "complexity_measurements/biheap_select_measure_complexity.h"
 
 int main() {
   long start_total_num_nodes = 1;
