@@ -21,7 +21,7 @@ The definition of a BiHeap is highly detailed but we can give a quick summary of
  
 where HeapSize(N) is defined in "BiHeaps and Pivot Selection.pdf".
 
-The quantity HeapSize(N) is a fundamentally important quantity associated with the biheap on total_num_nodes nodes. The formulas that define this quantity stems from the intuitive and natural graph-theoretic definition of a BiHeap given in detail in "BiHeaps and Pivot Selection.pdf".
+The quantity HeapSize(N) is a fundamentally important quantity associated with the biheap on N nodes. The formulas that define this quantity stems from the intuitive and natural graph-theoretic definition of a BiHeap given in detail in "BiHeaps and Pivot Selection.pdf".
 
 Besides making the minimum and maximum elements readily available in O(N) time, the author has noticed that, as expected, the BiHeapify() functions tends to take randomly distributed elements (following a uniform distribution) and reorders them so that many of the larger elements are near the max and many of the smaller elements are near the min and the value in middle of the data to be close to the median. In fact, we define a function called BiHeapifyInwards() that produces a better-than-random pivot to help to speed up certain sorting algorithms such as quicksort.
 
