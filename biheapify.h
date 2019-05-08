@@ -13,7 +13,7 @@ These elements form a BiHeap if:
 (2) the elements [N - heap_size, ..., N)
    form a max heap with the element at N - 1 being the max,
  where heap_size is obtained from the function
-GetNumNodesInHeapContainedInBiheap(), which is defined in biheap_common.h.
+HeapSize(), which is defined in this file.
 The quantity heap_size is a fundamentally important quantity associated
  with the biheap on N nodes. The formulas that define this
  quantity, although complicated, stem from the intuitive and natural
@@ -224,6 +224,7 @@ Although the above definition of a biheap is relatively complicated, the author
  that appears to have gone unnoticed until now. There are still many questions
  to be asked about biheaps, including:
  1) Do there exist O(log n) push and pop operations for biheaps?
+ Note that RAI = Random Access Iterator
 */
 
 #ifndef BIHEAPIFY_H_
