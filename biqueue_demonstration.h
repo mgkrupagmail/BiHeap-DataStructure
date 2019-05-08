@@ -2,13 +2,13 @@
  * biqueue_demonstration.h
  *
  *  A BiQueue is a Double Ended Queue based around the idea of
- *   the BiHeap and almost BiHeap data structures.
+ *   the BiHeap and Fused BiHeap data structures.
  *  This file contains a simple BiQueue implementation specifically
  *   designed to help users understand how the push and pop
  *   algorithm works. It was not meant to be used in any application
  *   so it was not designed with efficiency in mind.
  *
- *  It uses almost BiHeaps to implement a double ended priority
+ *  It uses Fused BiHeaps to implement a double ended priority
  *   queue. It has amortized O(log N) insertions and
  *   amortized O(log N) deletions.
  *  Given a collection of elements, this double ended priority
@@ -57,10 +57,10 @@ class BiQueueDemonstrationClass {
 public:
   bool verbose_ = true;
   std::vector<ValueType> vec_;
-  SizeType num_elements_; //The number of elements currently in the almost BiHeap.
+  SizeType num_elements_; //The number of elements currently in the Fused BiHeap.
   //Note that num_elements_ always satisfies (2 * N_) / 3 - 4 <= num_elements_ <= N_.
-  SizeType N_;            //The size of the BiHeap that induced this almost BiHeap.
-                          //This is the maximum number of elements that the almost BiHeap
+  SizeType N_;            //The size of the BiHeap that induced this Fused BiHeap.
+                          //This is the maximum number of elements that the Fused BiHeap
                           // can hold before it needs to be resized to allow for
                           // the insertion of another element.
                           //N should always be even and non-zero.
@@ -121,7 +121,7 @@ public:
     //Zero out all fused nodes to make their location clear.
     for (SizeType i = F_first_hc_; i <= F_last_hc_; i++)
       vec[i] = 0;
-    //Form an almost BiHeap.
+    //Form an Fused BiHeap.
     FusedBiHeapify<typename std::vector<ValueType>::iterator, SizeType>(vec.begin(), N_, F_first_hc_, F_last_hc_);
     vec_ = std::move(vec);
     return ;
@@ -276,7 +276,7 @@ public:
                 << std::endl;
     }
     std::iter_swap(vec_.begin() + pop_index, vec_.begin() + swap_index);
-    //Indicate that this node is no longer in the almost BiHeap by setting it to 0.
+    //Indicate that this node is no longer in the Fused BiHeap by setting it to 0.
     vec_[swap_index] = static_cast<ValueType>(0);
     //Sift the element into place.
     FusedBiHeapifySift<typename std::vector<ValueType>::iterator, SizeType>(vec_.begin(), N_, pop_index, F_first_hc_, F_last_hc_);
@@ -344,11 +344,11 @@ void DEBQDemonstration(bool verbose = true, int num_random_iterations = 64) {
     std::cout << "NOTE: The top half is the pure min heap and the bottom half is the pure max heap.\n";
     std::cout << "The node at the very top is node 0 (the minimum) and the node at the very bottom is "
               << "the maximum.\n";
-    std::cout << "These are just the values of the nodes of the almost BiHeap graphs.\n"
+    std::cout << "These are just the values of the nodes of the Fused BiHeap graphs.\n"
               << "To view the edges of the BiHeap graph, use the functions found in biheap_tikz_graph.h \n"
               << " to generate LaTeX code that you can then compile to produce an actual image.\n";
     std::cout << "The value of each element actually in the doubled ended BiHeap priority queue is POSITIVE.\n"
-              << "The 0's represent unused nodes that are not part of the current almost BiHeap.\n";
+              << "The 0's represent unused nodes that are not part of the current Fused BiHeap.\n";
     std::cout << "The coordinate of each node is represented by its min heap coordinate (which is\n"
               << " the same thing as its location/index in the vector containing this data)\n";
     std::cout << "The initial values of the vector (not a BiHeap) are:" << '\n';
