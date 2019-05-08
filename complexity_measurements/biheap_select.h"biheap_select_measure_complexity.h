@@ -16,9 +16,9 @@
 #include <vector>
 
 //#include "biheap_common.h"
-#include "biheap_ostream.h"
-#include "biheapify.h"
-#include "biheap_select.h"
+#include "../biheap_ostream.h"
+#include "../biheapify.h"
+#include "../biheap_select.h"
 
 std::size_t num_swaps_this_test = 0;
 
