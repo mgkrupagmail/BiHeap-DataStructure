@@ -32,6 +32,7 @@
 #include "biheapify_lambda.h"
 #include "biheap_sift.h"
 #include "almost_biheapify.h"
+#include "biqueue.h"
 
 #include "biheap_tikz_graph.h"
 #include "biheap_ostream.h"
@@ -41,6 +42,10 @@
 #include "biheapify_inwards_pivot_testing.h"
 #include "biqueue_with_verification.h"
 #include "biqueue_demonstration.h"
+
+#include "biheap_select.h"
+#include "biheap_select_test_correctness.h"
+#include "biheap_select_measure_complexity.h"
 
 int main() {
   long start_total_num_nodes = 1;
@@ -61,16 +66,33 @@ int main() {
   bool reset_after_print = true; //Don't show a cumulative success and failure
                                  // counts.
   bool verbose = false;
-  
-  //This randomly adds and removes random values to and from a double
-  // ended BiHeap queue and verifies that the result of each operation is correct.
-  BiQueueVerificationTests(true, 30000);
 
   //This randomly adds and removes random values to and from a double
   // ended BiHeap queue. For each insertion and deletion, it outputs
   // an ASCII image of the BiHeap and a short an explanation of what it's doing.
   //It sole purpose is to help explain how a BiQueue works.
   DEBQDemonstration(true);
+
+  //This randomly adds and removes random values to and from a double
+  // ended BiHeap queue and verifies that the result of each operation is correct.
+  BiQueueVerificationTests(true, 30000);
+
+  //This measures the complexity of BiHeapSelect().
+  //For each N in a sequence of exponentially increasing values of N,
+  // it generates num_tests random vectors, picks a position in the
+  // vector at random, and calls a special version of BiHeapSelect)_
+  // called BiHeapSelectMeasureComplexity() that measures a quantity
+  // that is directly proportional to the number of swaps that
+  // BiHeapSelect() performs.
+  //BiHeapSelectMeasureComplexity() is a copy of BiHeapSelect()
+  // except with code added to count a quantity that is a scalar
+  // multiple of the number of swaps that are performed by BiHeapSelect().
+  // is an O
+  MeasureBiHeapSelectComplexity();
+  MeasureBiHeapSelectMediansComplexity();
+
+  TestCorrectnessOfBiHeapSelect();
+  TestCorrectnessOfBiHeapSelectMedians();
   
   //The two key quantities to look at are:
   //smallest min(# elements <= pivot, # elements >= pivot), and
