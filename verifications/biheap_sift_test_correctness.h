@@ -10,8 +10,8 @@
 #define BIHEAP_SIFT_TEST_CORRECTNESS_H_
 
 #include <random>
-#include "random_helpers.h"
-#include "biheap_sift.h"
+#include "../random_helpers.h"
+#include "../biheap_sift.h"
 
 template<class T, typename size_type = std::size_t>
 bool BiHeapSiftTestCorrectness(long start_total_num_nodes,
