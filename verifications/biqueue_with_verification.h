@@ -14,9 +14,9 @@
 #include <algorithm>
 #include <vector>
 
-#include "biheapify.h"
-#include "almost_biheapify.h"
-#include "biheap_sift.h"
+#include "../biheapify.h"
+#include "../almost_biheapify.h"
+#include "../biheap_sift.h"
 
 #include <cassert>
 #include <iostream>
