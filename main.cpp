@@ -39,7 +39,6 @@
 #include "biheapify_single_pass_success_rate.h"
 #include "biheap_sift_test_correctness.h"
 #include "biheapify_inwards_pivot_testing.h"
-#include "biheapify_inwards_and_outwards_testing.h"
 #include "biqueue_with_verification.h"
 #include "biqueue_demonstration.h"
 
@@ -72,8 +71,6 @@ int main() {
   // an ASCII image of the BiHeap and a short an explanation of what it's doing.
   //It sole purpose is to help explain how a BiQueue works.
   DEBQDemonstration(true);
-
-  MeasureBiHeapifyInwardsAndOutwardsProperties();
   
   //The two key quantities to look at are:
   //smallest min(# elements <= pivot, # elements >= pivot), and
