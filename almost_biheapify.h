@@ -112,7 +112,7 @@ inline void FusedBiHeapifySiftFromMinToMaxIgnoreDoubledHeadedArrow(RAI V,
     return ;
   do {
     auto parent_it = V + lambda(N, N_minus1 - parent_mc);
-    if (pos_value > *parent_it) {
+    if (*parent_it < pos_value) {
       std::iter_swap(pos_it, parent_it);
       pos_mc = parent_mc;
       pos_it = parent_it;
@@ -319,7 +319,7 @@ inline void FusedBiHeapifySiftFromMinToMaxWithDoubleHeadedArrow(RAI V,
     return ;
   do {
     auto parent_it = V + lambda(N, N_minus1 - parent_mc);
-    if (pos_value > *parent_it) {
+    if (*parent_it < pos_value) {
       std::iter_swap(pos_it, parent_it);
       pos_mc = parent_mc;
       pos_it = parent_it;
@@ -437,7 +437,7 @@ inline void FusedBiHeapifyWithDoubleHeadedArrow(RAI V, SizeType N,
     if (N == 2 && F_last_hc < F_first_hc) {
       RAI V_0 = V + lambda(N, 0);
       RAI V_1 = V + lambda(N, 1);
-      if (*V_0 > *V_1)
+      if (*V_1 < *V_0)
         std::iter_swap(V_0, V_1);
     }
     return ;
@@ -600,8 +600,8 @@ template<class RAI, typename SizeType = std::size_t, typename LambdaType>
 void AlmostBiheapifyEnsureAlmostQuadrupleCondition(RAI V, SizeType N, LambdaType lambda) {
   SizeType pure_min_heap_double_arrow_node_hc = (N - 2) / 3;
   SizeType parent_of_pure_min_heap_double_arrow_node_hc = ParentNotRoot<SizeType>(pure_min_heap_double_arrow_node_hc);
-  if (*(V + lambda(N, parent_of_pure_min_heap_double_arrow_node_hc))
-      > *(V + lambda(N, (N - 1) - parent_of_pure_min_heap_double_arrow_node_hc)))
+  if (*(V + lambda(N, (N - 1) - parent_of_pure_min_heap_double_arrow_node_hc))
+      < *(V + lambda(N, parent_of_pure_min_heap_double_arrow_node_hc)))
     std::iter_swap(V + lambda(N, parent_of_pure_min_heap_double_arrow_node_hc),
         V + lambda(N, (N - 1) - parent_of_pure_min_heap_double_arrow_node_hc));
   return ;
@@ -639,10 +639,10 @@ bool IsFusedBiHeap(RAI V, SizeType N, LambdaType lambda) {
                                                     < first_in_node_hc; i++) {
       auto parent_value = *(V + lambda(N, i));
       //Check that the parent and left child satisfy the min heap condition.
-      if (parent_value > *(V + lambda(N, (right_child - 1))))
+      if (*(V + lambda(N, (right_child - 1))) < parent_value)
         return false;
       //Check that the parent and right child satisfy the min heap condition.
-      if (parent_value > *(V + lambda(N, right_child))) {
+      if (*(V + lambda(N, right_child)) < parent_value) {
         if (!(is_N_mod_3_equal_to_2 && right_child == pmin_node_of_double_arrow))
           return false;
       }
@@ -652,7 +652,7 @@ bool IsFusedBiHeap(RAI V, SizeType N, LambdaType lambda) {
     {
       SizeType left_child;
       if ((left_child = LeftChild<SizeType>(i)) < first_in_node_hc
-          && *(V + lambda(N, i)) > *(V + lambda(N, left_child)))
+          && *(V + lambda(N, left_child)) < *(V + lambda(N, i)))
         return false;
     }
   }
@@ -730,16 +730,16 @@ bool IsFusedBiHeap(RAI V, SizeType N, SizeType F_first_hc,
         && pmax_double_arrow_node_hc <= F_last_hc;
     if (!is_pmin_double_arrow_node_forbidden && *pmin_double_arrow_node_it < *minH_parent_of_pmin_double_arrow_node_it)
       return false;
-    if (!is_pmax_double_arrow_node_forbidden && *pmax_double_arrow_node_it > *maxH_parent_of_pmax_double_arrow_node_it)
+    if (!is_pmax_double_arrow_node_forbidden && *maxH_parent_of_pmax_double_arrow_node_it < *pmax_double_arrow_node_it)
       return false;
     if (!is_pmin_double_arrow_node_forbidden && !is_pmax_double_arrow_node_forbidden
-        && *pmin_double_arrow_node_it > *pmax_double_arrow_node_it)
+        && *pmax_double_arrow_node_it < *pmin_double_arrow_node_it)
       return false;
     else if (is_pmin_double_arrow_node_forbidden && !is_pmax_double_arrow_node_forbidden
-        && *minH_parent_of_pmin_double_arrow_node_it > *pmax_double_arrow_node_it)
+        && *pmax_double_arrow_node_it < *minH_parent_of_pmin_double_arrow_node_it)
       return false;
     else if (!is_pmin_double_arrow_node_forbidden && is_pmax_double_arrow_node_forbidden
-        && *pmin_double_arrow_node_it > *maxH_parent_of_pmax_double_arrow_node_it)
+        && *maxH_parent_of_pmax_double_arrow_node_it < *pmin_double_arrow_node_it)
       return false;
   }
   SizeType heap_size              = HeapSize(N);
@@ -751,7 +751,7 @@ bool IsFusedBiHeap(RAI V, SizeType N, SizeType F_first_hc,
     SizeType maxh_parent_of_pos_hc = N_minus1 - ParentNotRoot<SizeType>(N_minus1 - pos_hc);
     auto pos_value = *(V + lambda(N, pos_hc));
     if (pos_value < *(V + lambda(N, minh_parent_of_pos_hc)) ||
-        pos_value > *(V + lambda(N, maxh_parent_of_pos_hc))) {
+        *(V + lambda(N, maxh_parent_of_pos_hc)) < pos_value) {
       return false;
     }
   }
@@ -760,7 +760,7 @@ bool IsFusedBiHeap(RAI V, SizeType N, SizeType F_first_hc,
     SizeType maxh_parent_of_pos_hc = N_minus1 - ParentNotRoot<SizeType>(N_minus1 - pos_hc);
     auto pos_value = *(V + lambda(N, pos_hc));
     if (pos_value < *(V + lambda(N, minh_parent_of_pos_hc)) ||
-        pos_value > *(V + lambda(N, maxh_parent_of_pos_hc))) {
+        *(V + lambda(N, maxh_parent_of_pos_hc)) < pos_value) {
       return false;
     }
   }
@@ -937,7 +937,7 @@ inline void FusedBiHeapifySiftWithDoubleHeadedArrow(RAI V, SizeType N, SizeType 
     auto minh_parent_of_pmax_double_arrow_end_it = V + lambda(N, minh_parent_of_pmin_double_arrow_end_hc);
     auto maxh_parent_of_pmax_double_arrow_end_it = V + lambda(N, maxh_parent_of_pmax_double_arrow_end_hc);
     if (pos_hc == pmin_double_arrow_end_hc && is_pmax_double_arrow_end_in_F) { //If !is_pmax_double_arrow_end_in_F then you can just sift up.
-      if (pos_value > *maxh_parent_of_pmax_double_arrow_end_it) {
+      if (*maxh_parent_of_pmax_double_arrow_end_it < pos_value) {
         std::iter_swap(pos_it, maxh_parent_of_pmax_double_arrow_end_it);
         SiftUpMaxHeapUnboundedMC<RAI, SizeType, LambdaType>(V, N, N_minus1, minh_parent_of_pmin_double_arrow_end_hc, lambda);
       } else if (pos_value < *minh_parent_of_pmax_double_arrow_end_it) {
@@ -946,7 +946,7 @@ inline void FusedBiHeapifySiftWithDoubleHeadedArrow(RAI V, SizeType N, SizeType 
       }
       return ; //Return should be inside this if statement.
     } else if (pos_hc == pmax_double_arrow_end_hc && is_pmin_double_arrow_end_in_F) { //If !is_pmin_double_arrow_end_in_F then you can just sift up.
-      if (pos_value > *maxh_parent_of_pmax_double_arrow_end_it) {
+      if (*maxh_parent_of_pmax_double_arrow_end_it < pos_value) {
         std::iter_swap(pos_it, maxh_parent_of_pmax_double_arrow_end_it);
         SiftUpMaxHeapUnboundedMC<RAI, SizeType, LambdaType>(V, N, N_minus1, minh_parent_of_pmin_double_arrow_end_hc, lambda);
       } else if (pos_value < *minh_parent_of_pmax_double_arrow_end_it) {
@@ -962,7 +962,7 @@ inline void FusedBiHeapifySiftWithDoubleHeadedArrow(RAI V, SizeType N, SizeType 
     SizeType maxh_parent_of_pos_hc = N_minus1 - maxh_parent_of_pos_mc;
     auto minh_parent_of_pos_it     = V + lambda(N, minh_parent_of_pos_hc);
     auto maxh_parent_of_pos_it     = V + lambda(N, maxh_parent_of_pos_hc);
-    if (pos_value > *maxh_parent_of_pos_it) {
+    if (*maxh_parent_of_pos_it < pos_value) {
       std::iter_swap(pos_it, maxh_parent_of_pos_it);
       SiftUpMaxHeapUnboundedMC<RAI, SizeType, LambdaType>(V, N, N_minus1, N_minus1 - maxh_parent_of_pos_hc, lambda);
     } else if (pos_value < *minh_parent_of_pos_it) {
@@ -1013,7 +1013,7 @@ inline void FusedBiHeapifySiftIgnoreDoubledHeadedArrow(RAI V, SizeType N, SizeTy
     SizeType maxh_parent_of_pos_hc = N_minus1 - maxh_parent_of_pos_mc;
     auto minh_parent_of_pos_it     = V + lambda(N, minh_parent_of_pos_hc);
     auto maxh_parent_of_pos_it     = V + lambda(N, maxh_parent_of_pos_hc);
-    if (pos_value > *maxh_parent_of_pos_it) {
+    if (*maxh_parent_of_pos_it < pos_value) {
       std::iter_swap(pos_it, maxh_parent_of_pos_it);
       SiftUpMaxHeapUnboundedMC<RAI, SizeType, LambdaType>(V, N, N_minus1, N_minus1 - maxh_parent_of_pos_hc, lambda);
     } else if (pos_value < *minh_parent_of_pos_it) {
