@@ -19,6 +19,7 @@
  *  resize() method.
  *
  *  Example of using a BiQueue object:
+ *
 void BiQueueExample() {
   //Define the object.
   BiQueue<int> biq;
@@ -29,52 +30,51 @@ void BiQueueExample() {
   std::cout << "biq.insert(0) \t\t\t";
   biq.insert(0);
   if (!biq.empty())
-    std::cout << "Min: " << biq.min() << "  \tmax: " << biq.max()
-              << " \tbiq.size() = " << biq.size()
+    std::cout << "Min: " << biq.min() << "  \tmax: " << biq.max() << " \tbiq.size() = " << biq.size()
               << " \tInternal biheap size = N = " << biq.biheap_size() << std::endl;
+
   std::cout << "biq.insert(2) \t\t\t";
   biq.insert(2);
   if (!biq.empty())
-    std::cout << "Min: " << biq.min() << "  \tmax: " << biq.max()
-              << " \tbiq.size() = " << biq.size()
+    std::cout << "Min: " << biq.min() << "  \tmax: " << biq.max() << " \tbiq.size() = " << biq.size()
               << " \tInternal biheap size = N = " << biq.biheap_size() << std::endl;
+
   std::cout << "biq.insert(1) \t\t\t";
   biq.insert(1);
   if (!biq.empty())
-    std::cout << "Min: " << biq.min() << "  \tmax: " << biq.max()
-              << " \tbiq.size() = " << biq.size()
+    std::cout << "Min: " << biq.min() << "  \tmax: " << biq.max() << " \tbiq.size() = " << biq.size()
               << " \tInternal biheap size = N = " << biq.biheap_size() << std::endl;
+
   std::cout << "biq.insert(3) \t\t\t";
   biq.insert(3);
   if (!biq.empty())
-    std::cout << "Min: " << biq.min() << "  \tmax: " << biq.max()
-              << " \tbiq.size() = " << biq.size()
+    std::cout << "Min: " << biq.min() << "  \tmax: " << biq.max() << " \tbiq.size() = " << biq.size()
               << " \tInternal biheap size = N = " << biq.biheap_size() << std::endl;
+
   std::cout << "biq.insert(-1) \t\t\t";
   biq.insert(-1);
   if (!biq.empty())
-    std::cout << "Min: " << biq.min() << "  \tmax: " << biq.max()
-              << " \tbiq.size() = " << biq.size()
+    std::cout << "Min: " << biq.min() << "  \tmax: " << biq.max() << " \tbiq.size() = " << biq.size()
               << " \tInternal biheap size = N = " << biq.biheap_size() << std::endl;
+
   std::cout << "biq.popmax() \t\t\t";
   biq.popmax();
   if (!biq.empty())
-    std::cout << "Min: " << biq.min() << "  \tmax: " << biq.max()
-              << " \tbiq.size() = " << biq.size()
+    std::cout << "Min: " << biq.min() << "  \tmax: " << biq.max() << " \tbiq.size() = " << biq.size()
               << " \tInternal biheap size = N = " << biq.biheap_size() << std::endl;
+
   std::cout << "biq.popmin() \t\t\t";
   biq.popmin();
   if (!biq.empty())
-    std::cout << "Min: " << biq.min() << "  \tmax: " << biq.max()
-              << " \tbiq.size() = " << biq.size()
+    std::cout << "Min: " << biq.min() << "  \tmax: " << biq.max() << " \tbiq.size() = " << biq.size()
               << " \tInternal biheap size = N = " << biq.biheap_size() << std::endl;
+
   bool should_pop_max = true;
   std::cout << "biq.PopMinOrMax(should_pop_max)\t";
   //if should_pop_max == true then pop the max, otherwise pop the min.
   biq.PopMinOrMax(should_pop_max);
   if (!biq.empty())
-    std::cout << "Min: " << biq.min() << "  \tmax: " << biq.max()
-              << " \tbiq.size() = " << biq.size()
+    std::cout << "Min: " << biq.min() << "  \tmax: " << biq.max() << " \tbiq.size() = " << biq.size()
               << " \tInternal biheap size = N = " << biq.biheap_size() << std::endl;
   return ;
 }
