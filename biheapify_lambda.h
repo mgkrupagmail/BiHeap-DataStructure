@@ -399,11 +399,11 @@ bool IsBiHeap(RAI V, SizeType N, LambdaType lambda) {
                                                     < heap_size; i++) {
       auto parent_value = *(V + lambda(N, i));
       //Check that the parent and left child satisfy the min heap condition.
-      if (parent_value > *(V + lambda(N, right_child - 1)))
+      if (*(V + lambda(N, right_child - 1)) < parent_value)
         return false;
 
       //Check that the parent and right child satisfy the min heap condition.
-      if (parent_value > *(V + lambda(N, right_child)))
+      if (*(V + lambda(N, right_child)) < parent_value)
         return false;
     }
     //If the min heap's last element is an only child then check that it and
@@ -411,7 +411,7 @@ bool IsBiHeap(RAI V, SizeType N, LambdaType lambda) {
     {
       SizeType left_child;
       if ((left_child = LeftChild<SizeType>(i)) < heap_size
-          && *(V + lambda(N, i)) > *(V + lambda(N, left_child)))
+          && *(V + lambda(N, left_child)) < *(V + lambda(N, i)))
         return false;
     }
   }
