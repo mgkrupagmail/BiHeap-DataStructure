@@ -32,7 +32,7 @@ inline void SiftUpMaxHeapUnboundedMC(RAI V, SizeType N, SizeType N_minus1,
   while (pos_mc > 0) {
     parent = ParentNotRoot<SizeType>(pos_mc);
     auto parent_it = V + lambda(N, N_minus1 - parent);
-    if (pos_value > *parent_it) {
+    if (*parent_it < pos_value) {
       std::iter_swap(pos_it, parent_it);
       pos_mc = parent;
       pos_it = parent_it;
@@ -161,7 +161,7 @@ inline void BiHeapSift(RAI V, SizeType N, SizeType pos_hc, LambdaType lambda) {
   // of the following is true:
   // (1) is_node_in_min_heap && *(V + Parent(pos_hc))       > pos_value
   // (2) is_node_in_max_heap && *(V + FLIP(Parent(pos_mc))) < pos_value
-  else if (is_node_in_min_heap && *(V + lambda(N, Parent(pos_hc))) > pos_value)
+  else if (is_node_in_min_heap && pos_value < *(V + lambda(N, Parent(pos_hc))))
     SiftUpMinHeapUnboundedHC<RAI, SizeType, LambdaType>(V, N, N_minus1, pos_hc, lambda);
   else
     SiftUpMaxHeapUnboundedMC<RAI, SizeType, LambdaType>(V, N, N_minus1, pos_mc, lambda);
@@ -205,7 +205,7 @@ inline void BiHeapSiftInNode(RAI V, SizeType N, SizeType pos_hc, LambdaType lamb
     SizeType pos_mc                = N_minus1 - pos_hc;
     SizeType maxh_parent_of_pos_hc = N_minus1 - Parent<SizeType>(pos_mc);
     auto maxh_parent_of_pos_it     = V + lambda(N, maxh_parent_of_pos_hc);
-    if (pos_value > *maxh_parent_of_pos_it)
+    if (*maxh_parent_of_pos_it < pos_value)
       SiftUpMaxHeapUnboundedMC<RAI, SizeType, LambdaType>(V, N, N_minus1, pos_mc, lambda);
   }
   return ;
