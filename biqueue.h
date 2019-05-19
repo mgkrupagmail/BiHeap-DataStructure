@@ -30,43 +30,50 @@ void BiQueueExample() {
   std::cout << "biq.insert(0) \t\t\t";
   biq.insert(0);
   if (!biq.empty())
-    std::cout << "Min: " << biq.min() << "  \tmax: " << biq.max() << " \tbiq.size() = " << biq.size()
+    std::cout << "Min: " << biq.min() << "  \t2nd smallest = " << biq.second_smallest()
+              << " \t2nd largest = " << biq.second_largest() << "  \tmax: " << biq.max() << " \tbiq.size() = " << biq.size()
               << " \tInternal biheap size = N = " << biq.biheap_size() << std::endl;
 
   std::cout << "biq.insert(2) \t\t\t";
   biq.insert(2);
   if (!biq.empty())
-    std::cout << "Min: " << biq.min() << "  \tmax: " << biq.max() << " \tbiq.size() = " << biq.size()
+    std::cout << "Min: " << biq.min() << "  \t2nd smallest = " << biq.second_smallest()
+              << " \t2nd largest = " << biq.second_largest() << "  \tmax: " << biq.max() << " \tbiq.size() = " << biq.size()
               << " \tInternal biheap size = N = " << biq.biheap_size() << std::endl;
 
   std::cout << "biq.insert(1) \t\t\t";
   biq.insert(1);
   if (!biq.empty())
-    std::cout << "Min: " << biq.min() << "  \tmax: " << biq.max() << " \tbiq.size() = " << biq.size()
+    std::cout << "Min: " << biq.min() << "  \t2nd smallest = " << biq.second_smallest()
+              << " \t2nd largest = " << biq.second_largest() << "  \tmax: " << biq.max() << " \tbiq.size() = " << biq.size()
               << " \tInternal biheap size = N = " << biq.biheap_size() << std::endl;
 
   std::cout << "biq.insert(3) \t\t\t";
   biq.insert(3);
   if (!biq.empty())
-    std::cout << "Min: " << biq.min() << "  \tmax: " << biq.max() << " \tbiq.size() = " << biq.size()
+    std::cout << "Min: " << biq.min() << "  \t2nd smallest = " << biq.second_smallest()
+              << " \t2nd largest = " << biq.second_largest() << "  \tmax: " << biq.max() << " \tbiq.size() = " << biq.size()
               << " \tInternal biheap size = N = " << biq.biheap_size() << std::endl;
 
   std::cout << "biq.insert(-1) \t\t\t";
   biq.insert(-1);
   if (!biq.empty())
-    std::cout << "Min: " << biq.min() << "  \tmax: " << biq.max() << " \tbiq.size() = " << biq.size()
+    std::cout << "Min: " << biq.min() << "  \t2nd smallest = " << biq.second_smallest()
+              << " \t2nd largest = " << biq.second_largest() << "  \tmax: " << biq.max() << " \tbiq.size() = " << biq.size()
               << " \tInternal biheap size = N = " << biq.biheap_size() << std::endl;
 
   std::cout << "biq.popmax() \t\t\t";
   biq.popmax();
   if (!biq.empty())
-    std::cout << "Min: " << biq.min() << "  \tmax: " << biq.max() << " \tbiq.size() = " << biq.size()
+    std::cout << "Min: " << biq.min() << "  \t2nd smallest = " << biq.second_smallest()
+              << " \t2nd largest = " << biq.second_largest() << "  \tmax: " << biq.max() << " \tbiq.size() = " << biq.size()
               << " \tInternal biheap size = N = " << biq.biheap_size() << std::endl;
 
   std::cout << "biq.popmin() \t\t\t";
   biq.popmin();
   if (!biq.empty())
-    std::cout << "Min: " << biq.min() << "  \tmax: " << biq.max() << " \tbiq.size() = " << biq.size()
+    std::cout << "Min: " << biq.min() << "  \t2nd smallest = " << biq.second_smallest()
+              << " \t2nd largest = " << biq.second_largest() << "  \tmax: " << biq.max() << " \tbiq.size() = " << biq.size()
               << " \tInternal biheap size = N = " << biq.biheap_size() << std::endl;
 
   bool should_pop_max = true;
@@ -74,7 +81,8 @@ void BiQueueExample() {
   //if should_pop_max == true then pop the max, otherwise pop the min.
   biq.PopMinOrMax(should_pop_max);
   if (!biq.empty())
-    std::cout << "Min: " << biq.min() << "  \tmax: " << biq.max() << " \tbiq.size() = " << biq.size()
+    std::cout << "Min: " << biq.min() << "  \t2nd smallest = " << biq.second_smallest()
+              << " \t2nd largest = " << biq.second_largest() << "  \tmax: " << biq.max() << " \tbiq.size() = " << biq.size()
               << " \tInternal biheap size = N = " << biq.biheap_size() << std::endl;
   return ;
 }
@@ -485,6 +493,54 @@ public:
 
   inline SizeType size() const {
     return num_elements_;
+  }
+
+  //Returns the second largest element in the BiQueue.
+  //This is an O(const) function.
+  //Assumes that num_elements_ >= 1.
+  //Although note a standard feature of double ended queues,
+  // it is included because of how easily this element can be found.
+  //If there is only 1 element in the BiQueue then it returns that element.
+  inline ValueType second_largest() const {
+    if (num_elements_ <= 5) {
+      if (num_elements_ <= 2) {
+        return vec_[0];
+      } else if (num_elements_ == 3) {
+        return vec_[2];
+      } else if (num_elements_ == 4) {
+        return (vec_[2] < vec_[3]) ? vec_[3] : vec_[2];
+      } else { //Else num_elements_ == 5
+        return (vec_[3] < vec_[4]) ? vec_[4] : vec_[3];
+      }
+    } else {
+      return (vec_[3] < vec_[5]) ? vec_[5] : vec_[3];
+    }
+  }
+
+  //Returns the second smallest element in the BiQueue.
+  //This is an O(const) function.
+  //Assumes that num_elements_ >= 1.
+  //Although note a standard feature of double ended queues,
+  // it is included because of how easily this element can be found.
+  //If there is only 1 element in the BiQueue then it returns that element.
+  inline ValueType second_smallest() const {
+    if (num_elements_ <= 4) {
+      /* The following if statement if short for:
+      if (num_elements_ == 1) {
+        return vec_[0];
+      } else if (num_elements_ == 2) {
+        return vec_[1];
+      } else if (num_elements_ == 3) {
+        return vec_[2];
+      }*/
+      if (num_elements_ <= 3) {
+        return vec_[num_elements_ - 1];
+      } else { //Else num_elements_ == 4
+        return (vec_[2] < vec_[3]) ? vec_[2] : vec_[3];
+      }
+    } else {
+      return (vec_[2] < vec_[4]) ? vec_[2] : vec_[4];
+    }
   }
 };
 
