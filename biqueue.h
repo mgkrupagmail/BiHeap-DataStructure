@@ -339,7 +339,7 @@ public:
       if (num_elements_ == 0) {
         vec_[0] = value;
       } else if (num_elements_ == 1) {
-        if (value > vec_[0])
+        if (vec_[0] < value)
           vec_[1] = value;
         else {
           vec_[1] = vec_[0];
