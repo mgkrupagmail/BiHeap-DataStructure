@@ -19,11 +19,11 @@
  *  resize() method.
  *
  *  Example of using a BiQueue object:
- *
+
 void BiQueueExample() {
   //Define the object.
   BiQueue<int> biq;
-  std::vector<int> vector = { 1, 2, 3, 4, 5, 6 };
+  std::vector<int> vector = { 3, 6, 5, 4, 3, 2, 1, 2 };
   BiQueue<int> biq2(vector.begin(), vector.end());
 
   //Insert an element into the object
