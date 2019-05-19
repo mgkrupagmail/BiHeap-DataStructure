@@ -30,7 +30,7 @@ template<class RAI, typename size_type = std::size_t>
 void BiHeapSelectMeasureComplexity(RAI V, size_type N, size_type desired_index) {
   assert(desired_index < N || !(std::cout << "desired_index = " << desired_index << " \tN = " << N << std::endl));
   while(N > 0) {
-    if (N <= BIHEAP_SELECT_SORT_IF_LENGTH_IS_LESS_THAN_THIS) {
+    if (N <= BIHEAP_SELECT_SORT_IF_LENGTH_IS_LESS_THAN_OR_EQUAL_TO_THIS) {
       //Note that since N <= BIHEAP_SELECT_SORT_IF_LENGTH_IS_LESS_THAN_THIS, a constant, this sort operation is effectively O(constant).
       num_swaps_this_test += N * N; //Use N * N to approximate this constant since the sort algorithm is O(N log N).
       std::sort<RAI>(V, V + N);
