@@ -24,11 +24,11 @@ std::size_t num_swaps_this_test = 0;
 
 //Emplaces the element V + desired index.
 // That is, it rearranges V, V + 1, ..., V+ (N - 1) so that
-// (1) *(V + i) <= *(V + desired_index) for all 0 <= i < desired_index, and
-// (2) *(V + i) >= *(V + desired_index) for all desired_index < i < N.
+// (1) *(V + i) <= *(V + k) for all 0 <= i < k, and
+// (2) *(V + i) >= *(V + k) for all k < i < N.
 template<class RAI, typename size_type = std::size_t>
-void BiHeapSelectMeasureComplexity(RAI V, size_type N, size_type desired_index) {
-  assert(desired_index < N || !(std::cout << "desired_index = " << desired_index << " \tN = " << N << std::endl));
+void BiHeapSelectMeasureComplexity(RAI V, size_type N, size_type k) {
+  assert(k < N || !(std::cout << "k = " << k << " \tN = " << N << std::endl));
   while(N > 0) {
     if (N <= BIHEAP_SELECT_SORT_IF_LENGTH_IS_LESS_THAN_OR_EQUAL_TO_THIS) {
       //Note that since N <= BIHEAP_SELECT_SORT_IF_LENGTH_IS_LESS_THAN_THIS, a constant, this sort operation is effectively O(constant).
@@ -36,14 +36,26 @@ void BiHeapSelectMeasureComplexity(RAI V, size_type N, size_type desired_index) 
       std::sort<RAI>(V, V + N);
       break ;
     }
-    assert(desired_index >= 0);
-    assert(desired_index < N || !(std::cout << "desired_index = " << desired_index << " \tN = " << N << std::endl));
+    assert(k >= 0);
+    assert(k < N || !(std::cout << "k = " << k << " \tN = " << N << std::endl));
 
     num_swaps_this_test += (7.0l / 3.0l) * N; //It suffices to add N here since it is known that BiHeapify (called next)
                               // is O(N) and that a call to BiHeapify(V, N) performs at most 7N/3 swaps.
     BiHeapify<RAI, size_type>(V, N);
 
-    std::pair<size_type, size_type> next_range_pair = BiHeapSelectGetRangeToFindMedianOf<size_type>(N, desired_index);
+    //Handle some trivial cases.
+    if (k == 0 || k == N - 1)
+      break ; //Then we're done
+    if (k == 1 || k == N - 2) {
+      num_swaps_this_test++; //Assume the swap occurred to get worst case scenario.
+      if (*(V + 2) < *(V + 1)) //Sort nodes V + 1 and V + 2
+          std::iter_swap(V + 1, V + 2);
+      if (*(V + (N - 2)) < *(V + (N - 3))) //Sort nodes V + (N - 2) and V + (N - 3)
+          std::iter_swap(V + (N - 2), V + (N - 3));
+      break ; //We're now done
+    }
+
+    std::pair<size_type, size_type> next_range_pair = BiHeapSelectGetRangeToFindMedianOf<size_type>(N, k);
     size_type next_range_start = next_range_pair.first;
     size_type next_range_end = next_range_pair.second;
     assert(next_range_end >= next_range_start);
@@ -68,14 +80,14 @@ void BiHeapSelectMeasureComplexity(RAI V, size_type N, size_type desired_index) 
     auto b = pivot_range.second;
     // a is the index that is 1 + (the index of last element that is < the pivot value), and
     // b is the index of the first element that is > the pivot value.
-    if (desired_index < a) {
+    if (k < a) {
       N = a;
-      assert(desired_index < N);
-    } else if (desired_index >= b) {
+      assert(k < N);
+    } else if (k >= b) {
       V = V + b;
       N -= b;
-      desired_index -= b;
-      assert(desired_index < N);
+      k -= b;
+      assert(k < N);
     } else { //a <= diesred_index < b so we've emplaced the desired index.
       break ;
     }
@@ -451,7 +463,7 @@ struct MeasureComplexityOfBiHeapifySelectOnGivenSize {
   std::string GetDescriptionOfResult() {
     std::stringstream sstrm;
     sstrm << "N = " << N_
-          << " \t(N-1)/2 = " << (static_cast<long double>(N_ - 1) / 2.0l)
+          << " \t(N-1)/2= " << (static_cast<long double>(N_ - 1) / 2.0l)
           << " \tpivot_average_ = " << pivot_average_
           << " \tNum tests = " << total_num_test_runs_;
     sstrm << " \tMax {(num swaps/N} = " << largest_ratio_of_num_swaps_over_N_for_this_N_;
@@ -468,7 +480,7 @@ template<class ValueType, typename size_type>
 size_type MeasureComplexityOfBiHeapifySelectOnGivenSize<ValueType, size_type>::N_of_largest_ratio_of_num_swaps_over_N_so_far_ = 1;
 
 template<class ValueType = int, typename size_type = std::size_t>
-void MeasureBiHeapSelectComplexity(size_type num_tests = (1u << 17), size_type N_start = 20, size_type N_one_past_end = (1u << 17)) {
+void MeasureBiHeapSelectComplexity(size_type num_tests = (1u << 21), size_type N_start = 20, size_type N_one_past_end = (1u << 22)) {
   if (N_start >= N_one_past_end) {
     N_one_past_end = N_start + 1;
   }
