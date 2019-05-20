@@ -2,7 +2,7 @@
 A BiHeap is a new independently developed data structure a part of whose data lies in a min heap, a part that lies in a max heap, and a part that lies simultaneously in both. A BiHeap is a doubled ended heap, having both a min and a max that are readily accessible. An exposition on BiHeaps, including their definition, can be found in "BiHeaps and Pivot Selection.pdf". 
 
 We use BiHeaps (and a derived data structure call "Fused BiHeaps") to define a double ended priority queue we call a BiQueue that has amortized O(log N) insertions and pops (of the min and max elements) and can be constructed in O(N) time. 
-For the implementation of a double ended priority queue with both a min and a max and amortized O(log N) inserts and pops see the class BiQueue in the file biqueue.h. A standalone header file for the Biqueue data structure is included as biqueue_standalone.h, allowing for the BiQueue to be easily used in any project.
+For the implementation of a double ended priority queue with both a min and a max and amortized O(log N) inserts and pops see the class BiQueue in the file biqueue.h. A standalone header file for the BiQueue data structure,biqueue_standalone.h, contains the BiQueue implementation in its entirety, allowing for the biqueue::BiQueue to be easily used in any C++ project.
 
 In biheap_select.h we define BiHeapSelect(), which does the same thing as the QuickSelect algorithm. However, unlike the Quickselect algorithm, BiHeapSelect() is O(N) (this is something that I'm still in the middle of proving mathematically). Empirical testing by the functions in biheap_select_measure_complexity.h show that BiHeapSelect() emplaces the element in the desired position using at most 15 * N swap operations.
 
