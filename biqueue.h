@@ -18,7 +18,7 @@
  *  object and when it needs more capacity will call std::vector's
  *  resize() method.
  *
- * Operations on a biqueue::BiQueue:
+ * Operations on a BiQueue:
  *  insert(value)        - Inserts value into the BiQueue.
  *  max()                - Returns a reference to the largest element.
  *  min()                - Returns a reference to the smallest element.
