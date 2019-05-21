@@ -5,7 +5,7 @@
  *      Author: Matthew Gregory Krupa
  *   Copyright: Matthew Gregory Krupa
  *
- *  A BiQueue is a Double Ended Priority Queue based around
+ *  A biqueue::BiQueue is a Double Ended Priority Queue based around
  *   the idea of the BiHeap and Fused BiHeap data structures.
  *
  *  It uses Fused BiHeaps to implement a double ended priority
@@ -17,6 +17,21 @@
  * Internally, BiQueue stores all objects in a std::vector<ValueType>
  *  object and when it needs more capacity will call std::vector's
  *  resize() method.
+ *
+ * Operations on a biqueue::BiQueue:
+ *  insert(value)        - Inserts value into the BiQueue.
+ *  max()                - Returns a reference to the largest element.
+ *  min()                - Returns a reference to the smallest element.
+ *  second_largest()     - Returns a reference to the second largest element in O(const) time.
+ *  second_smallest()    - Returns a reference to the second smallest element in O(const) time.
+ *  popmin()
+ *  popmax()
+ *  pop_min_or_max(bool) - Pops max if true, pops min in false.
+ *  empty()              - Returns true if and only if the BiQueue is empty.
+ *  size()               - Returns the number of elements in the BiQueue.
+ *  clear()              - Deletes all elements in the BiQueue.
+ *  capacity()           - Returns the size of the vector object storing all the data.
+ *  data()               - Returns the vector object storing all the data.
  *
  *  Example of using a BiQueue object:
 
@@ -79,9 +94,9 @@ void BiQueueExample() {
               << " \tInternal biheap size = N = " << biq.biheap_size() << std::endl;
 
   bool should_pop_max = true;
-  std::cout << "biq.PopMinOrMax(should_pop_max)\t";
+  std::cout << "biq.pop_min_or_max(should_pop_max)\t";
   //if should_pop_max == true then pop the max, otherwise pop the min.
-  biq.PopMinOrMax(should_pop_max);
+  biq.pop_min_or_max(should_pop_max);
   if (!biq.empty())
     std::cout << "Min: " << biq.min() << "  \t2nd smallest = " << biq.second_smallest()
               << " \t2nd largest = " << biq.second_largest() << "  \tmax: " << biq.max() << " \tbiq.size() = " << biq.size()
@@ -126,8 +141,6 @@ template<typename SizeType = std::size_t>
 inline SizeType HeapSize(SizeType N) {
   return N - static_cast<SizeType>(N / 3);
 }
-
-
 
 /*
  * ================== START: Definition of lambda version of BiHeapify ====================
@@ -360,7 +373,6 @@ inline void BiHeapify(RAI V, SizeType N, LambdaType lambda) {
  * ================== END: Definition of lambda version of BiHeapify ====================
  */
 
-
 template<class RAI, typename SizeType = std::size_t, class LambdaType>
 inline void SiftUpMaxHeapUnboundedMC(RAI V, SizeType N, SizeType N_minus1,
                             SizeType pos_mc, LambdaType lambda) {
@@ -401,7 +413,6 @@ inline void SiftUpMinHeapUnboundedHC(RAI V, SizeType N, SizeType N_minus1,
   }
   return ;
 }
-
 
 /*
  * ================== START: Definition of lambda version of AlmostBiheapify with some permitted In nodes, N mod 3 != 2 case =============
@@ -920,11 +931,9 @@ inline void FusedBiHeapify(RAI V, SizeType N) {
  * ================== END: Definition of lambda version of AlmostBiheapify with some permitted In nodes and specializations ==========
  */
 
-
 /*
  * ================== START: Definition of FusedBiHeapifySift ====================
  */
-
 
 template<class RAI, typename SizeType = std::size_t, class LambdaType>
 inline void FusedBiHeapifySiftWithDoubleHeadedArrow(RAI V, SizeType N, SizeType pos_hc,
@@ -1084,52 +1093,126 @@ inline void FusedBiHeapifySift(RAI V, SizeType N, SizeType pos_hc,
 
 template<class ValueType, typename SizeType = std::size_t>
 class BiQueue {
-public:
-  std::vector<ValueType> vec_;
-  SizeType num_elements_; //The number of elements currently in the Fused BiHeap.
-  SizeType N_;            //The size of the BiHeap that induced this Fused BiHeap.
-                          //This is the maximum number of elements that the Fused BiHeap
-                          // can hold before it needs to be resized to allow for
-                          // the insertion of another element.
-                          //N should always be even and non-zero.
-  //SizeType N_minus_1;   //Frequently used value.
-  //SizeType half_of_N;   //Frequently used value.
-  SizeType F_first_hc_, F_last_hc_;
-  //Invariants when num_elements > 0:
-  // (1) vec_ holds a fused BiHeap (which could possibly also be a BiHeap).
-  // (2) num_elements_ <= N_.
-  // (3) num_elements_ <= vec_.size() or else num_elements <= 1.
-  // (4) if lambda = get_index_lambda(), then the value of the
-  //     node whose min heap coordinate is pos_hc is located
-  //     at vec_[lambda(N_, i)] in memory.
-  // (5) The graph is a BiHeap if and only if N_ == num_elements_.
-  // (6) If F_first_hc_ < F_last_hc_ then N_ > 3 and
-  //     the graph is a fused BiHeap graph on N_ nodes
-  //     with each of the (F_last_hc_ + 1 - F_first_hc_) nodes
-  //     F_first_hc_, F_first_hc_ + 1, ...., F_last_hc_
-  //     fused.
-  // (7) If F_last_hc_ < F_first_hc_ then it holds a BiHeap.
-  // (8) Either F_last_hc_ < F_first_hc_
-  //     or else Flip(F_last_hc_) + 1 >= F_first_hc_ >= Flip(F_last_hc_)
-  //     (b) if num_elements_ == 1 then F_last_hc_ == F_first_hc_.
-  //     (c) if F_last_hc_ == F_first_hc_ then either
-  //         (i) num_elements_ == 1, in which case N_ == 1 or N_ == 2
-  //             and the graph is a BiHeap (if N_ == 1) or else an
-  //             Fused BiHeap (if N_ == 2) with F_last_hc_ = 1, or else
-  //         (i) num_elements_ > 2, in which case the graph is a
-  //             fused BiHeap graph fused at node F_first_hc_.
-  // (9) N_ >= 2 where if num_elements_ <= 1 then N_ == 2.
-  // (10) If vec_[i] does NOT store the value of any node then it will store 0
-  //      and otherwise, it will store a positive number.
-  //      - This is so that if the algorithm touches a node that is not
-  //        in the fused BiHeap then this will be indicated by having
-  //        a zero value where there should be a positive value.
-  // (11) If num_elements_ > 1 then vec_[0] stores the minimum and
-  //      vec_[1] stores the maximum. If num_elements_ == 1 then vec_[0]
-  //      stores both the minimum and the maximum.
-  // (12) For any index i, vec_[i] stores the value of a node in the
-  //      fused BiHeap if and only if i < num_elements_.
+private:
+   std::vector<ValueType> vec_;
+   SizeType num_elements_; //The number of elements currently in the Fused BiHeap.
+   SizeType N_;            //The size of the BiHeap that induced this Fused BiHeap.
+                           //This is the maximum number of elements that the Fused BiHeap
+                           // can hold before it needs to be resized to allow for
+                           // the insertion of another element.
+                           //N should always be even and non-zero.
+   //SizeType N_minus_1;   //Frequently used value.
+   //SizeType half_of_N;   //Frequently used value.
+   SizeType F_first_hc_, F_last_hc_;
+   //Invariants when num_elements > 0:
+   // (1) vec_ holds a fused BiHeap (which could possibly also be a BiHeap).
+   // (2) num_elements_ <= N_.
+   // (3) num_elements_ <= vec_.size() or else num_elements <= 1.
+   // (4) if lambda = get_index_lambda(), then the value of the
+   //     node whose min heap coordinate is pos_hc is located
+   //     at vec_[lambda(N_, i)] in memory.
+   // (5) The graph is a BiHeap if and only if N_ == num_elements_.
+   // (6) If F_first_hc_ < F_last_hc_ then N_ > 3 and
+   //     the graph is a fused BiHeap graph on N_ nodes
+   //     with each of the (F_last_hc_ + 1 - F_first_hc_) nodes
+   //     F_first_hc_, F_first_hc_ + 1, ...., F_last_hc_
+   //     fused.
+   // (7) If F_last_hc_ < F_first_hc_ then it holds a BiHeap.
+   // (8) Either F_last_hc_ < F_first_hc_
+   //     or else Flip(F_last_hc_) + 1 >= F_first_hc_ >= Flip(F_last_hc_)
+   //     (b) if num_elements_ == 1 then F_last_hc_ == F_first_hc_.
+   //     (c) if F_last_hc_ == F_first_hc_ then either
+   //         (i) num_elements_ == 1, in which case N_ == 1 or N_ == 2
+   //             and the graph is a BiHeap (if N_ == 1) or else an
+   //             Fused BiHeap (if N_ == 2) with F_last_hc_ = 1, or else
+   //         (i) num_elements_ > 2, in which case the graph is a
+   //             fused BiHeap graph fused at node F_first_hc_.
+   // (9) N_ >= 2 where if num_elements_ <= 1 then N_ == 2.
+   // (10) If vec_[i] does NOT store the value of any node then it will store 0
+   //      and otherwise, it will store a positive number.
+   //      - This is so that if the algorithm touches a node that is not
+   //        in the fused BiHeap then this will be indicated by having
+   //        a zero value where there should be a positive value.
+   // (11) If num_elements_ > 1 then vec_[0] stores the minimum and
+   //      vec_[1] stores the maximum. If num_elements_ == 1 then vec_[0]
+   //      stores both the minimum and the maximum.
+   // (12) For any index i, vec_[i] stores the value of a node in the
+   //      fused BiHeap if and only if i < num_elements_.
 
+   //Assumes that vec_.size() is sufficiently large to store
+   // the new parent BiHeap.
+   inline void fused_biheapify() {
+     N_ = parent_heap_size(num_elements_);
+     if (num_elements_ <= 0)
+       return ;
+     F_first_hc_ = (num_elements_ + 1) / 2;        //Note that if num_elements == 1 then F_first_hc_ == 1, as desired.
+     F_last_hc_  = (N_ - 1) - (num_elements_ / 2); //Note that if num_elements == 1 then F_last_hc_  == 1, as desired.
+     if (num_elements_ > 1)
+       call_fused_biheapify();
+     return ;
+   }
+
+   inline void call_biheapify() {
+     call_biheapify(N_);
+     return ;
+   }
+
+   inline void expand_parent_biheap() {
+     SizeType new_N = parent_heap_size(N_);
+     assert(N_ >= 2 && N_ % 2 == 0 && new_N > 2 && new_N % 2 == 0);
+     assert(num_elements_ % 2 == 0 && N_ < new_N && num_elements_ <= N_ && num_elements_ + 1 < new_N);
+     reserve(new_N);
+     N_          = new_N;
+     F_first_hc_ = (num_elements_ + 1) / 2;
+     F_last_hc_  = (new_N - 1) - (num_elements_ / 2);
+     /* //Unnecessary code, useful for checking correctness and
+        // development but limits ValueType to numeric objects.
+     auto index_lambda = get_index_lambda();
+     //Fill the nodes that are not to be touched with 0's.
+     for (SizeType i_hc = F_first_hc_; i_hc <= F_last_hc_; i_hc++) {
+       SizeType vec_index_of_node_i = index_lambda(N_, i_hc);
+       vec_[vec_index_of_node_i] = static_cast<ValueType>(0);
+     }
+     */
+     call_fused_biheapify();
+     return ;
+   }
+
+   inline auto get_index_lambda() const {
+     return get_index_lambda(N_);
+   }
+
+   inline auto get_index_lambda(SizeType new_N) const {
+     auto twice_new_N_minus1 = 2 * new_N - 1; // = 2 * (new_N - 1) + 1
+     auto half_new_N = new_N / 2;
+     return [twice_new_N_minus1, half_new_N](SizeType N_local, SizeType pos_hc) -> SizeType {
+       SizeType twice_pos_hc = 2 * pos_hc;
+       if (pos_hc < half_new_N)
+         return twice_pos_hc;
+       else
+         return twice_new_N_minus1 - twice_pos_hc;// = 2 * (new_N_minus1 - pos_hc) + 1 = 2 * pos_mc + 1
+     };
+   }
+
+   //Assumes that even_N is even and positive.
+   static inline SizeType parent_heap_size_even(SizeType even_N) {
+     SizeType half_N             = even_N / 2;
+     SizeType three_times_half_N = 3 * half_N;
+     if (half_N % 2 == 1)
+       return three_times_half_N + 1;
+     else
+       return three_times_half_N;
+   }
+
+   //Assumes that even_N is even and positive.
+   static inline SizeType parent_heap_size(SizeType N) {
+     if (N <= 1)
+       return 2;
+     else
+       return parent_heap_size_even(N - (N % 2));
+   }
+
+public:
   BiQueue() : num_elements_(0), N_(2), F_first_hc_(0), F_last_hc_(1) {
   }
 
@@ -1190,19 +1273,6 @@ public:
     F_last_hc_ = biq.F_last_hc_;
   }
 
-  //Assumes that vec_.size() is sufficiently large to store
-  // the new parent BiHeap.
-  inline void fused_biheapify() {
-    N_ = parent_heap_size(num_elements_);
-    if (num_elements_ <= 0)
-      return ;
-    F_first_hc_ = (num_elements_ + 1) / 2;        //Note that if num_elements == 1 then F_first_hc_ == 1, as desired.
-    F_last_hc_  = (N_ - 1) - (num_elements_ / 2); //Note that if num_elements == 1 then F_last_hc_  == 1, as desired.
-    if (num_elements_ > 1)
-      call_fused_biheapify();
-    return ;
-  }
-
   inline SizeType biheap_size() const {
     return N_;
   }
@@ -1234,11 +1304,6 @@ public:
     return ;
   }
 
-  inline void call_biheapify() {
-    call_biheapify(N_);
-    return ;
-  }
-
   inline void call_biheapify(SizeType new_N) {
     auto lambda = get_index_lambda(new_N);
     FusedBiHeapify<typename std::vector<ValueType>::iterator, SizeType, decltype(lambda)>(vec_.begin(), new_N, new_N, 0, lambda);
@@ -1266,43 +1331,6 @@ public:
 
   inline bool empty() const {
     return num_elements_ <= 0;
-  }
-
-  inline void expand_parent_biheap() {
-    SizeType new_N = parent_heap_size(N_);
-    assert(N_ >= 2 && N_ % 2 == 0 && new_N > 2 && new_N % 2 == 0);
-    assert(num_elements_ % 2 == 0 && N_ < new_N && num_elements_ <= N_ && num_elements_ + 1 < new_N);
-    reserve(new_N);
-    N_          = new_N;
-    F_first_hc_ = (num_elements_ + 1) / 2;
-    F_last_hc_  = (new_N - 1) - (num_elements_ / 2);
-    /* //Unnecessary code, useful for checking correctness and
-       // development but limits ValueType to numeric objects.
-    auto index_lambda = get_index_lambda();
-    //Fill the nodes that are not to be touched with 0's.
-    for (SizeType i_hc = F_first_hc_; i_hc <= F_last_hc_; i_hc++) {
-      SizeType vec_index_of_node_i = index_lambda(N_, i_hc);
-      vec_[vec_index_of_node_i] = static_cast<ValueType>(0);
-    }
-    */
-    call_fused_biheapify();
-    return ;
-  }
-
-  inline auto get_index_lambda() const {
-    return get_index_lambda(N_);
-  }
-
-  inline auto get_index_lambda(SizeType new_N) const {
-    auto twice_new_N_minus1 = 2 * new_N - 1; // = 2 * (new_N - 1) + 1
-    auto half_new_N = new_N / 2;
-    return [twice_new_N_minus1, half_new_N](SizeType N_local, SizeType pos_hc) -> SizeType {
-      SizeType twice_pos_hc = 2 * pos_hc;
-      if (pos_hc < half_new_N)
-        return twice_pos_hc;
-      else
-        return twice_new_N_minus1 - twice_pos_hc;// = 2 * (new_N_minus1 - pos_hc) + 1 = 2 * pos_mc + 1
-    };
   }
 
   //To see that insert() has amortized O(log(N_)) complexity, note
@@ -1361,7 +1389,7 @@ public:
   }
 
   //Assumes that num_elements_ > 0.
-  inline ValueType max() const {
+  inline ValueType& max() const {
     return vec_[num_elements_ > 1];
     /* The above is short for:
     if (num_elements_ == 1)
@@ -1370,26 +1398,8 @@ public:
   }
 
   //Assumes that num_elements_ > 0.
-  inline ValueType min() const {
+  inline ValueType& min() const {
     return vec_[0];
-  }
-
-  //Assumes that even_N is even and positive.
-  static inline SizeType parent_heap_size_even(SizeType even_N) {
-    SizeType half_N             = even_N / 2;
-    SizeType three_times_half_N = 3 * half_N;
-    if (half_N % 2 == 1)
-      return three_times_half_N + 1;
-    else
-      return three_times_half_N;
-  }
-
-  //Assumes that even_N is even and positive.
-  static inline SizeType parent_heap_size(SizeType N) {
-    if (N <= 1)
-      return 2;
-    else
-      return parent_heap_size_even(N - (N % 2));
   }
 
   //Assumes that num_elements_ > 0.
@@ -1397,7 +1407,7 @@ public:
   //The argument that this function has amortized O(log(N_)) complexity
   // is analogous to the argument used to show that insert() also
   // has amortized O(log(N_)) complexity.
-  void PopMinOrMax(SizeType pop_index) {
+  void pop_min_or_max(SizeType pop_index) {
     assert(pop_index == 0 || pop_index == 1);
     if (num_elements_ == 1) {
       num_elements_ = 0;
@@ -1442,13 +1452,13 @@ public:
 
   //Assumes that num_elements_ > 0.
   inline void popmax() {
-    PopMinOrMax(1);
+    pop_min_or_max(1);
     return ;
   }
 
   //Assumes that num_elements_ > 0.
   inline void popmin() {
-    PopMinOrMax(0);
+    pop_min_or_max(0);
     return ;
   }
 
@@ -1482,7 +1492,7 @@ public:
   //Although note a standard feature of double ended queues,
   // it is included because of how easily this element can be found.
   //If there is only 1 element in the BiQueue then it returns that element.
-  inline ValueType second_largest() const {
+  inline ValueType& second_largest() const {
     if (num_elements_ <= 5) {
       if (num_elements_ <= 2) {
         return vec_[0];
@@ -1504,7 +1514,7 @@ public:
   //Although note a standard feature of double ended queues,
   // it is included because of how easily this element can be found.
   //If there is only 1 element in the BiQueue then it returns that element.
-  inline ValueType second_smallest() const {
+  inline ValueType& second_smallest() const {
     if (num_elements_ <= 4) {
       /* The following if statement if short for:
       if (num_elements_ == 1) {
@@ -1522,6 +1532,33 @@ public:
     } else {
       return (vec_[2] < vec_[4]) ? vec_[2] : vec_[4];
     }
+  }
+
+  inline void swap(BiQueue &other) noexcept {
+    std::swap<std::vector<ValueType>>(vec_, other.vec_);
+    std::swap<SizeType>(num_elements_, other.num_elements_);
+    std::swap<SizeType>(N_, other.N_);
+    std::swap<SizeType>(F_first_hc_, other.F_first_hc_);
+    std::swap<SizeType>(F_last_hc_, other.F_last_hc_);
+    return ;
+  }
+
+  inline BiQueue<ValueType, SizeType>& operator=(const BiQueue<ValueType, SizeType>& other) {
+    vec_ = other.vec_;
+    num_elements_ = other.num_elements_;
+    N_ = other.N_;
+    F_first_hc_ = other.F_first_hc_;
+    F_last_hc_ = other.F_last_hc_;
+    return *this;
+  }
+
+  inline BiQueue<ValueType, SizeType>& operator=(BiQueue<ValueType, SizeType>&& other) {
+    vec_ = std::move<std::vector<ValueType>>(other.vec_);
+    num_elements_ = other.num_elements_;
+    N_ = other.N_;
+    F_first_hc_ = other.F_first_hc_;
+    F_last_hc_ = other.F_last_hc_;
+    return *this;
   }
 };
 
