@@ -26,7 +26,7 @@
  *  second_smallest()    - Returns a reference to the second smallest element in O(const) time.
  *  popmin()
  *  popmax()
- *  pop_min_or_max(bool) - Pops max if true, pops min in false.
+ *  pop_min_or_max(bool) - Pops max if true, pops min if false.
  *  empty()              - Returns true if and only if the BiQueue is empty.
  *  size()               - Returns the number of elements in the BiQueue.
  *  clear()              - Deletes all elements in the BiQueue.
