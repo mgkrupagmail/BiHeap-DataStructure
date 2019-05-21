@@ -19,19 +19,20 @@
  *  resize() method.
  *
  * Operations on a BiQueue:
- *  insert(value)        - Inserts value into the BiQueue.
- *  max()                - Returns a reference to the largest element.
- *  min()                - Returns a reference to the smallest element.
- *  second_largest()     - Returns a reference to the second largest element in O(const) time.
- *  second_smallest()    - Returns a reference to the second smallest element in O(const) time.
- *  popmin()
- *  popmax()
+ *  insert(value)        - Inserts value into the BiQueue in amortized O(log N) time.
+ *  max()                - Returns a const reference to the largest element in O(const) time.
+ *  min()                - Returns a const reference to the smallest element in O(const) time.
+ *  second_largest()     - Returns a const reference to the second largest element in O(const) time.
+ *  second_smallest()    - Returns a const reference to the second smallest element in O(const) time.
+ *  popmin()             - Pops the maximum value in amortized O(log N) time.
+ *  popmax()             - Pops the minimum value in amortized O(log N) time.
  *  pop_min_or_max(bool) - Pops max if true, pops min if false.
  *  empty()              - Returns true if and only if the BiQueue is empty.
  *  size()               - Returns the number of elements in the BiQueue.
  *  clear()              - Deletes all elements in the BiQueue.
- *  capacity()           - Returns the size of the vector object storing all the data.
- *  data()               - Returns the vector object storing all the data.
+ *  capacity()           - Returns the size of the std::vector object storing all the data. capacity() >= size().
+ *  data()               - Returns a reference to the std::vector object storing all the data.
+ *                       - The data is stored in the first size() elements of the data() std::vector.
  *
  *  Example of using a BiQueue object:
 
