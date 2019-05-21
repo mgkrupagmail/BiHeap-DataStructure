@@ -1442,7 +1442,6 @@ bool IsFusedBiHeap(RAI V, SizeType N) {
  * ================== START: Definition of FusedBiHeapifySift ====================
  */
 
-#include "biheap_sift.h"
 
 template<class RAI, typename SizeType = std::size_t, class LambdaType>
 inline void FusedBiHeapifySiftWithDoubleHeadedArrow(RAI V, SizeType N, SizeType pos_hc,
