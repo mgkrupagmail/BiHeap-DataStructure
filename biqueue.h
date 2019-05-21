@@ -42,7 +42,7 @@ void BiQueueExample() {
   std::vector<int> vector = { 3, 6, 5, 4, 3, 2, 1, 2 };
   BiQueue<int> biq2(vector.begin(), vector.end());
 
-  //Insert an element into the object
+  //Insert an element into the BiQueue:
   std::cout << "biq.insert(0) \t\t\t";
   biq.insert(0);
   if (!biq.empty())
@@ -293,6 +293,15 @@ public:
   //Copy constructor
   BiQueue(const BiQueue<ValueType> &biq) {
     vec_ = biq.vec_;
+    num_elements_ = biq.num_elements_;
+    N_ = biq.N_;
+    F_first_hc_ = biq.F_first_hc_;
+    F_last_hc_ = biq.F_last_hc_;
+  }
+
+  //Move constructor
+  BiQueue(BiQueue<ValueType> &&biq) {
+    vec_ = std::move<std::vector<ValueType>>(biq.vec_);
     num_elements_ = biq.num_elements_;
     N_ = biq.N_;
     F_first_hc_ = biq.F_first_hc_;
