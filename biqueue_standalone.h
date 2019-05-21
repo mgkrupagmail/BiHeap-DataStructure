@@ -1,7 +1,7 @@
 /*
- * biqueue.h
+ * biqueue_standalone.h
  *
- *  Created on: Dec 2, 2017
+ *  Created on: May 20, 2019
  *      Author: Matthew Gregory Krupa
  *   Copyright: Matthew Gregory Krupa
  *
