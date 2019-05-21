@@ -414,7 +414,7 @@ public:
   }
 
   //Assumes that num_elements_ > 0.
-  inline ValueType& max() const {
+  inline const ValueType& max() const {
     return vec_[num_elements_ > 1];
     /* The above is short for:
     if (num_elements_ == 1)
@@ -423,7 +423,7 @@ public:
   }
 
   //Assumes that num_elements_ > 0.
-  inline ValueType& min() const {
+  inline const ValueType& min() const {
     return vec_[0];
   }
 
@@ -517,7 +517,7 @@ public:
   //Although note a standard feature of double ended queues,
   // it is included because of how easily this element can be found.
   //If there is only 1 element in the BiQueue then it returns that element.
-  inline ValueType& second_largest() const {
+  inline const ValueType& second_largest() const {
     if (num_elements_ <= 5) {
       if (num_elements_ <= 2) {
         return vec_[0];
@@ -539,7 +539,7 @@ public:
   //Although note a standard feature of double ended queues,
   // it is included because of how easily this element can be found.
   //If there is only 1 element in the BiQueue then it returns that element.
-  inline ValueType& second_smallest() const {
+  inline const ValueType& second_smallest() const {
     if (num_elements_ <= 4) {
       /* The following if statement if short for:
       if (num_elements_ == 1) {
