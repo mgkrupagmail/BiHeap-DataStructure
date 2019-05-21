@@ -441,7 +441,6 @@ inline void BiHeapifySiftFromMaxToMin(RAI V, SizeType N, SizeType N_minus1,
 }
 
 /* This will BiHeapify all nodes in [0, N).
- * Assumes that N is odd.
  */
 /*
  * Remark:
