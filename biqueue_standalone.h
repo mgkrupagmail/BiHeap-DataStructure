@@ -105,6 +105,11 @@ void BiQueueExample() {
   return ;
 }
 
+int main() {
+  BiQueueExample();
+  return 0;
+}
+
  */
 
 #ifndef BIQUEUE_STANDALONE_H_
