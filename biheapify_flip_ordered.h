@@ -1,14 +1,14 @@
 /*
  * biheapify_flip_ordered.h
- * 
+ *
  * This file implements BiHeapifyFlipOrdered() which forms a
  *  flip-ordered BiHeap, that is, a BiHeap with the additional
- *  property that for all i = 0, ..., CEIL(N/2), 
+ *  property that for all i = 0, ..., CEIL(N/2),
  *  *(V + i) <= *(V + Flip(i)).
- * Note that a call to BiHeapifyFlipOrdered() is slightly more 
+ * Note that a call to BiHeapifyFlipOrdered() is slightly more
  *  expensive than a call to BiHeapify().
  * Note that RAI = Random Access Iterator
- * 
+ *
  *  Created on: Nov 21, 2017
  *      Author: Matthew Gregory Krupa
  *   Copyright: Matthew Gregory Krupa
@@ -46,7 +46,7 @@ inline void BiHeapifyFlipsOrderedSiftFromMinToMax(RAI V, SizeType N, SizeType N_
 
     {
       auto flip_pos_node = V + lambda(N, N_minus1 - pos_hc);
-      if (*pos_it > *flip_pos_node)
+      if (*flip_pos_node < *pos_it)
         std::iter_swap(pos_it, flip_pos_node);
     }
 
@@ -61,7 +61,7 @@ inline void BiHeapifyFlipsOrderedSiftFromMinToMax(RAI V, SizeType N, SizeType N_
       smaller_it = left_it;
       pos_hc     = left_child_hc;
     }
-    if (*pos_it > *smaller_it)
+    if (*smaller_it < *pos_it)
       std::iter_swap(pos_it, smaller_it);
     else
       return ;
@@ -69,7 +69,7 @@ inline void BiHeapifyFlipsOrderedSiftFromMinToMax(RAI V, SizeType N, SizeType N_
   if (N % 3 != 2 || pos_hc != (N - 2) / 3) { //If the node is not the end of a double arrow.
     auto pos_it         = V + lambda(N, pos_hc);
     auto flip_of_pos_it = V + lambda(N, N_minus1 - pos_hc);
-    if ((pos_hc <  N / 2 && *pos_it > *flip_of_pos_it) ||
+    if ((pos_hc <  N / 2 && *flip_of_pos_it < *pos_it) ||
         (pos_hc >= N / 2 && *pos_it < *flip_of_pos_it))
       std::iter_swap(pos_it, flip_of_pos_it);
   }
@@ -105,7 +105,7 @@ inline void BiHeapifyFlipsOrderedSiftFromMaxToMin(RAI V, SizeType N, SizeType N_
     //assert((left_child_mc < heap_size) && (left_child_hc >= first_node_in_biheap_hc) && (right_child_hc >= first_node_in_biheap_hc));
     bool is_right_child_valid = right_child_mc < heap_size;
     RAI larger_it;
-    if (is_right_child_valid && *right_it > *left_it) {
+    if (is_right_child_valid && *left_it < *right_it) {
       larger_it = right_it;
       pos_hc    = right_child_hc;
       pos_mc    = right_child_mc;
@@ -122,7 +122,7 @@ inline void BiHeapifyFlipsOrderedSiftFromMaxToMin(RAI V, SizeType N, SizeType N_
   if (N % 3 != 2 || pos_hc != (N - 2) / 3) { //If the node is not the end of a double arrow.
     auto pos_it         = V + lambda(N, pos_hc);
     auto flip_of_pos_it = V + lambda(N, pos_mc);
-    if ((pos_hc <  N / 2 && *pos_it > *flip_of_pos_it) ||
+    if ((pos_hc <  N / 2 && *flip_of_pos_it < *pos_it) ||
         (pos_hc >= N / 2 && *pos_it < *flip_of_pos_it))
       std::iter_swap(pos_it, flip_of_pos_it);
   }
@@ -157,7 +157,7 @@ inline void BiHeapifyFlipOrdered(RAI V, SizeType N, LambdaType lambda) {
     for (SizeType i = first_in_node; i < one_past_last_node_to_order; i++) {
       auto i_node      = V + lambda(N, i);
       auto flip_i_node = V + lambda(N, (N - 1) - i);
-      if (*i_node > *flip_i_node)
+      if (*flip_i_node < *i_node)
         std::iter_swap(i_node, flip_i_node);
     }
   }
@@ -171,7 +171,7 @@ inline void BiHeapifyFlipOrdered(RAI V, SizeType N, LambdaType lambda) {
     {
       auto lambda_first_hc = lambda(N, first_node_in_biheap_hc);
       auto lambda_last_hc  = lambda(N, last_node_in_biheap_hc + 1);
-      if (*(V + lambda_first_hc) > *(V + lambda_last_hc))
+      if (*(V + lambda_last_hc) < *(V + lambda_first_hc))
         std::iter_swap(V + lambda_first_hc, V + lambda_last_hc);
     }
     BiHeapifyFlipsOrderedSiftFromMinToMax<RAI, SizeType, LambdaType>(V, N, N_minus1,
@@ -222,7 +222,7 @@ bool ArePairwiseFlipOrdered(RAI V, SizeType N, LambdaType lambda) {
   SizeType num_nodes_to_check = N / 2;
   SizeType N_minus1           = N - 1;
   for (SizeType i = 0; i < num_nodes_to_check; i++) {
-    if (*(V + lambda(N, i)) > *(V + lambda(N, (N_minus1 - i))))
+    if (*(V + lambda(N, (N_minus1 - i))) < *(V + lambda(N, i)))
       return false;
   }
   return true;
