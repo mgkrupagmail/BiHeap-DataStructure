@@ -8,6 +8,9 @@
  *  A biqueue::BiQueue is a Double Ended Priority Queue based around
  *   the idea of the BiHeap and Fused BiHeap data structures.
  *
+ *  A biqueue::BiQueue can be used with any object that defines the
+ *   < operator.
+ *
  *  It uses Fused BiHeaps to implement a double ended priority
  *   queue. It has amortized O(log N) insertions and
  *   amortized O(log N) deletions.
@@ -332,7 +335,6 @@ inline void BiHeapifySiftFromMaxToMin(RAI V, SizeType N, SizeType N_minus1,
 }
 
 /* This will BiHeapify all nodes in [0, N).
- * Assumes that N is odd.
  */
 /*
  * Remark:
