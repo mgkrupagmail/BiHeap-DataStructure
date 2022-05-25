@@ -23,7 +23,7 @@
 #include <vector>
 
 //#include "biheap_common.h"
-#include "biheap_ostream.h"
+#include "visualization/biheap_ostream.h"
 #include "biheapify.h"
 
 
