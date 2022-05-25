@@ -50,7 +50,7 @@
 #include "almost_biheapify.h"
 #include "biheap_sift.h"
 
-#include "biheap_ostream.h"
+#include "visualization/biheap_ostream.h"
 
 template<class ValueType, typename SizeType = std::size_t>
 class BiQueueDemonstrationClass {
