@@ -21,7 +21,7 @@
 #include <string>
 #include <vector>
 
-#include "biheapify.h"
+#include "../biheapify.h"
 
 #ifndef FLIP
 #define FLIP(a) ((total_num_nodes - 1) - (a))
