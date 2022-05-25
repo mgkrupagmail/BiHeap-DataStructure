@@ -4,6 +4,15 @@ biheapify_odd.h
 biheapify_time.h
 biheapify_inwards_symmetrically_alternating_towards_ends.h
 biheapify_inwards_symmetrically_alternating_towards_ends_testing.h
+biheap_select_measure_complexity.h
+biheap_sift_test_correctness.h
+biheapify_inwards_and_outwards.h
+biheapify_inwards_and_outwards_testing.h
+biheapify_inwards_pivot_testing.h
+biheapify_no_value_copy.h
+biheapify_single_pass_success_rate.h
+biqueue_with_verification.h
+
 
 
 # Prerequisites
