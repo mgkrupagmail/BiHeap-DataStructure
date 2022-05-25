@@ -34,8 +34,8 @@
 #include "almost_biheapify.h"
 #include "biqueue.h"
 
-#include "biheap_tikz_graph.h"
-#include "biheap_ostream.h"
+#include "visualization/biheap_tikz_graph.h"
+#include "visualization/biheap_ostream.h"
 
 #include "complexity_measurements/biheapify_single_pass_success_rate.h"
 #include "verifications/biheap_sift_test_correctness.h"
